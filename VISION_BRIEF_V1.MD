@@ -14,6 +14,72 @@ The ordinary QC answer — ACCEPT / INVESTIGATE / REJECT — remains important, 
 
 ---
 
+## One canonical model
+
+The product must not drift into several parallel epistemological systems.
+
+There is **one primary representational object**:
+
+> **the uncertainty field**
+
+The uncertainty field describes the spread of material states that remain plausible given the evidence currently available.
+
+It is not a single scalar confidence value. It is a structured distribution over the observable space of the diagnostic process, including:
+
+- **spatial position**;
+- **capture scale / magnification**;
+- **detector or measurement modality**;
+- **derived physical features / material KPIs**;
+- **acquisition conditions and known nuisance factors**.
+
+Everything else in the product must be expressed as something that **widens, narrows, reshapes, or interrogates this field**.
+
+This is the canonical epistemological rule:
+
+> **Represent the current envelope of plausible reality → find where that envelope is too wide, unsupported or inconsistent → estimate which observation would contract it most → update.**
+
+A **blindspot** is a region of the uncertainty field that remains poorly constrained.
+
+A **robust anomaly** is an observed deviation that remains outside the supported uncertainty spread after plausible acquisition, sampling and nuisance variation are accounted for.
+
+A **measurement recommendation** is an acquisition action predicted to contract the uncertainty field more than the alternatives.
+
+A **capture-geometry problem** is a case where the dominant uncertainty comes from how reality was sampled — for example insufficient coherent spatial extent, the wrong magnification, redundant local sampling, or the wrong modality.
+
+A **model-support problem** is a case where the current observation lies outside the region represented well enough by the baseline to justify a confident interpretation.
+
+Provenance, perturbation testing, detector disagreement, uncertainty calibration, sampling density, baseline coverage, composition ambiguity and active acquisition are **not separate product concepts**. They are factors that modify the same uncertainty field.
+
+The product is therefore fundamentally:
+
+> **a system for dynamically refining the shape of what is known.**
+
+### Two improvement loops, one object
+
+There are only two allowed improvement loops, and both update the same uncertainty field.
+
+**Measurement loop**
+
+**current data → uncertainty field → blindspot → next capture → updated field**
+
+This determines what should be measured next: more area, different scale, another detector, another section, EDS, more baseline material, or another acquisition strategy.
+
+**Discovery loop**
+
+**paper / agentic research → candidate measurable pattern or inference operator → test on current data → update field**
+
+This is where agentic literature research belongs.
+
+Research may discover a new morphology statistic, cross-detector relationship, spatial descriptor, characteristic scale, physical proxy, or other inference lead. It becomes part of the product **only if it changes the uncertainty field in a useful, testable way** — for example by revealing hidden variance, explaining existing spread, reducing a blindspot, or changing the highest-value next observation.
+
+This prevents the research stream from becoming a parallel feature factory.
+
+All new inference leads must answer one question:
+
+> **Does this improve our estimate of what remains plausible, or tell us how to reduce that uncertainty more efficiently?**
+
+---
+
 ## The problem
 
 Most QC systems treat the dataset as fixed and ask:
@@ -96,16 +162,23 @@ This is closer to Track 2's epistemological-agent logic applied to Track 4's phy
 
 ## Central technical idea
 
-An observed difference can be factored into:
+The core computation is to estimate and update the **uncertainty field**.
 
-1. change plausibly explained by the observation / acquisition process;
-2. residual change that survives those explanations;
-3. the amount of evidence supporting interpretation of that residual;
-4. the expected value of obtaining another measurement.
+The field should represent, as far as the available data allows:
 
-The important object is not a generic confidence score.
+1. the variation already observed in the material;
+2. the variation attributable to the observation / acquisition process;
+3. the plausible but unobserved variation implied by sparse sampling, spatial structure, limited scale, weak baseline coverage or detector limitations;
+4. the residual deviations that survive those explanations;
+5. how much the field is expected to contract under each candidate next measurement.
 
-It is the **structure of the evidence deficit**.
+The important object is not a generic confidence score and not a collection of separate uncertainty widgets.
+
+It is the **shape and spread of plausible reality under the current evidence**.
+
+The operational question is always:
+
+> **What uncertainty remains, where does it live, and what observation would shrink it most?**
 
 A region might need:
 
@@ -315,13 +388,14 @@ And the shortest demo idea:
 
 1. Preserve the existing QC engine as the evidence substrate.
 2. Audit the current model for baseline/test leakage caused by reconstructed parent micrographs spanning batch folders.
-3. Define the minimal derived state needed for each evidence cell:
-   - material deviation;
-   - nuisance-explainable fraction;
+3. Define the minimal representation of the **uncertainty field** for each evidence cell / region:
+   - observed spread;
+   - nuisance / acquisition-explainable spread;
+   - plausible unobserved spread from sampling and support limits;
+   - residual material deviation;
    - support / blindspot level;
-   - decision leverage;
-   - recommended acquisition action;
-   - expected information gain.
+   - expected contraction under candidate next measurements.
+   Derive decision leverage, recommended acquisition action and expected information gain from this same representation rather than creating separate conceptual systems.
 4. Build the Evidence Field as the hero interaction.
 5. Add the evidence-survival / falsification sequence.
 6. Add a NEXT VIEW mode that can recommend spatial extent, scale, modality or additional baseline sampling.
