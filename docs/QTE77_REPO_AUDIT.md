@@ -1,7 +1,7 @@
 # Audit: qte77's repo (`qte77/2026-10-03-london-ai-science-hack`) vs ours
 
-Exploratory audit, 2026-10-03, against qte77's `main` at `11be16b`. Nothing was changed in either repo. Read alongside
-`docs/VISION_BRIEF_V2.MD` and `docs/JOB_SPLIT_V2.MD`.
+Exploratory audit, 2026-10-03, against qte77's `main` at `11be16b`; re-explored at `24a77c2` (see §7). Nothing was
+changed in either repo. Read alongside `docs/VISION_BRIEF_V2.MD` and `docs/JOB_SPLIT_V2.MD`.
 
 **Bottom line.** qte77's repo is a hosted web shell with no science code. It meets ours most usefully as the online
 surface for our results, plus two credibility mechanisms worth borrowing. Its written architecture describes a different
@@ -110,3 +110,34 @@ Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 
 `renderer/` has no `.gitignore`, so `git add renderer` would also commit `node_modules`. Add `renderer/node_modules` (and
 `renderer/dist`, if build output should not be tracked) to `.gitignore` before committing.
+
+## 7. Update: re-explored at `24a77c2` (3 new commits, PRs #8–#10)
+
+**What changed.** All three PRs extend the hosting / agent-discovery surface; there is still no science code, and
+`docs/architecture.md` and `AGENTS.md` are unchanged. The live site serves `24a77c2` (verified via `/v1/health`).
+
+| PR | Adds |
+|---|---|
+| #8 | Landing page at `/`: HTML for people, markdown for agents (`Accept: text/markdown` or `/index.md`), canonical link, Open Graph, `SoftwareApplication` JSON-LD |
+| #9 | `/sitemap.xml`, `/.well-known/api-catalog` (RFC 9727), `/.well-known/agent-skills/index.json` + a `SKILL.md` pinned by SHA-256, `/.well-known/ard.json`, RFC 8288 `Link` headers, per-agent `robots.txt` rules, markdown 404s, "when to use / when not" text |
+| #10 | `/v1/health` reports the deployed commit; `deploy.yml` waits until the new commit is serving before running live e2e |
+
+**What this changes in the audit.**
+
+- **§2.1 (connectivity) is now cheaper.** The skills index and `SKILL.md` are the natural place to publish a
+  `recommend-next-capture` skill. Markdown negotiation fits `reports/<batch>/report.md` directly (Accept-negotiated
+  `/batches/{id}`).
+- **§4 (opposite framings) is now more urgent.** The public landing page, `SKILL.md`, ARD entry and JSON-LD all describe
+  the eval-bench thesis ("check whether a science agent's verdict is correct… detect reward hacking… measure
+  calibration"), and the sitemap invites indexing. None of it mentions the epistemic acquisition controller. Every further
+  PR on that surface deepens the HackBench identity, so the framing decision should come before more discovery work, not
+  after.
+- **New borrowable pattern: commit-stamped health.** If our demo is served, `/v1/health` returning the commit lets judges
+  (and the pre-registration release) tie the live system to a specific frozen commit.
+- **Unchanged.** No progress on the scientific half of the lane (`FIELD_MODEL.md` §7 still unanswered in the repo), no
+  endpoints that serve data, and no open PRs or issues showing QC work in progress. Our unseen-batch pre-registration
+  (§2.2) is still open: `data/` holds only Batch_1–3.
+
+**Revised top action.** Before step 2 of §5, GRAMSINATOR and qte77 agree on one public identity. Then qte77 swaps
+`TAGLINE`, `WHEN_TO_USE` and the skill text in `landing.py` / `discovery.py` to the V2 controller, and adds the field /
+report endpoints.
