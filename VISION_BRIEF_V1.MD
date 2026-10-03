@@ -1,413 +1,614 @@
 # VISION BRIEF V1
 
-## Working thesis
+## Vision in one sentence
 
-We are not building a better anomaly detector.
+We are building a **recursive epistemic diagnostic system** that performs materials QC, models where the current dataset stops constraining reality, and then improves the diagnostic process by identifying the next measurement, capture strategy, inference dimension, or parallel dataset that would reduce the most consequential uncertainty.
 
-We are building an **epistemic diagnostic layer** that shows where a scientific quality-control process is strong, where it is blind, why it is uncertain, and **what should be measured next to improve the diagnosis most efficiently**.
+Polaron's battery-electrode QC problem is the proving ground.
 
-Polaron's battery-electrode QC task is the proving ground. The product is broader:
+The product is broader:
 
-> **Map what the diagnostic system knows, what it may be missing, and which next observation would reduce uncertainty most.**
+> **Diagnose the material, diagnose the limits of the diagnosis, then improve how reality is observed.**
 
-The ordinary QC answer — ACCEPT / INVESTIGATE / REJECT — remains important, but it is **supporting proof**, not the organizing metaphor of the product.
+The ACCEPT / INVESTIGATE / REJECT result remains essential proof that the system can do the requested QC task. It is not the organizing metaphor of the product.
 
 ---
 
-## One canonical model
+## The core object: the uncertainty field
 
-The product must not drift into several parallel epistemological systems.
+The product must not drift into multiple parallel epistemological systems.
 
-There is **one primary representational object**:
+There is one canonical object:
 
 > **the uncertainty field**
 
-The uncertainty field describes the spread of material states that remain plausible given the evidence currently available.
+The uncertainty field represents the range and structure of material states that remain plausible given the evidence currently available.
 
-It is not a single scalar confidence value. It is a structured distribution over the observable space of the diagnostic process, including:
+It is not a single confidence score.
 
-- **spatial position**;
-- **capture scale / magnification**;
-- **detector or measurement modality**;
-- **derived physical features / material KPIs**;
-- **acquisition conditions and known nuisance factors**.
+It is shaped by the dataset's actual support across:
 
-Everything else in the product must be expressed as something that **widens, narrows, reshapes, or interrogates this field**.
-
-This is the canonical epistemological rule:
-
-> **Represent the current envelope of plausible reality → find where that envelope is too wide, unsupported or inconsistent → estimate which observation would contract it most → update.**
-
-A **blindspot** is a region of the uncertainty field that remains poorly constrained.
-
-A **robust anomaly** is an observed deviation that remains outside the supported uncertainty spread after plausible acquisition, sampling and nuisance variation are accounted for.
-
-A **measurement recommendation** is an acquisition action predicted to contract the uncertainty field more than the alternatives.
-
-A **capture-geometry problem** is a case where the dominant uncertainty comes from how reality was sampled — for example insufficient coherent spatial extent, the wrong magnification, redundant local sampling, or the wrong modality.
-
-A **model-support problem** is a case where the current observation lies outside the region represented well enough by the baseline to justify a confident interpretation.
-
-Provenance, perturbation testing, detector disagreement, uncertainty calibration, sampling density, baseline coverage, composition ambiguity and active acquisition are **not separate product concepts**. They are factors that modify the same uncertainty field.
-
-The product is therefore fundamentally:
-
-> **a system for dynamically refining the shape of what is known.**
-
-### Two improvement loops, one object
-
-There are only two allowed improvement loops, and both update the same uncertainty field.
-
-**Measurement loop**
-
-**current data → uncertainty field → blindspot → next capture → updated field**
-
-This determines what should be measured next: more area, different scale, another detector, another section, EDS, more baseline material, or another acquisition strategy.
-
-**Discovery loop**
-
-**paper / agentic research → candidate measurable pattern or inference operator → test on current data → update field**
-
-This is where **qte77's workstream** belongs.
-
-qte77 should run the agentic literature-research / inference-discovery loop: search papers and related technical work for new patterns, descriptors, physical proxies, cross-detector relationships, characteristic scales, morphology statistics, or other inference leads that may be extractable from the current dataset.
-
-The purpose is not to create a parallel research product. qte77's output should be **candidate measurable structures** that can be tested against the existing data and then either incorporated into or rejected by the same uncertainty field.
-
-A candidate lead becomes part of the product only if it changes the uncertainty field in a useful, testable way — for example by revealing previously hidden variance, explaining existing spread, reducing a blindspot, improving the estimate of plausible unseen variation, or changing the highest-value next observation.
-
-This creates a continuous-improvement runway and a perpendicular challenge to the current model: the system is not limited to the features we thought of at the start. qte77 continuously searches for additional scientifically grounded ways to interrogate the same dataset, while the canonical product model remains unchanged.
-
-This prevents the research stream from becoming a parallel feature factory.
-
-All new inference leads must answer one question:
-
-> **Does this improve our estimate of what remains plausible, or tell us how to reduce that uncertainty more efficiently?**
-
----
-
-## The problem
-
-Most QC systems treat the dataset as fixed and ask:
-
-> Is this sample normal or abnormal?
-
-That leaves several deeper questions unanswered:
-
-- Is an apparent deviation actually material, or is it caused by acquisition?
-- How much relevant variance may exist outside what was sampled?
-- Is the current field of view too small to reveal the structure that matters?
-- Is the current magnification too low or too high?
-- Are we repeatedly sampling the same local regime?
-- Would another detector or modality resolve the ambiguity better than collecting more of the same data?
-- Is the baseline itself too narrow?
-- Is the model extrapolating beyond the region in which it has support?
-- Which single additional observation would improve the decision most?
-
-The dataset is therefore not just an input. **The geometry and method of capture are themselves objects of diagnosis.**
-
----
-
-## Product
-
-The product is a **self-improving diagnostic interface** for scientific and industrial QC.
-
-It performs the requested diagnosis, but then interrogates the diagnosis itself.
-
-### Core loop
-
-**OBSERVE → DIAGNOSE → LOCATE BLINDSPOTS → CHOOSE NEXT OBSERVATION → UPDATE THE KNOWLEDGE MODEL → DIAGNOSE AGAIN**
-
-The system should identify whether the dominant bottleneck is:
-
-- sample count;
-- spatial coverage;
+- spatial position;
 - coherent capture area;
-- resolution / magnification;
-- detector modality;
-- acquisition instability;
-- baseline diversity;
+- field of view;
+- magnification / scale;
+- detector or measurement modality;
+- baseline population coverage;
+- physical features and derived KPIs;
+- acquisition conditions;
+- sampling density;
 - composition information;
-- or an unsupported region of the model.
+- known nuisance factors;
+- and any other scientifically justified source of variance.
 
-The goal is not simply "more data."
+Everything else in the product must either:
 
-The goal is:
+1. **describe the uncertainty field**;
+2. **change its shape**;
+3. **explain why it has that shape**; or
+4. **identify an observation that would reshape it usefully**.
 
-> **the right shape of data, captured in the right place, at the right scale, with the right modality.**
+Provenance, perturbation testing, detector disagreement, active acquisition, baseline coverage, model support, literature research and new measurement technologies are not separate product ideas.
 
----
-
-## Favored frame
-
-The interface is intentionally biased toward one question:
-
-> **Where is the diagnosis weakest, what kind of weakness is it, and what measurement would improve it most?**
-
-This is an epistemological tool embodied inside a materials diagnostic system.
-
-A visually unusual region is not automatically uncertain.
-
-A visually normal region is not automatically well known.
-
-The system must distinguish between:
-
-- **supported normality**;
-- **supported material shift**;
-- **measurement-confounded evidence**;
-- **spatial undersampling**;
-- **scale ambiguity**;
-- **modality disagreement**;
-- **baseline weakness**;
-- **composition blindness**;
-- **model extrapolation / unsupported state**.
-
-This is closer to Track 2's epistemological-agent logic applied to Track 4's physical QC problem: the diagnostic system should know when it does not know.
+They all operate on the same uncertainty field.
 
 ---
 
-## Central technical idea
+## The fading outer rim
 
-The core computation is to estimate and update the **uncertainty field**.
+The key visual and epistemological metaphor is the **fading outer rim of the dataset**.
 
-The field should represent, as far as the available data allows:
+This is not simply the physical edge of an SEM image.
 
-1. the variation already observed in the material;
-2. the variation attributable to the observation / acquisition process;
-3. the plausible but unobserved variation implied by sparse sampling, spatial structure, limited scale, weak baseline coverage or detector limitations;
-4. the residual deviations that survive those explanations;
-5. how much the field is expected to contract under each candidate next measurement.
+The outer rim is the boundary of what the current dataset can legitimately constrain.
 
-The important object is not a generic confidence score and not a collection of separate uncertainty widgets.
+The dataset has a **size and shape** in measurement space.
 
-It is the **shape and spread of plausible reality under the current evidence**.
+That shape is determined by what has actually been captured:
 
-The operational question is always:
+- how much area;
+- how coherently that area was captured;
+- at what magnification;
+- with which detector;
+- across how many independent samples;
+- under which acquisition conditions;
+- with what physical or compositional measurements;
+- and across which kinds of material variation.
 
-> **What uncertainty remains, where does it live, and what observation would shrink it most?**
+Inside the well-supported region, the system has evidence.
 
-A region might need:
+Toward the rim, support fades.
 
-- a wider coherent field of view;
-- higher magnification;
-- lower magnification / more context;
-- another adjacent section;
-- more independent spatial sampling;
-- BSE rather than another InLens image;
-- ETD / InLens for morphology or topography;
-- EDS for composition;
-- more approved baseline material;
-- or simply a repeated acquisition under controlled settings.
+Beyond it, increasingly many states of reality remain plausible because the data no longer constrains them strongly enough.
 
-The system should rank those interventions by **expected diagnostic value**, ideally relative to acquisition cost or effort.
-
----
-
-## Capture geometry is part of the model
-
-A major thesis is that the system should question the **boundaries of capture**.
-
-Example:
-
-If variance appears correlated over spatial scales close to the current field-of-view boundary, collecting hundreds of additional tiny random crops may be less informative than collecting a smaller number of **larger contiguous regions**.
-
-Conversely, if the uncertain feature lies near the resolution limit, widening the field may make the diagnosis worse; the correct intervention may be higher magnification.
-
-Therefore the system should estimate, where possible:
-
-- within-field versus between-field variance;
-- spatial autocorrelation / correlation length;
-- characteristic defect or structure size;
-- clustering scale;
-- detector disagreement;
-- sensitivity to resolution;
-- how uncertainty changes with sampled area;
-- how much of the current evidence is spatially redundant.
-
-This allows the model to answer a question that conventional QC rarely asks:
-
-> **Are we collecting enough data, or are we collecting data in the wrong geometry?**
-
----
-
-## Hero interface: Evidence Field
-
-Do not make the main experience a conventional scientific dashboard.
-
-The hero object should feel closer to a **Launchpad / control surface / active scientific instrument**.
-
-### Evidence Field
-
-A grid of spatial evidence units representing the currently observed material.
-
-Each pad is not just "an anomaly score." It represents the **epistemic state** of that observation.
-
-Possible visual channels:
-
-- **hue** → dominant evidence / blindspot type;
-- **brightness** → magnitude of observed or residual signal;
-- **solidity** → survival under falsification / perturbation;
-- **flicker** → measurement instability;
-- **hollowness** → unsupported or undersampled region;
-- **border / leverage** → how much the region influences the final diagnosis;
-- **directional cue** → recommended next acquisition;
-- **pulse / projected area** → expected information gain.
-
-Primitive statistical values should stay underneath. The main representation should compress them into a perceptually legible state.
-
-### Modes
-
-#### MATERIAL
-What appears to differ physically?
-
-#### BLINDSPOTS
-Where could the current capture regime be missing relevant variation?
-
-#### NEXT VIEW
-What observation would improve the diagnosis most?
-
-#### EVIDENCE SURVIVAL
-Watch apparent deviations disappear or persist as the system applies successive falsification layers.
-
----
-
-## The wow-factor interaction
-
-Begin with many apparent differences.
-
-Then progressively challenge them:
-
-**RAW → NORMALIZE ACQUISITION → PERTURB / STRESS → CORRECT SAMPLING / PROVENANCE → BASELINE SUPPORT → SURVIVING SIGNAL**
-
-Signals that can be explained by acquisition fade or collapse.
-
-Signals unstable to processing flicker and disappear.
-
-Unsupported regions become visibly hollow rather than falsely precise.
-
-Signals that survive become more solid.
-
-The emotional result should be:
-
-> **We begin with many apparent anomalies. We try to explain them away. What remains is the evidence we actually trust.**
-
-This gives continuity, motion and visual drama without inventing pseudotime.
-
----
-
-## Adaptive acquisition
-
-The interface should not stop at "uncertain."
-
-It should propose the **next best observation**.
+The product should therefore model not only observed variance, but how each variance source changes the significance, thickness and geometry of this outer rim.
 
 Examples:
 
-- "Increase coherent capture width before adding more random samples."
-- "Acquire a higher-magnification BSE image in this region."
-- "Repeat this field under controlled acquisition settings."
-- "Acquire adjacent sections to test spatial persistence."
-- "Use EDS here: morphology is robust but chemistry is unresolved."
-- "More baseline material is more valuable than more incoming-batch sampling."
+- strong spatial correlation near the field-of-view limit may mean the dataset's spatial rim is too close and larger coherent captures are needed;
+- a feature near the resolution limit may mean the scale rim is the dominant constraint and higher magnification is needed;
+- disagreement between BSE and another detector may expose a modality rim;
+- a narrow approved baseline may create a population-support rim;
+- unknown chemistry can create an unresolved explanatory dimension even when morphology is measured well;
+- acquisition instability can widen the range of appearances consistent with the same underlying material state.
 
-Where possible, candidate actions should be scored by something like:
+The canonical question is:
 
-**expected uncertainty reduction / acquisition effort**
-
-This turns the system from passive inspection into **adaptive evidence acquisition**.
+> **Given the variance we can currently see, where does the dataset stop strongly constraining reality?**
 
 ---
 
-## What we already have as proof
+## The recursive architecture
 
-The current Polaron implementation is valuable because it gives this concept a real technical substrate rather than leaving it as speculative UX.
+The system is intentionally recursive.
 
-The reconnaissance already demonstrated several behaviors the new product should preserve:
+It does not only estimate uncertainty inside the current dataset.
 
-- reconstructed 31 fields into approximately 13 parent micrographs instead of treating all fields as independent;
-- found that some apparent latent structure was acquisition-driven and rejected pseudotime rather than forcing it;
-- measured which physical KPIs survive realistic acquisition perturbations;
-- rejected KPIs that were too sensitive to blur, gamma, contrast or detector artifacts;
-- identified a baseline micrograph where additive measurements were not comparable enough to trust;
-- found a robust Batch 3 deviation concentrated in M2060;
-- showed that removing M2060 flips the Batch 3 decision back toward ACCEPT;
-- kept chemistry of the bright phase explicitly unresolved and recommended EDS rather than overclaiming;
-- produced a usable ACCEPT / INVESTIGATE / REJECT pipeline with a hidden-batch path.
+It also asks whether the **model of uncertainty itself is incomplete**.
 
-This is the **proof layer**.
+This creates two nested levels operating on the same uncertainty field.
 
-The new interface should make the epistemic structure behind these behaviors visible.
+### Level 1 — Model the dataset's current uncertainty
+
+The system looks at the current data and estimates:
+
+- observed variance;
+- spatial variance;
+- between-sample versus within-sample variance;
+- acquisition-driven variance;
+- detector disagreement;
+- scale dependence;
+- baseline support;
+- sampling redundancy;
+- residual deviations;
+- plausible unobserved variance implied by the current capture geometry.
+
+From that, it infers the current fading outer rim.
+
+The operational loop is:
+
+**current dataset → estimate variance → infer the outer rim → locate the dominant constraint → choose the next observation → update the field**
+
+The next observation may be:
+
+- more independent samples;
+- a larger coherent area;
+- higher magnification;
+- lower magnification / more context;
+- another detector;
+- another section;
+- repeated acquisition under controlled conditions;
+- EDS or another compositional measurement;
+- broader approved baseline material;
+- or another justified capture change.
+
+The system should not assume that "more data" means "more samples of the same kind."
+
+It should ask:
+
+> **What shape of new data would reduce the consequential uncertainty most?**
+
+### Level 2 — Audit the sources of variance themselves
+
+The agentic layer then challenges Level 1.
+
+It asks:
+
+> **What important sources of variance or information might our current uncertainty model not even contain?**
+
+This is a second-order blindspot search.
+
+A newly discovered, scientifically credible variance source may initially **expand the outer rim**.
+
+That is desirable.
+
+It means the system has discovered that it was previously overconfident.
+
+Only after the relevant evidence is acquired or extracted can that rim be tightened again.
+
+The recursive epistemic cycle is therefore not monotonically "uncertainty goes down."
+
+It is:
+
+> **discover missing uncertainty → widen the supported model honestly → acquire or infer the missing evidence → constrain it again**
+
+That dynamic is central to the product.
+
+The system improves not only by collecting more evidence, but by becoming better at identifying **what kinds of evidence it did not know it needed**.
 
 ---
 
-## Relationship to the Polaron track
+## qte77 — recursive measurement-space expansion
 
-The track asks:
+qte77 owns the agentic scientific-research layer.
+
+His role is not generic paper search and not a parallel feature-development stream.
+
+His job is to **challenge the current variance model from outside it**.
+
+He begins from consequential failure states exposed by the uncertainty field:
+
+- unresolved residual variance;
+- unexpected spread;
+- spatial truncation;
+- scale ambiguity;
+- detector disagreement;
+- composition blindness;
+- weak physical interpretation;
+- unsupported morphology regimes;
+- acquisition sensitivity;
+- or other blindspots that materially affect the diagnostic process.
+
+He then searches papers, technical literature and scientific evidence for two classes of expansion.
+
+### 1. New inference dimensions from data we already have
+
+These are scientifically grounded measurements or relationships that may already be latent in the existing dataset but are not yet part of our model.
+
+Examples may include:
+
+- morphology descriptors;
+- spatial correlation measures;
+- topology;
+- texture;
+- clustering statistics;
+- scale-dependent features;
+- cross-detector relationships;
+- physical proxies;
+- characteristic length scales;
+- new combinations of existing measurements;
+- or other inferential structures supported by literature.
+
+The question is not:
+
+> "What else can SEM tell us?"
+
+It is:
+
+> **"What scientifically credible dimension are we currently failing to model that could explain, expose or constrain meaningful variance?"**
+
+A candidate inference is valuable when it can:
+
+- reveal hidden variance;
+- explain existing spread;
+- distinguish nuisance from material signal;
+- expose a new blindspot;
+- shrink an existing rim;
+- or show that the current rim should actually be wider.
+
+### 2. New measurement approaches and novel parallel datasets
+
+Some uncertainty cannot be resolved from the current SEM dataset.
+
+qte77 should also identify measurement approaches, instruments, modalities, assays, process data, or other parallel datasets that could unlock genuinely new information.
+
+Examples may include:
+
+- EDS;
+- larger coherent SEM mosaics;
+- different magnification regimes;
+- adjacent cross-sections;
+- tomography;
+- alternative microscopy modes;
+- process telemetry;
+- compositional measurements;
+- mechanical or electrochemical measurements;
+- or another scientifically defensible data source.
+
+But novelty alone is not enough.
+
+A new measurement approach should enter the product only when it reaches **critical mass of unlocked value**.
+
+That means it must correspond to failure states that matter and offer enough additional information to justify the acquisition burden.
+
+The rough acceptance test is:
+
+- **consequence** — does the blindspot matter to a QC decision, failure mode, or important scientific interpretation?
+- **orthogonality** — does the new data contain information the current dataset genuinely cannot provide?
+- **coverage** — does it resolve one high-leverage blindspot or several related blindspots at once?
+- **information gain** — is it expected to reshape the uncertainty field substantially?
+- **feasibility / cost** — is the gain plausible relative to acquisition effort, time or complexity?
+- **testability** — can the proposed value be evaluated rather than merely asserted?
+
+This prevents the agentic layer from becoming a catalogue of interesting technologies.
+
+The governing loop is:
+
+**failure state → identify missing information → search scientific evidence → propose new inference or measurement dimension → estimate/test its effect on the uncertainty field → adopt, reject, or defer**
+
+---
+
+## The outer rim can expand before it contracts
+
+This distinction is important enough to state explicitly.
+
+A good epistemic system is not rewarded for always becoming more confident.
+
+If research reveals a credible missing variance source, the correct response may be:
+
+> **we know less than we thought**
+
+That should visibly expand or reshape the outer rim.
+
+Example:
+
+We may initially believe the relevant variation is captured by local particle statistics.
+
+Then literature and the data together suggest that defect clustering occurs over scales larger than the current field of view.
+
+The system should not hide this because it makes the model look less certain.
+
+It should say:
+
+> **our current capture geometry cannot rule out larger-scale structure**
+
+The spatial rim expands.
+
+The next-best measurement may then become a larger coherent capture rather than more small fields.
+
+After that larger capture arrives, the newly exposed uncertainty can contract again.
+
+This alternating process —
+
+**discover → expand → measure → constrain**
+
+— is the core recursive behavior.
+
+---
+
+## Capture geometry is itself diagnostic
+
+The dataset is not a neutral container.
+
+Its geometry can create or hide uncertainty.
+
+A major product capability is therefore to question the boundaries of capture.
+
+For example:
+
+If the observed morphology has a characteristic correlation length close to the width of the current image, then many additional small independent crops may not solve the important uncertainty.
+
+The better acquisition may be:
+
+> **capture a larger coherent region so larger-scale structure can actually be observed**
+
+Conversely, if the important feature is close to the resolution limit, increasing coherent area may reduce useful resolution.
+
+Then the better acquisition may be:
+
+> **increase magnification in a targeted region**
+
+The product should therefore estimate, where defensible:
+
+- within-field versus between-field variance;
+- spatial autocorrelation / correlation length;
+- characteristic defect size;
+- clustering scale;
+- how variance changes with window size;
+- sensitivity to pixel size and magnification;
+- detector-specific information;
+- spatial redundancy;
+- and how quickly uncertainty decreases as area or independent sampling increases.
+
+This lets the system distinguish:
+
+> **we need more data**
+
+from:
+
+> **we need data with a different geometry**
+
+That distinction is one of the central product insights.
+
+---
+
+## Product behavior
+
+The product performs three things in one recursive loop.
+
+### 1. Diagnose the material
+
+Do the Track 4 task properly.
+
+Detect meaningful deviation from the approved baseline.
+
+Separate material signal from acquisition artefact where possible.
+
+Produce interpretable evidence.
+
+Return ACCEPT / INVESTIGATE / REJECT.
+
+### 2. Diagnose the diagnostic process
+
+Show:
+
+- where support is strong;
+- where support fades;
+- which variance source is widening the rim;
+- where visually normal material is actually poorly known;
+- where apparent anomalies are likely nuisance-driven;
+- where a result depends on a small amount of high-leverage evidence;
+- and which important forms of variation may remain unseen.
+
+### 3. Improve the measurement process
+
+Recommend the next action most likely to improve the diagnosis:
+
+- change area;
+- change scale;
+- change modality;
+- repeat acquisition;
+- extend baseline;
+- acquire a new physical measurement;
+- or investigate a new scientifically grounded inference dimension.
+
+The product is therefore not simply a QC classifier.
+
+It is a **recursive control system for the quality of the QC process itself**.
+
+---
+
+## Hero interface: the Evidence Field
+
+The main experience should not look like a conventional scientific dashboard.
+
+It should feel closer to a **Launchpad, control surface, or active scientific instrument**.
+
+The hero object is an **Evidence Field**: a grid / field of observations whose visual state represents the current epistemic structure of the dataset.
+
+The visual grammar should privilege the uncertainty field and its rim.
+
+Possible channels:
+
+- **fill / hue** → dominant evidence or uncertainty class;
+- **brightness** → strength of observed material deviation;
+- **solidity** → how much evidence survives nuisance / falsification tests;
+- **flicker** → instability under acquisition or processing changes;
+- **hollowness / fade** → weak support and proximity to the outer rim;
+- **spatial extent** → scale of the evidence or capture recommendation;
+- **direction / expansion cue** → where the dataset should be extended;
+- **modality marker** → which detector or measurement is missing;
+- **pulse / emphasis** → expected information gain or leverage.
+
+Primitive statistics stay underneath.
+
+The surface should make the **shape of knowledge and ignorance** perceptible before the user reads a table.
+
+---
+
+## Interface modes
+
+### MATERIAL
+
+What appears physically different?
+
+### UNCERTAINTY FIELD
+
+Where is the current dataset strongly constraining reality, and where does support fade?
+
+### OUTER RIM
+
+Which size, shape, scale, modality or population constraints are currently limiting the model?
+
+### NEXT CAPTURE
+
+What data should we acquire next to reduce the most consequential uncertainty?
+
+### DISCOVERED BLINDSPOTS
+
+What new variance source or measurement dimension has the agentic research layer identified?
+
+### EVIDENCE SURVIVAL
+
+Which apparent deviations survive successive attempts to explain them away?
+
+---
+
+## The core interaction
+
+The demo should show the uncertainty field changing under interrogation.
+
+A useful sequence is:
+
+**RAW OBSERVATION → ACQUISITION NORMALIZATION → PERTURBATION / STRESS → SAMPLING / PROVENANCE CORRECTION → BASELINE SUPPORT → OUTER-RIM MODEL → NEXT MEASUREMENT**
+
+Apparent anomalies that can be explained by acquisition fade.
+
+Unstable signals flicker and collapse.
+
+Unsupported regions become visibly hollow.
+
+Surviving material signal becomes more solid.
+
+Then the system exposes what remains unresolved and shows **which direction the dataset itself should expand**.
+
+The emotional result should be:
+
+> **We do not merely find anomalies. We show what survives, what we cannot yet know, and how to observe it next.**
+
+---
+
+## Proof layer: what the current Polaron work already demonstrates
+
+The concept is anchored in real analysis rather than speculative interface design.
+
+The current implementation already provides evidence for the product logic:
+
+- it reconstructed fields into parent micrographs rather than treating all tiles as independent;
+- it discovered acquisition fingerprints and used perturbation testing to identify fragile measurements;
+- it tested pseudotime / latent progression and rejected it when the dominant structure proved acquisition-driven;
+- it rejected KPIs that were too sensitive to blur, gamma, contrast or detector artifacts;
+- it identified a baseline micrograph where additive measurements were not trustworthy enough to use normally;
+- it found a robust Batch 3 deviation concentrated in M2060;
+- removing M2060 materially changes the Batch 3 conclusion, exposing decision leverage;
+- chemistry of the bright phase remains unresolved, creating a legitimate measurement blindspot rather than an excuse to overclaim;
+- the system already produces an interpretable ACCEPT / INVESTIGATE / REJECT result.
+
+These behaviors are the first working examples of the recursive epistemic philosophy:
+
+**find signal → challenge signal → expose unsupported assumptions → preserve only what survives**
+
+The next step is to make the same logic explicit for dataset shape, unseen variance and future measurement.
+
+---
+
+## Relationship to the Polaron challenge
+
+The challenge asks:
 
 > Can you detect when a supplier's material has changed before it becomes a manufacturing problem?
 
-We should still answer that well.
+We should answer that well.
 
-But we do not want the track brief to define the product.
+But the product asks a deeper operational question:
 
-Our stronger question is:
+> **How sure are we that our quality-control process would detect the kinds of change that matter, and what should we change about the measurement process if it would not?**
 
-> **How good is the diagnostic process itself, where are its blindspots, and what should we observe next to make it better?**
+Polaron is therefore both:
 
-Polaron becomes a concrete validation environment for a more general scientific instrument.
+1. the diagnostic task;
+2. the validation environment for the recursive uncertainty model.
 
-The Track 4 outputs — material KPIs, uncertainty, hidden-batch accuracy, interpretability, ACCEPT / INVESTIGATE / REJECT — should remain available beneath the interface as evidence that the system actually works.
+The Track 4 outputs remain available as hard proof:
+
+- material KPIs;
+- uncertainty;
+- hidden-batch result;
+- interpretability;
+- ACCEPT / INVESTIGATE / REJECT;
+- recommended follow-up.
+
+They support the thesis.
 
 They are not the hero.
 
 ---
 
-## Non-goals
-
-- Do not resurrect pseudotime unless new evidence genuinely supports it.
-- Do not make latent-space aesthetics the centerpiece simply because they look technical.
-- Do not collapse all uncertainty into one confidence score.
-- Do not assume more samples are always the correct answer.
-- Do not assume the current capture geometry is appropriate.
-- Do not make the main page a wall of KPIs, p-values or conventional scientific plots.
-- Do not hide unsupported regions behind false precision.
-- Do not overclaim chemistry, chronology, causality or material failure mechanisms not supported by the data.
-- Do not optimize the product around the wording of the sponsor prompt.
-
----
-
 ## Product statement
 
-> **A diagnostic system that maps what it knows, what it may be missing, and the next observation that would improve the diagnosis most.**
+> **A recursive diagnostic system that maps the limits of what the current dataset can tell us, discovers what those limits may themselves be missing, and identifies the next observation that would improve the diagnosis most.**
 
-Alternative formulation:
+Shorter:
 
-> **We don't just ask whether your data is sufficient. We ask whether you're collecting the right shape of data.**
+> **See what survives. See where knowledge fades. Expand the data where it matters.**
 
-And the shortest demo idea:
+Another useful formulation:
 
-> **See what survives. See what is missing. Know what to measure next.**
+> **We do not just ask whether you have enough data. We ask whether your dataset has the right shape — and whether your model of that shape is missing an entire dimension.**
 
 ---
 
-## Immediate build priority
+## Non-goals
 
-1. Preserve the existing QC engine as the evidence substrate.
-2. Audit the current model for baseline/test leakage caused by reconstructed parent micrographs spanning batch folders.
-3. Define the minimal representation of the **uncertainty field** for each evidence cell / region:
-   - observed spread;
-   - nuisance / acquisition-explainable spread;
-   - plausible unobserved spread from sampling and support limits;
-   - residual material deviation;
-   - support / blindspot level;
-   - expected contraction under candidate next measurements.
-   Derive decision leverage, recommended acquisition action and expected information gain from this same representation rather than creating separate conceptual systems.
-4. Build the Evidence Field as the hero interaction.
-5. Add the evidence-survival / falsification sequence.
-6. Add a NEXT VIEW mode that can recommend spatial extent, scale, modality or additional baseline sampling.
-7. Keep conventional QC outputs and technical evidence available below / behind the hero surface.
-8. Use the unseen batch as the proof test for both diagnostic accuracy and the usefulness of the blindspot / next-acquisition model.
+- Do not create multiple parallel epistemological frameworks.
+- Do not reduce the uncertainty field to one confidence score.
+- Do not treat every interesting literature finding as a product feature.
+- Do not recommend new modalities or technologies unless they address consequential failure states.
+- Do not assume more samples are always the answer.
+- Do not assume the current field of view, magnification, detector set or baseline geometry is appropriate.
+- Do not hide newly discovered uncertainty merely because it makes the system look less confident.
+- Do not resurrect pseudotime unless new evidence genuinely supports it.
+- Do not make latent-space aesthetics the centerpiece.
+- Do not turn the interface into a wall of KPIs, p-values or conventional scientific plots.
+- Do not overclaim chemistry, chronology, causality or material failure mechanisms unsupported by the evidence.
+- Do not let qte77's research stream become a separate feature factory.
+- Do not optimize the product architecture around the wording of the sponsor prompt.
 
-The target is not a prettier dashboard.
+---
 
-The target is a **new scientific control surface for improving how diagnosis itself is performed**.
+## Immediate build priorities
+
+1. **Preserve the existing QC engine as the proof substrate.**
+2. **Audit baseline/test independence and reconstructed-parent leakage before building higher-level claims on top of it.**
+3. **Formalize the uncertainty field and fading outer rim.**
+   - observed variance;
+   - acquisition / nuisance variance;
+   - sampling variance;
+   - spatial and scale dependence;
+   - baseline support;
+   - plausible unobserved variance;
+   - residual material deviation.
+4. **Model dataset geometry explicitly.**
+   - coherent area;
+   - field of view;
+   - scale;
+   - detector coverage;
+   - independent sample count;
+   - spatial redundancy.
+5. **Build the Evidence Field as the hero interaction.**
+6. **Make the outer rim visible.**
+   The user should be able to see where the dataset's size and shape stop supporting confident inference.
+7. **Build NEXT CAPTURE.**
+   Compare candidate acquisition changes by expected reduction of consequential uncertainty relative to effort.
+8. **qte77: run the recursive scientific-research loop.**
+   Search for missing variance sources, new inference dimensions, and novel measurement / parallel-data opportunities tied to actual failure states.
+9. **Introduce a critical-mass gate for new parallel datasets.**
+   New data sources should be added only when their expected orthogonal information gain is large enough to justify them.
+10. **Show recursive expansion explicitly.**
+    When a newly discovered variance source means we were overconfident, the interface should be allowed to expand the outer rim before recommending how to constrain it again.
+11. **Keep conventional QC outputs behind / beneath the hero surface as technical proof.**
+12. **Use the unseen batch to test both the diagnostic result and the usefulness of the uncertainty / acquisition recommendations.**
+
+The target is not a prettier QC dashboard.
+
+The target is a **scientific control surface that recursively improves the quality, geometry and vocabulary of measurement itself**.
