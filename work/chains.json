@@ -1,0 +1,5 @@
+{"note": "Adjacency chains (left->right) found by edge-NCC of BSE tiles; parent micrograph id = 'S'+tile height (all tiles of a parent share H and TIFF XResolution rational). Tiles abut without overlap.",
+ "chains": {"S1904": ["mgxahqnk","hawkfj64","0grcilhi"], "S2060": ["x7u69zsw","tuy3zymq","kbdh4tri","71vgq3fw"],
+            "S2068": ["vc2whyaq","x77cy643","utfgcjfa","rxax5ozo"], "S2080": ["cfe5vt7s","r17byphk","ffwubibz"],
+            "S2088": ["9luzk4jm","hzumfsms"], "S2148": ["f1vzngrs","epqdaau9"]},
+ "unchained_same_parent": {"S1612": ["ptg8lmto","xgj4xftb"], "S2048": ["3806gxp0","avn74qx1"], "S2088": ["ufdvpb81"], "S2156": ["fzrt2k6r","b3esycq1"], "S2272": ["i9jiqjwl","pl8uabbv"], "S2316": ["4ih2ggld","5n1q8atc"]}}

@@ -1,0 +1,7 @@
+Spearman of crop PC1/PC2 with per-crop stats: overall | within-src (src means removed)
+BSE/raw: PC1: mean=-0.09|-0.22 std=+0.15|+0.27 dark_rel=+0.54|+0.59 bright_rel=+0.07|+0.08  ;  PC2: mean=-0.21|-0.09 std=+0.03|-0.10 dark_rel=+0.04|+0.04 bright_rel=-0.11|-0.11
+BSE/heq: PC1: mean=+0.03|-0.07 std=+0.25|+0.35 dark_rel=+0.45|+0.47 bright_rel=+0.21|+0.21  ;  PC2: mean=+0.10|+0.30 std=+0.11|+0.06 dark_rel=-0.23|-0.25 bright_rel=+0.19|+0.22
+SEt/raw: PC1: mean=-0.27|-0.26 std=+0.52|+0.63 dark_rel=+0.55|+0.60 bright_rel=+0.27|+0.27  ;  PC2: mean=-0.04|-0.11 std=+0.16|+0.17 dark_rel=+0.18|+0.22 bright_rel=+0.00|+0.03
+SEt/heq: PC1: mean=-0.28|-0.28 std=+0.54|+0.64 dark_rel=+0.54|+0.59 bright_rel=+0.27|+0.27  ;  PC2: mean=+0.06|+0.10 std=+0.12|+0.17 dark_rel=+0.13|+0.14 bright_rel=+0.15|+0.22
+Inlens/raw: PC1: mean=+0.04|+0.05 std=+0.16|+0.24 dark_rel=+0.25|+0.26 bright_rel=+0.10|+0.10  ;  PC2: mean=-0.27|-0.15 std=+0.28|+0.18 dark_rel=+0.30|+0.28 bright_rel=+0.02|+0.00
+Inlens/heq: PC1: mean=+0.19|+0.11 std=+0.12|+0.29 dark_rel=+0.17|+0.21 bright_rel=+0.15|+0.17  ;  PC2: mean=-0.47|-0.25 std=+0.35|+0.15 dark_rel=+0.35|+0.37 bright_rel=-0.01|-0.06
