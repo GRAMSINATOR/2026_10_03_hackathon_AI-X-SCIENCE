@@ -6,7 +6,7 @@ Keep the hackathon work deliberately asymmetric.
 
 We do **not** want two expensive agents independently exploring the same space.
 
-The project has one product direction, defined in `docs/VISION_BRIEF_V1.MD`, with two complementary workstreams:
+The project has one product direction, defined in `docs/VISION_BRIEF_V2.MD`, with two complementary workstreams:
 
 > **Guilhem + Claude turn the current knowledge into the product.**  
 > **qte77 searches for what the current knowledge is missing.**
@@ -36,7 +36,7 @@ Guilhem should spend human attention on **selection and coherence**, not on low-
 
 Claude owns the convergent build.
 
-Its job is to turn the current evidence and `VISION_BRIEF_V1.MD` into the strongest working scientific instrument possible without repeatedly reopening the thesis.
+Its job is to turn the current evidence and `VISION_BRIEF_V2.MD` into the strongest working scientific instrument possible without repeatedly reopening the thesis.
 
 ### Claude should focus on
 
@@ -262,7 +262,7 @@ Use it to:
 
 ### Guilhem + Claude now
 
-1. Read `docs/VISION_BRIEF_V1.MD`.
+1. Read `docs/VISION_BRIEF_V2.MD`.
 2. Audit the current implementation against it.
 3. Define the smallest mathematically defensible V1 of:
    - uncertainty field;
