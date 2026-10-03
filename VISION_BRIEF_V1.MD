@@ -68,9 +68,15 @@ This determines what should be measured next: more area, different scale, anothe
 
 **paper / agentic research → candidate measurable pattern or inference operator → test on current data → update field**
 
-This is where agentic literature research belongs.
+This is where **qte77's workstream** belongs.
 
-Research may discover a new morphology statistic, cross-detector relationship, spatial descriptor, characteristic scale, physical proxy, or other inference lead. It becomes part of the product **only if it changes the uncertainty field in a useful, testable way** — for example by revealing hidden variance, explaining existing spread, reducing a blindspot, or changing the highest-value next observation.
+qte77 should run the agentic literature-research / inference-discovery loop: search papers and related technical work for new patterns, descriptors, physical proxies, cross-detector relationships, characteristic scales, morphology statistics, or other inference leads that may be extractable from the current dataset.
+
+The purpose is not to create a parallel research product. qte77's output should be **candidate measurable structures** that can be tested against the existing data and then either incorporated into or rejected by the same uncertainty field.
+
+A candidate lead becomes part of the product only if it changes the uncertainty field in a useful, testable way — for example by revealing previously hidden variance, explaining existing spread, reducing a blindspot, improving the estimate of plausible unseen variation, or changing the highest-value next observation.
+
+This creates a continuous-improvement runway and a perpendicular challenge to the current model: the system is not limited to the features we thought of at the start. qte77 continuously searches for additional scientifically grounded ways to interrogate the same dataset, while the canonical product model remains unchanged.
 
 This prevents the research stream from becoming a parallel feature factory.
 
