@@ -13,7 +13,7 @@ There are three roles:
 
 > **Guilhem decides what the product is.**  
 > **Claude turns current knowledge into the product.**  
-> **Anders / qte77 expands the scientific and external measurement space.**
+> **qte77 expands the scientific and external measurement space.**
 
 Everything feeds the same canonical object: the **uncertainty field** and the acquisition decisions derived from it.
 
@@ -115,9 +115,9 @@ Expensive Claude reasoning should end in:
 
 ---
 
-# 3. Anders / qte77 — scientific expansion + external connectivity
+# 3. qte77 — scientific expansion + external connectivity
 
-Anders / qte77 owns the **expanding edge of the system**.
+qte77 owns the **expanding edge of the system**.
 
 He should work deliberately perpendicular to Claude.
 
@@ -134,7 +134,7 @@ The common principle is:
 
 ## 3A. Scientific adversarial expansion
 
-Anders should challenge the current uncertainty model from outside it.
+qte77 should challenge the current uncertainty model from outside it.
 
 Questions:
 
@@ -187,7 +187,7 @@ It must correspond to a **failure state that matters** and reach **critical mass
 
 ## 3B. Hosting, APIs, connectivity and external sourcing
 
-Anders owns anything where the product needs to reach beyond the local core.
+qte77 owns anything where the product needs to reach beyond the local core.
 
 This includes:
 
@@ -228,11 +228,11 @@ This includes:
 
 For the hackathon, this should stay **thin and demonstrable**, not become a platform rewrite.
 
-Anders owns the external edge; Claude owns the product centre.
+qte77 owns the external edge; Claude owns the product centre.
 
 ---
 
-# 4. qte77 / Anders acceptance gate
+# 4. qte77 acceptance gate
 
 A research lead, API, dataset or new technology should enter the product only if it does at least one of the following:
 
@@ -252,7 +252,7 @@ Otherwise:
 
 ---
 
-# 5. Anders output format
+# 5. qte77 output format
 
 Do not send Claude large undifferentiated research dumps.
 
@@ -345,7 +345,7 @@ Use cheaper / lower effort for:
 - mechanical tests;
 - documentation cleanup.
 
-## Anders / qte77 — exploration-heavy
+## qte77 — exploration-heavy
 
 Use the large budget aggressively for:
 
@@ -367,7 +367,7 @@ Guilhem decides when exploration becomes product.
 
 The useful mental model is:
 
-> **Claude compresses. Anders expands. Guilhem decides where expansion becomes compression.**
+> **Claude compresses. qte77 expands. Guilhem decides where expansion becomes compression.**
 
 ---
 
@@ -381,7 +381,7 @@ The useful mental model is:
 - specify exactly what drives each visual state;
 - identify what is real computation versus future recommendation.
 
-### Anders
+### qte77
 - begin cross-sectional scientific audits;
 - test spatial / scale methods;
 - investigate missing variance dimensions;
@@ -405,7 +405,7 @@ The useful mental model is:
 - preserve the QC proof layer;
 - wire the demo flow.
 
-### Anders
+### qte77
 - continue scientific exploration;
 - return only gated candidates;
 - deploy / host;
@@ -430,7 +430,7 @@ Claude switches to:
 
 **test → simplify → make causal → make legible → harden**
 
-Anders shifts toward:
+qte77 shifts toward:
 
 **deployment → APIs → external connectivity → final research validation**
 
@@ -460,7 +460,7 @@ The demo should tell one story:
 
 # 9. Final operating rule
 
-> **Claude builds the strongest coherent controller from what we currently know. Anders / qte77 searches for scientifically grounded reasons why that knowledge or connectivity is incomplete and owns the external edge. Guilhem decides what crosses into the product.**
+> **Claude builds the strongest coherent controller from what we currently know. qte77 searches for scientifically grounded reasons why that knowledge or connectivity is incomplete and owns the external edge. Guilhem decides what crosses into the product.**
 
 No duplicated exploration.
 
