@@ -30,11 +30,20 @@ def main():
     a = sub.add_parser('reference')
     a.add_argument('baseline')
     a.add_argument('--noise-from', nargs='*', default=[])
+    c = sub.add_parser('fixture')
+    c.add_argument('report_dir')
+    c.add_argument('--out', default='fixtures')
     b = sub.add_parser('assess')
     b.add_argument('batches', nargs='+')
     for p in (a, b):
         p.add_argument('--workers', type=int, default=None)
     args = ap.parse_args()
+    if args.cmd == 'fixture':
+        from . import contract
+        path = contract.export_fixture(args.report_dir, args.out)
+        bad = contract.check(json.load(open(path, encoding='utf-8')))
+        print(path, 'coherent' if not bad else f'{len(bad)} violations: ' + '; '.join(bad[:5]))
+        return
     if args.cmd == 'reference':
         ref = pipeline.build_reference(args.baseline, args.noise_from, args.workers)
         print(f"reference '{ref['name']}': {len(ref['micrographs'])} micrographs")

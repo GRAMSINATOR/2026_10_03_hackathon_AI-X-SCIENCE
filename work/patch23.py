@@ -1,0 +1,6 @@
+p = 'qc/field.py'; s = open(p, encoding='utf-8').read()
+s = s.replace("    return dict(entity=entity, dimension=k, column_um=COL_UM,", "    return dict(id=_oid(entity, k), entity=entity, dimension=k, column_um=COL_UM,")
+s = s.replace("        missing.append(dict(entity=pid, dimension='composition',", "        missing.append(dict(id=_oid(pid, 'composition'), entity=pid, dimension='composition',")
+s = s.replace("facts=[('missing_dimensions', pid, 'basis')],", "facts=[('missing_dimensions', _oid(pid, 'composition'), 'basis')],")
+open(p, 'w', encoding='utf-8').write(s)
+print('ok')

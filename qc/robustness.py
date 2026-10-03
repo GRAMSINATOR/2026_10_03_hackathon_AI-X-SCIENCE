@@ -2,7 +2,7 @@
 import numpy as np
 from scipy import ndimage as ndi
 
-from .features import KPI_CROP, kpis
+from .features import KPI_CROP, acquisition, kpis
 from .io import read_gray
 from .segment import segment
 from .stats import KPIS
@@ -26,16 +26,23 @@ def _one(args):
     path, name = args
     raw, px, _ = read_gray(path)
     x = raw[:, KPI_CROP:-KPI_CROP][:, 1500:5500]
-    lab, _, _ = segment(PERTURB[name](x).astype(np.float32) if name != 'none' else x, px)
-    return path, name, kpis(lab, px)
+    y = PERTURB[name](x).astype(np.float32) if name != 'none' else x
+    lab, s, a = segment(y, px)
+    return path, name, kpis(lab, px), acquisition(y, s, a, px)
 
 
 def card(paths, pool):
     jobs = [(p, n) for p in paths for n in ['none'] + list(PERTURB)]
     res = pool.map(_one, jobs)
-    base = {p: k for p, n, k in res if n == 'none'}
+    base = {p: k for p, n, k, _ in res if n == 'none'}
     table = {k: {} for k in KPIS}
-    for p, n, kp in res:
+    tested = {}
+    for _, _, _, aq in res:
+        for m, v in aq.items():
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                lo, hi = tested.get(m, (v, v))
+                tested[m] = (min(lo, v), max(hi, v))
+    for p, n, kp, _ in res:
         if n == 'none':
             continue
         for k in KPIS:
@@ -45,4 +52,4 @@ def card(paths, pool):
         means = {n: float(np.nanmean(v)) for n, v in table[k].items()}
         worst = max(means, key=means.get)
         out[k] = dict(per_perturbation=means, worst=worst, max_abs=means[worst])
-    return out
+    return out, {m: [float(lo), float(hi)] for m, (lo, hi) in tested.items()}

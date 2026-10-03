@@ -9,12 +9,14 @@ from skimage import measure, morphology
 
 from .io import read_gray
 from .segment import pore_mask_se, segment
+from .spatial import field_maps
 
 CACHE = os.environ.get('QC_CACHE', 'cache/fields')
 EDGE_CROP = 4      # px; removes the 1-4 px green stitching column (provenance edges use this)
 KPI_CROP = 8       # px; margin for KPI computation
 N_STRIPS = 4       # spatial sub-windows for within-field uncertainty
 THUMB = 4          # display downsampling
+FEATURE_VERSION = 2  # bump to invalidate cached field records
 
 
 def _chords_mean(mask, axis, px_um):
@@ -108,7 +110,7 @@ def process_field(field, force=False):
     stamp = [os.path.getsize(src), int(os.path.getmtime(src))]
     if not force and os.path.exists(out_json):
         rec = json.load(open(out_json))
-        if rec.get('stamp') == stamp:
+        if rec.get('stamp') == stamp and rec.get('v') == FEATURE_VERSION:
             return rec
     os.makedirs(CACHE, exist_ok=True)
     raw_full, px_nm, sig = read_gray(src)
@@ -117,12 +119,13 @@ def process_field(field, force=False):
     np.save(os.path.join(CACHE, key + '_edges.npy'), np.stack([raw_full[:, EDGE_CROP], raw_full[:, W - 1 - EDGE_CROP]]))
     raw = raw_full[:, KPI_CROP:-KPI_CROP]
     lab, s, a = segment(raw, px_nm)
-    rec = dict(key=key, batch=field['batch'], fid=field['fid'], H=H, W=W, px_nm=px_nm, xres_sig=sig, stamp=stamp,
+    rec = dict(key=key, v=FEATURE_VERSION, batch=field['batch'], fid=field['fid'], H=H, W=W, px_nm=px_nm, xres_sig=sig, stamp=stamp,
                detectors=field['detectors'], anchors=a)
     rec['kpi'] = kpis(lab, px_nm)
     rec['kpi'].update(additive_brightness(lab, s, a, px_nm))
     rec['strips'] = [kpis(l, px_nm) for l in np.array_split(lab, N_STRIPS, axis=1)]
     rec['acq'] = acquisition(raw, s, a, px_nm)
+    rec['spatial'] = field_maps(lab, px_nm)
     # cross-detector porosity check with the secondary-electron image
     if 'SE2' in field['channels']:
         se, _, _ = read_gray(field['channels']['SE2'])

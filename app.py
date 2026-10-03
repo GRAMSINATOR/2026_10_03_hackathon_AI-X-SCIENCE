@@ -6,6 +6,7 @@ import sys
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 
 from qc import provenance, viz
 from qc.pipeline import REF_PATH, known_records
@@ -58,13 +59,22 @@ st.sidebar.markdown('**Colour key**  \n'
 st.sidebar.markdown('Overlays: <span style="color:#2a78d6">■ pores</span> · <span style="color:#eb6834">■ high-Z additive</span>',
                     unsafe_allow_html=True)
 
+# ---------------- hero: Evidence Field (the uncertainty field as a control surface)
+hero_path = os.path.join('reports', batch, 'evidence_field.html')
+if os.path.exists(hero_path) and d['verdict'] != 'REFERENCE':
+    components.html(open(hero_path, encoding='utf-8').read(), height=1130, scrolling=True)
+    st.caption('V1 exploratory renderer of the uncertainty-field contract epistemic-field/1 (docs/REPRESENTATION_CONTRACT.md). '
+               'The QC proof layer below holds the primitive statistics.')
+    st.markdown('---')
+    st.markdown('### QC proof layer')
+
 # ---------------- verdict banner
 col, icon = viz.VERDICT[d['verdict']]
 st.markdown(f"""<div class='verdict' style='border-left: 10px solid {col}'>
 <h1>{icon} {d['verdict']} <span style='font-size:1.1rem;color:#52514e;font-weight:400'>— {batch}</span></h1>
 <p>{res['summary']}</p></div>""", unsafe_allow_html=True)
 c1, c2, c3, c4 = st.columns(4)
-c1.metric('Independent micrographs', d['n_micrographs'], help='Fields are tiles of parent micrographs; the micrograph is the statistical unit.')
+c1.metric('Independent micrographs', d.get('n_independent', d['n_micrographs']), help='Fields are tiles of parent micrographs; the micrograph is the statistical unit. Micrographs continuous with approved baseline sections are not counted.')
 c2.metric('Fields (tiles)', res['n_fields'])
 c3.metric('Micrographs outside 99% envelope', d['d99'], help='on robust KPIs (additive phase)')
 c4.metric('Batch p-value', f"{d['p_batch']:.3f}" if d['verdict'] != 'REFERENCE' else '—',

@@ -27,15 +27,28 @@ def fmt(k, v, meta=None):
     return f"{v * meta['scale']:.3g}{'' if meta['unit'] in ('%', '') else ' '}{meta['unit']}"
 
 
-def acquisition_notes(m, ref):
-    notes = []
+# minimum differences that count as a different acquisition regime (instrument-level resolution of each metric)
+ACQ_TOL = dict(px_nm=0.25, contrast_mb=3.0, black_level=1.0, clip_black=0.01, hist_gaps=0.05, noise_abs=1.0,
+               cnr_additive=0.5, sharpness=0.03)
+
+
+def acquisition_deviations(m, ref, envelope='acq_envelope'):
+    """Structured: acquisition metrics of micrograph m outside an envelope (approved micrographs, or the tested range)."""
+    out = []
     for a in ACQ:
-        lo, hi = ref['acq_envelope'][a]
+        if a not in ref.get(envelope, {}):
+            continue
+        lo, hi = ref[envelope][a]
         v = m['acq'][a]
-        span = max(hi - lo, 1e-9)
-        if v < lo - 0.15 * span or v > hi + 0.15 * span:
-            notes.append(f"{ACQ_LABEL[a]} {v:.3g} (baseline {lo:.3g}–{hi:.3g})")
-    return notes
+        tol = max(ACQ_TOL.get(a, 0.0), 0.15 * (hi - lo))
+        if v < lo - tol or v > hi + tol:
+            out.append(dict(metric=a, label=ACQ_LABEL[a], value=float(v), lo=float(lo), hi=float(hi), tolerance=float(tol)))
+    return out
+
+
+def acquisition_notes(m, ref, envelope='acq_envelope', label='baseline'):
+    """Human-readable form of acquisition_deviations."""
+    return [f"{d['label']} {d['value']:.3g} ({label} {d['lo']:.3g}–{d['hi']:.3g})" for d in acquisition_deviations(m, ref, envelope)]
 
 
 def micrograph_text(m, ref, links):

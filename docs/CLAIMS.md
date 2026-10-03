@@ -8,7 +8,9 @@
 - **Batch 3 → REJECT (p = 0.017; severity test p = 0.009).** Micrograph M2060 (4 tiles) has 34.4 fine high-Z (BSE-bright) objects per 1000 µm²
   against 19.5 in the approved micrographs (+77%, t = 6.7, 3/4 tiles individually outside 95%), at unchanged additive area
   fraction. The largest tested synthetic acquisition change explains ≤12% of that shift.
-- **Batch 2 → ACCEPT.** All 6 independent micrographs sit inside the approved envelope on every measurable KPI.
+- **Batch 2 → ACCEPT, but fragile.** Its 3 independent micrographs sit inside the approved envelope on every measurable KPI. The other 3
+  (M2080, M2148, M2156) are physical continuations of approved baseline sections, so they are not independent evidence. Removing
+  any one independent micrograph leaves too few to certify the batch.
 - **Baseline audit.** M2316 (approved) has additive-to-matrix contrast-to-noise 3.2, so its additive is not measurable
   and it is excluded from those KPIs. The system says so instead of reporting a number.
 - **Detection limits.** With 5–6 approved micrographs, the minimum detectable change (95%, 3-tile micrograph) is

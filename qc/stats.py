@@ -232,20 +232,19 @@ def null_pvalue(refs, m_test, sev_obs, d95_obs, R=100_000, seed=0):
     return p, dict(p_any99=float(np.mean(e99.any(1))), p_any95=float(np.mean(D95 >= 1)), p_severity=p_sev, p_count=p_cnt)
 
 
-def decide(mgs, ref):
-    for m in mgs:
-        gate(m, ref['px_nm'])
-        m['score'] = score(m, ref)
-        m['status'] = worst(m['score'])
+def _core(mgs, ref, R=100_000):
+    """Batch decision from independent micrographs (reference-linked ones are shown but carry no independent weight)."""
     robust = [k for k, v in KPIS.items() if v['cls'] == 'robust']
-    valid = [m for m in mgs if m['gate']['additive']]
+    indep = [m for m in mgs if not m.get('ref_linked')]
+    valid = [m for m in indep if m['gate']['additive']]
     d99 = sum(any(m['score'][k]['status'] == 'out' for k in robust) for m in valid)
     d95 = sum(any(m['score'][k]['status'] in ('out', 'deviant') for k in robust) for m in valid)
     sev = max([abs(m['score'][k]['t']) / m['score'][k]['q99'] for m in valid for k in robust if m['score'][k].get('q99')], default=0.0)
-    p, null = null_pvalue([ref['kpi'][k] for k in robust], [m['n_tiles'] for m in valid], sev, d95)
+    p, null = null_pvalue([ref['kpi'][k] for k in robust], [m['n_tiles'] for m in valid], sev, d95, R=R)
     consistent_out = [m['parent'] for m in valid if any(m['score'][k]['status'] == 'out' and m['score'][k]['consistent'] for k in robust)]
-    moderate_out = [m['parent'] for m in mgs if any(m['score'][k]['status'] == 'out' for k, v in KPIS.items() if v['cls'] == 'moderate')]
-    gate_fail = [m['parent'] for m in mgs if not all(m['gate'].values())]
+    moderate_out = [m['parent'] for m in indep if any(m['score'][k]['status'] == 'out' for k, v in KPIS.items() if v['cls'] == 'moderate')]
+    gate_fail = [m['parent'] for m in indep if not all(m['gate'].values())]
+    linked = [m['parent'] for m in mgs if m.get('ref_linked')]
     reasons = []
     if p < ALPHA_REJECT and consistent_out:
         verdict = 'REJECT'
@@ -263,11 +262,34 @@ def decide(mgs, ref):
     if gate_fail:
         verdict = 'INVESTIGATE' if verdict == 'ACCEPT' else verdict
         reasons.append(f'measurement-validity gate failed for {", ".join(gate_fail)}; affected KPIs not used.')
-    if len(mgs) < 3:
+    if len(indep) < 3:
         verdict = 'INVESTIGATE' if verdict == 'ACCEPT' else verdict
-        reasons.append(f'only {len(mgs)} independent micrograph(s): too few to certify the batch.')
+        reasons.append(f'only {len(indep)} independent micrograph(s): too few to certify the batch.')
+    if linked:
+        reasons.append(f'{len(linked)} micrograph(s) ({", ".join(linked)}) are physical continuations of approved baseline '
+                       'cross-sections: shown, but excluded from the batch test (not independent of the reference).')
     if verdict == 'ACCEPT':
-        reasons.append(f'all {len(mgs)} independent micrographs inside the approved envelope on every measurable KPI '
+        reasons.append(f'all {len(indep)} independent micrographs inside the approved envelope on every measurable KPI '
                        f'(batch p = {p:.3f}).')
-    return dict(verdict=verdict, p_batch=p, d99=d99, d95=d95, severity=sev, n_micrographs=len(mgs), n_valid_additive=len(valid),
-                reasons=reasons, null=null, consistent_out=consistent_out, moderate_out=moderate_out, gate_fail=gate_fail)
+    return dict(verdict=verdict, p_batch=p, d99=d99, d95=d95, severity=sev, n_micrographs=len(mgs), n_independent=len(indep),
+                n_valid_additive=len(valid), ref_linked=linked, reasons=reasons, null=null, consistent_out=consistent_out,
+                moderate_out=moderate_out, gate_fail=gate_fail)
+
+
+def decide(mgs, ref, linked=()):
+    """Score micrographs, decide, and measure decision leverage (verdict with each independent micrograph removed)."""
+    for m in mgs:
+        gate(m, ref['px_nm'])
+        m['score'] = score(m, ref)
+        m['status'] = worst(m['score'])
+        m['ref_linked'] = m['parent'] in set(linked)
+    d = _core(mgs, ref)
+    for m in mgs:
+        if m['ref_linked']:
+            m['leverage'] = None
+            continue
+        sub = _core([x for x in mgs if x is not m], ref, R=40_000)
+        why = 'batch would fall below 3 independent micrographs' if sub['n_independent'] < 3 else 'carries the decisive evidence'
+        m['leverage'] = dict(verdict_without=sub['verdict'], p_without=sub['p_batch'], flips=sub['verdict'] != d['verdict'], why=why)
+    d['pivotal'] = [m['parent'] for m in mgs if m.get('leverage') and m['leverage']['flips']]
+    return d

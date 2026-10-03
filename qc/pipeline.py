@@ -6,7 +6,7 @@ from multiprocessing import Pool
 
 import numpy as np
 
-from . import explain, provenance, stats
+from . import explain, field, hero, provenance, spatial, stats
 from .features import CACHE, process_field
 from .io import discover
 
@@ -67,8 +67,22 @@ def build_reference(baseline_dir, noise_dirs=(), workers=None):
     paths = {f['fid']: f['channels']['BSE'] for f in discover(baseline_dir)}
     pick = [m['fids'][0] for m in ref['micrographs'] if all(m['gate'].values())][:4]  # one valid tile per micrograph
     with Pool(min(12, (os.cpu_count() or 4) - 2)) as P:
-        ref['robustness'] = robustness.card([paths[f] for f in pick], P)
+        ref['robustness'], tested = robustness.card([paths[f] for f in pick], P)
     ref['robustness_tiles'] = pick
+    # acquisition range whose KPI effect was actually measured = approved micrographs U perturbed images
+    ref['acq_tested'] = {a: [min(lo, tested.get(a, [lo, hi])[0]), max(hi, tested.get(a, [lo, hi])[1])]
+                         for a, (lo, hi) in ref['acq_envelope'].items()}
+    # capture-geometry / spatial support model (spread and correlation only)
+    gated = [m['parent'] for m in ref['micrographs'] if not m['gate']['additive']]
+    ref['spatial'] = spatial.model(allr, prov['parent_of'], prov['chains'], gated)
+    ok_add = [r for r in recs if prov['parent_of'][r['key']] not in gated]
+    ref['psd_ref'] = spatial.psd_density(ok_add)
+    tagged = [dict(r, parent=prov['parent_of'][r['key']]) for r in recs]
+    ref['band'] = {k: spatial.band(tagged, k, gated if k.startswith('additive') else ()) for k in spatial.SPATIAL_KPIS}
+    ref['tile_range'] = {}
+    for k, meta in stats.KPIS.items():
+        v = [t[k] for m in ref['micrographs'] if m['gate'][meta['family']] for t in m['tile_kpi'].values() if t.get(k) is not None]
+        ref['tile_range'][k] = [float(min(v)), float(max(v))]
     os.makedirs(os.path.dirname(REF_PATH) or '.', exist_ok=True)
     json.dump(_clean(ref), open(REF_PATH, 'w'), indent=1)
     return ref
@@ -82,7 +96,8 @@ def assess(batch_dir, workers=None, ref=None):
     allr = known_records()
     prov = provenance.build(allr, ref['name'])
     mgs = stats.micrographs(recs, prov['parent_of'])
-    decision = stats.decide(mgs, ref)
+    linked = set() if is_ref else {m['parent'] for m in ref['micrographs']}
+    decision = stats.decide(mgs, ref, linked)
     if is_ref:
         decision.update(verdict='REFERENCE', reasons=['approved baseline: self-audit (leave-one-micrograph-out) shown per micrograph.']
                         + [f"{a['parent']}: {a['status']} (max |t| {a['max_t']:.1f}) {'; '.join(a['gate_reasons'])}" for a in ref['self_audit']])
@@ -93,8 +108,14 @@ def assess(batch_dir, workers=None, ref=None):
                micrographs=mgs, explanations=mtexts, chains=chains,
                links=[l for l in prov['links'] if l['parent'] in chains], n_fields=len(recs),
                mdc95={k: ref['kpi'][k]['mdc95'] for k in stats.KPIS})
-    res['actions'] = explain.actions(decision, mtexts, mgs)
+    res['field'] = field.build(_clean(res), ref, recs, prov['chains'], allr)
+    res['actions'] = [f"[{a['verb']}] {a['title']}" for a in res['field']['actions']]
     os.makedirs(os.path.join(REPORTS, batch), exist_ok=True)
     json.dump(_clean(res), open(os.path.join(REPORTS, batch, 'result.json'), 'w'), indent=1)
     open(os.path.join(REPORTS, batch, 'report.md'), 'w', encoding='utf-8').write(explain.markdown_report(_clean(res), ref))
+    # representation boundary: the contract is written first; the V1 renderer reads only that JSON
+    fpath = os.path.join(REPORTS, batch, 'field.json')
+    json.dump(_clean(res['field']), open(fpath, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
+    open(os.path.join(REPORTS, batch, 'evidence_field.html'), 'w', encoding='utf-8').write(
+        hero.render(json.load(open(fpath, encoding='utf-8'))))
     return res

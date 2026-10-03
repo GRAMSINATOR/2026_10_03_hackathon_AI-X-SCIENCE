@@ -22,7 +22,7 @@ from multi-detector SEM cross-sections. It explains *what* physically changed an
 | Batch | Verdict | Why |
 |---|---|---|
 | Batch_1 | REFERENCE | approved baseline; self-audit flags M2316 (additive contrast-to-noise 3.2 < 4, so additive not measurable) |
-| Batch_2 | **ACCEPT** (p = 1.0) | all 6 independent micrographs inside the approved envelope |
+| Batch_2 | **ACCEPT** (p = 1.0) | its 3 independent micrographs are inside the approved envelope; 3 more are continuations of approved sections (not independent), so the ACCEPT is fragile |
 | Batch_3 | **REJECT** (p = 0.017) | M2060: additive number density 34.4 vs 19.5 per 1000 µm² (t = 6.7, 3/4 tiles); M2068 coarser additive and M2088 porosity +37% are outside 95% but spatially inconsistent |
 
 ## Quick start
