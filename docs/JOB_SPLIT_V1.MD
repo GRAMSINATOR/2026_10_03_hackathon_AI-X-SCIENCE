@@ -8,16 +8,16 @@ We do **not** want two expensive agents independently exploring the same space.
 
 The project has one product direction, defined in `docs/VISION_BRIEF_V2.MD`, with two complementary workstreams:
 
-> **Guilhem + Claude turn the current knowledge into the product.**  
+> **GRAMSINATOR + Claude turn the current knowledge into the product.**  
 > **qte77 searches for what the current knowledge is missing.**
 
 Both streams feed the same canonical object: the **uncertainty field**.
 
 ---
 
-## 1. Guilhem — product direction and convergence
+## 1. GRAMSINATOR — product direction and convergence
 
-Guilhem owns the product thesis, prioritization and demo framing.
+GRAMSINATOR owns the product thesis, prioritization and demo framing.
 
 His job is to decide:
 
@@ -28,7 +28,7 @@ His job is to decide:
 - which qte77 findings cross the threshold from interesting research to product-relevant evidence;
 - what the final demo must communicate in two minutes.
 
-Guilhem should spend human attention on **selection and coherence**, not on low-level implementation or exhaustive literature search.
+GRAMSINATOR should spend human attention on **selection and coherence**, not on low-level implementation or exhaustive literature search.
 
 ---
 
@@ -242,9 +242,9 @@ Claude should use high reasoning selectively for:
 
 Do not spend the highest effort on routine refactors, CSS, or broad literature search.
 
-### Guilhem: selection
+### GRAMSINATOR: selection
 
-Guilhem's scarce resource is attention.
+GRAMSINATOR's scarce resource is attention.
 
 Use it to:
 
@@ -260,7 +260,7 @@ Use it to:
 
 ## Immediate split
 
-### Guilhem + Claude now
+### GRAMSINATOR + Claude now
 
 1. Read `docs/VISION_BRIEF_V2.MD`.
 2. Audit the current implementation against it.
@@ -287,6 +287,6 @@ Use it to:
 
 ## Final rule
 
-> **Claude builds the best product from what we currently know. qte77 searches for scientifically grounded reasons why what we currently know is incomplete. Guilhem decides what becomes the product.**
+> **Claude builds the best product from what we currently know. qte77 searches for scientifically grounded reasons why what we currently know is incomplete. GRAMSINATOR decides what becomes the product.**
 
 No duplicated exploration. No parallel epistemologies. One uncertainty field.

@@ -83,7 +83,7 @@ Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 ## 4. Incompatibilities
 
 - **Opposite product framings.** In qte77's plan our engine is a control inside their eval bench; in ours their work is
-  the outer layer of our controller. Guilhem needs to settle this explicitly, or the repos will keep diverging.
+  the outer layer of our controller. GRAMSINATOR needs to settle this explicitly, or the repos will keep diverging.
 - **Don't move our engine into qte77's repo.** Their `mypy --strict` and ruff `ANN` rules would fail on almost all of
   `qc/`. Keep the field file as the boundary: bundle `fixtures/` (and `fixtures/assets/`) plus `renderer/dist/index.html`
   into the Modal image.
@@ -102,7 +102,7 @@ Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 3. **Material-injection test** (our lane): extend `qc/robustness.py` and report detected-vs-injected curves next to the
    claimed minimum detectable changes.
 4. **Prose-number provenance test** in `tests/test_contract.py`.
-5. **For Guilhem: Originator-track framing.** Our system already "knows when its measurements are insufficient": fragile
+5. **For GRAMSINATOR: Originator-track framing.** Our system already "knows when its measurements are insufficient": fragile
    ACCEPT flagged, validity gates, chemistry left unresolved. That could support an Originator entry without building any
    eval bench. Check the event rules on entering more than one track.
 

@@ -11,7 +11,7 @@ The canonical product direction is defined in:
 
 There are three roles:
 
-> **Guilhem decides what the product is.**  
+> **GRAMSINATOR decides what the product is.**  
 > **Claude turns current knowledge into the product.**  
 > **qte77 expands the scientific and external measurement space.**
 
@@ -19,9 +19,9 @@ Everything feeds the same canonical object: the **uncertainty field** and the ac
 
 ---
 
-# 1. Guilhem — product direction, selection and demo coherence
+# 1. GRAMSINATOR — product direction, selection and demo coherence
 
-Guilhem owns:
+GRAMSINATOR owns:
 
 - product thesis;
 - priority;
@@ -32,7 +32,7 @@ Guilhem owns:
 - final UX framing;
 - final demo story.
 
-Guilhem should spend attention on **selection, coherence and consequence**, not on exhaustive paper search, infrastructure or low-level implementation.
+GRAMSINATOR should spend attention on **selection, coherence and consequence**, not on exhaustive paper search, infrastructure or low-level implementation.
 
 Primary question:
 
@@ -361,13 +361,13 @@ Use the large budget aggressively for:
 
 High failure rate is acceptable here.
 
-## Guilhem — routing and selection
+## GRAMSINATOR — routing and selection
 
-Guilhem decides when exploration becomes product.
+GRAMSINATOR decides when exploration becomes product.
 
 The useful mental model is:
 
-> **Claude compresses. qte77 expands. Guilhem decides where expansion becomes compression.**
+> **Claude compresses. qte77 expands. GRAMSINATOR decides where expansion becomes compression.**
 
 ---
 
@@ -389,7 +389,7 @@ The useful mental model is:
 - choose hosting / deployment path;
 - identify any immediately useful APIs or external data.
 
-### Guilhem
+### GRAMSINATOR
 - approve the central model;
 - cut anything that creates parallel epistemologies;
 - freeze the demo's hero story.
@@ -434,7 +434,7 @@ qte77 shifts toward:
 
 **deployment → APIs → external connectivity → final research validation**
 
-Guilhem becomes increasingly ruthless about scope.
+GRAMSINATOR becomes increasingly ruthless about scope.
 
 ---
 
@@ -460,7 +460,7 @@ The demo should tell one story:
 
 # 9. Final operating rule
 
-> **Claude builds the strongest coherent controller from what we currently know. qte77 searches for scientifically grounded reasons why that knowledge or connectivity is incomplete and owns the external edge. Guilhem decides what crosses into the product.**
+> **Claude builds the strongest coherent controller from what we currently know. qte77 searches for scientifically grounded reasons why that knowledge or connectivity is incomplete and owns the external edge. GRAMSINATOR decides what crosses into the product.**
 
 No duplicated exploration.
 
