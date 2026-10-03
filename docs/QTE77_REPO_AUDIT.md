@@ -1,13 +1,13 @@
-# Audit: Anders' repo (`qte77/2026-10-03-london-ai-science-hack`) vs ours
+# Audit: qte77's repo (`qte77/2026-10-03-london-ai-science-hack`) vs ours
 
-Exploratory audit, 2026-10-03, against Anders' `main` at `11be16b`. Nothing was changed in either repo. Read alongside
+Exploratory audit, 2026-10-03, against qte77's `main` at `11be16b`. Nothing was changed in either repo. Read alongside
 `docs/VISION_BRIEF_V2.MD` and `docs/JOB_SPLIT_V2.MD`.
 
-**Bottom line.** Anders' repo is a hosted web shell with no science code. It meets ours most usefully as the online
+**Bottom line.** qte77's repo is a hosted web shell with no science code. It meets ours most usefully as the online
 surface for our results, plus two credibility mechanisms worth borrowing. Its written architecture describes a different
 product, and adopting that would split our thesis.
 
-## 1. What Anders' project actually is
+## 1. What qte77's project actually is
 
 **Built and live:** "HackBench", a FastAPI app on Modal at <https://thismay52--hackbench-web.modal.run> (`/v1/health`
 and the agent card were verified to respond).
@@ -28,7 +28,7 @@ synthetic drift injector with known ground truth, agents under test (Claude, Dev
 (trip-wires, re-scoring, provenance, LLM judge), ECE/Brier calibration, falsification checks and a leaderboard. Our kind
 of pipeline appears there only as the "reference pipeline (honest, non-agent)" control.
 
-**Fit with `JOB_SPLIT_V2`:** Anders' lane is scientific expansion plus hosting/connectivity. The hosting half is delivered
+**Fit with `JOB_SPLIT_V2`:** qte77's lane is scientific expansion plus hosting/connectivity. The hosting half is delivered
 and done well. Nothing in the repo covers the scientific half: the four literature requests in `docs/FIELD_MODEL.md` §7
 are unanswered there, and there are no candidates in the agreed HYPOTHESIS / FAILURE STATE / … / STATUS format.
 
@@ -37,14 +37,14 @@ are unanswered there, and there are no candidates in the agreed HYPOTHESIS / FAI
 ### 2.1 Hosted shell + our representation contract (connectivity)
 
 Our `field.json` (`epistemic-field/1`) is renderer-independent JSON with a schema. It needs no Python engine and was
-designed for any consumer. Anders' app has endpoints but no data; our engine has data but no web interface. Joining them
+designed for any consumer. qte77's app has endpoints but no data; our engine has data but no web interface. Joining them
 makes demo step 7 (agentic connectivity) a live call: a lab agent asks "what should I measure next for Batch_3?" and gets
 the ranked `actions[]` back, each with `triggered_by` and `trigger_facts`.
 
 Concretely:
 - `/v1/batches/{id}/field` → `reports/<batch>/field.json` (or `fixtures/epistemic_field.<batch>.json`);
 - `/batches/{id}` → the built R3F renderer (`qc/instrument.py` already injects the payload into `renderer/dist/index.html`);
-- `/batches/{id}.md` → `reports/<batch>/report.md` (matches Anders' planned "*.md twins");
+- `/batches/{id}.md` → `reports/<batch>/report.md` (matches qte77's planned "*.md twins");
 - agent-card skill changed from `evaluate-qc-verdict` to something like `recommend-next-capture`.
 
 This matches the V2 stack position: lab agent → epistemic acquisition controller → instrument.
@@ -57,7 +57,7 @@ arrives, and `renderer/` (currently untracked) should be committed first so the 
 
 ### 2.3 Known-answer material injection (the one real science contribution)
 
-`qc/robustness.py` applies 10 *acquisition* perturbations: what the pipeline should ignore. Anders' drift injector
+`qc/robustness.py` applies 10 *acquisition* perturbations: what the pipeline should ignore. qte77's drift injector
 idea, applied to the *material* instead (paste fine high-Z objects at +X% density; dilate pores by a known amount), gives
 an empirical detection curve. That curve can be checked against the minimum detectable changes claimed in
 `docs/CLAIMS.md` (e.g. ±5.6 per 1000 µm² for additive density, ±0.29 µm for additive D50) and makes demo step 2
@@ -65,14 +65,14 @@ an empirical detection curve. That curve can be checked against the minimum dete
 
 ### 2.4 Number provenance for prose annotations
 
-Anders' plan requires every reported number to map to a logged source. `docs/REPRESENTATION_CONTRACT.md` §3 admits our
+qte77's plan requires every reported number to map to a logged source. `docs/REPRESENTATION_CONTRACT.md` §3 admits our
 prose annotations "are not machine-checked against the numbers they describe". A test that extracts numbers from
 `statement` / `rationale` / `reasons` and matches them to structured values in the same field would close that gap.
 Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 
 ## 3. Similar-looking, but don't adopt
 
-| Anders' idea | Why not |
+| qte77's idea | Why not |
 |---|---|
 | "Never use detector-channel presence or filenames as features" | Already satisfied. `qc/io.py` canonicalises detector names (ETD and SE → SE2), and the acquisition deviations that trigger REPEAT come from measured image statistics (`acquisition_deviations`, `qc/field.py:148`), not detector names. |
 | ECE / Brier calibration | Meaningless with 2–3 batches. Our simulation-calibrated thresholds (`null_calibration`) are the defensible version. |
@@ -82,9 +82,9 @@ Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 
 ## 4. Incompatibilities
 
-- **Opposite product framings.** In Anders' plan our engine is a control inside their eval bench; in ours their work is
+- **Opposite product framings.** In qte77's plan our engine is a control inside their eval bench; in ours their work is
   the outer layer of our controller. Guilhem needs to settle this explicitly, or the repos will keep diverging.
-- **Don't move our engine into Anders' repo.** Their `mypy --strict` and ruff `ANN` rules would fail on almost all of
+- **Don't move our engine into qte77's repo.** Their `mypy --strict` and ruff `ANN` rules would fail on almost all of
   `qc/`. Keep the field file as the boundary: bundle `fixtures/` (and `fixtures/assets/`) plus `renderer/dist/index.html`
   into the Modal image.
 - **Serve precomputed files, not the live engine.** Running the full engine on Modal would need 1.7 GB of TIFFs in a
@@ -96,7 +96,7 @@ Estimated cost: about 30 minutes, in `tests/test_contract.py`.
 
 1. **Pre-register now.** Commit `renderer/`, then add `preregister.yml` or run
    `gh release create prereg-v2 --prerelease` on our repo before the unseen batch arrives.
-2. **Anders wires their app to our field file** (their lane): field, verdict, report and renderer endpoints, plus a
+2. **qte77 wires their app to our field file** (their lane): field, verdict, report and renderer endpoints, plus a
    next-capture skill in the agent card. They re-point their README / architecture doc to V2, or confirm the eval-bench
    plan is parked.
 3. **Material-injection test** (our lane): extend `qc/robustness.py` and report detected-vs-injected curves next to the
