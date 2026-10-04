@@ -3,7 +3,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Instrument from './scene/Instrument.jsx';
 import Panel from './ui/Panel.jsx';
-import Hero, { StatusReadout } from './ui/Hero.jsx';
+import Hero, { SupportingReadout } from './ui/Hero.jsx';
 import { installGrain } from './ui/grain.js';
 import brandLogo from './assets/brand-logo.png';   // company mark (branding/), the only image the renderer ships
 import SpatialEvidence from './ui/SpatialEvidence.jsx';
@@ -83,7 +83,6 @@ function Main({ payload }) {
     <div className="app">
       <header className="bar">
         <div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{M.meta.batch}</b><span className="muted">reference frame · {M.meta.reference}{M.meta.role === 'reference' ? ' · leave-one-parent-out self-audit' : ''}</span></div>
-        <StatusReadout brief={brief} onTrace={onTrace} traced={trace && trace.id} />
         <span className="bar-note">every statement traces to its proof below</span>
         <img className="brand-logo" src={brandLogo} alt="Parallax" />
       </header>
@@ -123,6 +122,7 @@ function Main({ payload }) {
         </div>
       </details>
 
+      {brief && <SupportingReadout brief={brief} onTrace={onTrace} traced={trace && trace.id} />}
       <MarkerFrontier field={M.F} brief={brief} onTrace={onTrace} />
     </div>
   );

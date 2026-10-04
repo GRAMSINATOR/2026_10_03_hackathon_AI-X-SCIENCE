@@ -81,9 +81,11 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
 .readout { position: relative; margin: 0 0 18px; padding: 12px; border-radius: 20px; border: 6px solid transparent;
   background: var(--grain) padding-box, var(--plateau) padding-box, var(--bevel-out) border-box; box-shadow: var(--raised-l); }
 .ro-grid { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ro-priority-grid { grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr); align-items: stretch; }
 /* the cross-rib between the windows is the panel itself; a moulded parting line runs along its centre */
 .ro-grid::before { content: ''; position: absolute; top: 8px; bottom: 8px; left: calc(50% - 1px); width: 2px;
   background: linear-gradient(90deg, rgba(52,46,38,.18) 50%, rgba(255,255,255,.85) 50%); pointer-events: none; }
+.ro-priority-grid::before { left: 75%; }
 .rz { position: relative; min-width: 0; padding: 12px 18px 14px; border-radius: 10px; cursor: pointer; outline: none; border: 5px solid transparent;
   background: var(--grain) padding-box, linear-gradient(var(--display), var(--display)) padding-box, var(--bevel-in) border-box; box-shadow: var(--cut-deep); }
 .rz-support::after, .rz-evidence::after { content: ''; position: absolute; bottom: -13px; height: 2px; pointer-events: none;
@@ -111,6 +113,22 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
 .rz-row:hover { background: rgba(255,255,255,.22); } .rz-row.traced, .rz-row:focus-visible { outline: 2px solid var(--hue); outline-offset: 1px; }
 .rz-rows:not(.rz-steps) { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); column-gap: 18px; }
 .rz-limits .rz-rows, .rz-limits .rz-rows .rz-row { display: flex; width: 100%; } .rz-limits .rz-rows { flex-direction: column; }
+.rz-policy .rz-state { font-size: clamp(25px, 2.2vw, 38px); }
+.rz-policy .rz-steps { margin: 12px 0 0 18px; padding: 0; background: transparent; box-shadow: none; gap: 7px; }
+.rz-policy .rz-steps .rz-row { box-shadow: none; }
+.rz-policy .rz-steps li:first-child .rz-row { min-height: 52px; padding: 11px 22px 11px 13px; border: 1px solid rgba(52,46,38,.22); border-radius: 999px;
+  background: var(--grain), linear-gradient(180deg, #f0eee8, #e4e1da); box-shadow: var(--cut-deep), inset 0 1px 0 rgba(255,255,255,.75); }
+.rz-policy .rz-steps li:first-child .n { flex-basis: 28px; height: 28px; border-radius: 50%; }
+.rz-policy .rz-steps li:not(:first-child) .rz-row { padding-left: 8px; color: var(--mut); font-size: 11.5px; }
+.rz-policy .rz-steps li:not(:first-child) .n { opacity: .65; }
+.rz-policy .rz-later { margin-left: 18px; }
+.rz-limits { padding-left: 22px; }
+.supporting-readout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 0 0 14px; }
+.supporting-readout .rz { padding: 9px 14px 10px; border-width: 2px; border-radius: 8px; background: var(--grain) padding-box, rgba(235,232,225,.72) padding-box, var(--bevel-in) border-box; box-shadow: var(--seam), inset 0 1px 0 rgba(255,255,255,.6); }
+.supporting-readout .rz-tag { font-size: 9px; padding-bottom: 2px; }
+.supporting-readout .rz-state { margin: 5px 0 3px; font-size: 18px; }
+.supporting-readout .rz-text, .supporting-readout .rz-fact { font-size: 12px; }
+.supporting-readout .rz-rows { margin-top: 5px; }
 /* indicator lamp: a small square LED seated in the row */
 .led { flex: 0 0 8px; width: 8px; height: 8px; border-radius: 2px; align-self: center; background: var(--tone, #b7b5ae);
   box-shadow: 0 0 0 1px rgba(52,46,38,.25), inset 0 1px 0 rgba(255,255,255,.45); }
@@ -271,5 +289,5 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
   .lens button { padding: 8px 10px; font-size: 10.5px; }
 }
 @media (max-width: 1280px) { :root { --panel: 420px; } }
-@media (max-width: 1100px) { .main { grid-template-columns: 1fr; } .panel { min-height: 420px; } .ro-grid { grid-template-columns: 1fr; } .ro-grid::before, .rz::after { display: none; } }
+@media (max-width: 1100px) { .main { grid-template-columns: 1fr; } .panel { min-height: 420px; } .ro-grid, .supporting-readout { grid-template-columns: 1fr; } .ro-grid::before, .rz::after { display: none; } }
 @media (prefers-reduced-motion: reduce) { .lens-block { transition: none; } .px-trace { animation: none; } }
