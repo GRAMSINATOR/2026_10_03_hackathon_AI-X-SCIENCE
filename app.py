@@ -108,7 +108,8 @@ default = next((i for i, b in reversed(list(enumerate(batches))) if b != active_
 bar = st.columns([1.15, 1.15, 0.62, 4.4, 0.4] if DEV else [1.15, 1.15, 0.62, 4.8], vertical_alignment='bottom')
 batch = bar[0].selectbox('DATASET', batches, index=default)
 frame_ids = [x['id'] for x in eligible_frames]
-frame_default = frame_ids.index(active_ref['name']) if active_ref['name'] in frame_ids else 0
+default_frame = 'Batch_3' if 'Batch_3' in frame_ids else active_ref['name']
+frame_default = frame_ids.index(default_frame) if default_frame in frame_ids else 0
 reference = bar[1].selectbox('REFERENCE FRAME', frame_ids, index=frame_default)
 frame_entry = next(x for x in eligible_frames if x['id'] == reference)
 artifact = frame_entry.get('artifact') or os.path.join(os.path.dirname(REF_PATH), 'references', reference + '.json')
