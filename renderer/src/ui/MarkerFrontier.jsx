@@ -1,11 +1,11 @@
-// MARKER FRONTIER: the recursive-research layer under the current decision. Pure rendering of marker-frontier/1 (built
-// and checked in qc/frontier.py): two lanes (track with current capture | requires new capability), a recessed evidence
-// rail per case (one categorical segment per gate, never a probability) and an evidence tray where the depth lives.
+// AGENTIC MARKER FRONTIER: the global opportunity layer around the local decision loop. Pure rendering of
+// marker-frontier/1 (built and checked in qc/frontier.py): ranked marker protocols, observability-attractor payloads,
+// categorical evidence rails (never probabilities), a roadmap and evidence trays where the depth lives.
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './frontier.css';
 import {
-  railSegments, lanes, blindspotChips, decisionValue, markerCounts, capabilityCounts, papersFor, recordsFor, basisLabel,
-  assessmentDims, transferDetail, researchState, openPull, briefClaimFor, stateWord, testWord, casesById, GATE_WORD,
+  railSegments, opportunityView, vorticesFor, blindspotChips, decisionValue, markerCounts, capabilityCounts, papersFor, recordsFor, basisLabel,
+  assessmentDims, transferDetail, researchState, openPull, briefClaimFor, stateWord, testWord, representationWord, casesById, GATE_WORD,
 } from '../model/frontier.js';
 
 // payload: a <script id="frontier-payload"> tag injected by qc.frontier.inject, or (dev) a fixture from ../fixtures
@@ -35,7 +35,7 @@ export default function MarkerFrontier({ frontier: given = null, field = null, b
 }
 
 function Frontier({ doc, batch, brief, onTrace }) {
-  const L = useMemo(() => lanes(doc), [doc]);
+  const O = useMemo(() => opportunityView(doc), [doc]);
   const pull = useMemo(() => openPull(doc, batch), [doc, batch]);
   const [stack, setStack] = useState([]);            // tray navigation: [{kind, id}]; capability -> unlocked marker -> back
   const opener = useRef(null);
@@ -52,44 +52,64 @@ function Frontier({ doc, batch, brief, onTrace }) {
   const top = stack[stack.length - 1];
   const ctx = { doc, batch, brief, trace, canTrace: chip => !!(onTrace && briefClaimFor(brief, chip)) };
   return (
-    <section className="mf" aria-label="Marker Frontier">
+    <section className="mf" aria-label="Agentic Marker Frontier">
       <header className="mf-head">
-        <div className="mf-layer" aria-hidden="true"><span>CURRENT DECISION</span><i /><b>EXPANDING WHAT THE SYSTEM CAN KNOW</b></div>
+        <div className="mf-layer" aria-hidden="true"><span>LOCAL EXAMINER LOOP</span><i /><b>GLOBAL OPPORTUNITY MAP</b></div>
         <div className="mf-title">
-          <h2>MARKER FRONTIER</h2>
-          <p>Which new markers the current blindspots pull in, and when converging evidence would justify a new measurement capability.</p>
+          <h2>AGENTIC MARKER FRONTIER</h2>
+          <p>New protocols for perceiving the current dataset, plus the observability gaps that could justify future measurement capability.</p>
         </div>
         <ul className="mf-research" aria-label="research state">{researchState(doc).map(t => <li key={t} className={t.startsWith('FIXTURE') ? 'fx' : ''}>{t}</li>)}</ul>
       </header>
 
-      <div className="mf-lanes">
-        <section className="mf-lane lane-m" aria-label="Current capture markers: marker admission">
-          <div className="mf-lane-h"><span className="mf-ch">CURRENT CAPTURE MARKERS</span><em>marker admission · observable with today's capture</em></div>
-          <div className="mf-mods">{L.active.map(m => <MarkerCard key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}</div>
-          {!L.active.length && <p className="mf-empty">No active marker case. The open blindspots below are where a current-capture marker could help.</p>}
-          {L.setAside.length > 0 && (
-            <div className="mf-aside">
-              <h4>TESTED AND SET ASIDE</h4>
-              {L.setAside.map(m => <AsideRow key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}
-            </div>)}
-        </section>
-        <section className="mf-lane lane-c" aria-label="New capability cases: capability expansion">
-          <div className="mf-lane-h"><span className="mf-ch">NEW CAPABILITY CASES</span><em>capability expansion · needs a measurement the lab lacks</em></div>
-          <div className="mf-mods">{L.capabilities.map(c => <CapabilityCard key={c.id} c={c} ctx={ctx} onOpen={el => open('capability', c.id, el)}
-                                                   onMarker={(id, el) => open('marker', id, el)} />)}</div>
-          {!L.capabilities.length && <p className="mf-empty">No capability case. A marker that current capture cannot observe creates one.</p>}
-        </section>
+      <div className="mf-distinction">
+        <div><b>NEXT CAPTURE</b><span>Local decision optimization</span><p>What should the lab do next to resolve the current decision?</p></div>
+        <i aria-hidden="true" />
+        <div className="active"><b>MARKER FRONTIER</b><span>Representation search</span><p>What useful new ways of perceiving this dataset should be investigated?</p></div>
+        <i aria-hidden="true" />
+        <div><b>OBSERVABILITY EXPANSION</b><span>Capability roadmap</span><p>What missing information would unlock valuable marker families?</p></div>
       </div>
+
+      <section className="mf-frontier" aria-label="Current Frontier">
+        <div className="mf-section-h"><span>A</span><div><h3>CURRENT FRONTIER</h3><p>Highest-priority research opportunities under the inspectable attention rules below.</p></div></div>
+        <div className="mf-frontier-list">
+          {O.currentFrontier.map(m => <FrontierRow key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}
+          {!O.currentFrontier.length && <p className="mf-empty">No grounded marker opportunity yet. Structured inquiry vortices will appear here when evidence supports them.</p>}
+        </div>
+        {O.rankingPolicy.length > 0 && <p className="mf-rank-policy"><b>ATTENTION ORDER</b> {O.rankingPolicy.join(' → ')}</p>}
+      </section>
+
+      <section className="mf-candidates" aria-label="Candidate Markers">
+        <div className="mf-section-h"><span>B</span><div><h3>CANDIDATE MARKERS</h3><p>Defined observation protocols, separated by what the loaded data can support.</p></div></div>
+        <div className="mf-candidate-lanes">
+          <MarkerGroup title="COMPUTABLE / TESTABLE NOW" note="use the data already loaded" markers={O.computableNow} ctx={ctx} onOpen={open} />
+          <MarkerGroup title="NEEDS TARGETED CAPTURE" note="same modality, new scale or sampling" markers={O.needsCapture} ctx={ctx} onOpen={open} />
+        </div>
+        {O.setAside.length > 0 && (
+          <div className="mf-aside">
+            <h4>TESTED AND DEPRIORITIZED <span>negative results remain visible</span></h4>
+            {O.setAside.map(m => <AsideRow key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}
+          </div>)}
+      </section>
+
+      <section className="mf-observe" aria-label="Observability Expansion">
+        <div className="mf-section-h"><span>C</span><div><h3>OBSERVABILITY EXPANSION</h3><p>Marker pools that require information the current workflow does not capture. These are scoped payload arguments, not equipment recommendations.</p></div></div>
+        <div className="mf-attractors">{O.attractors.map(c => <CapabilityCard key={c.id} c={c} ctx={ctx} onOpen={el => open('capability', c.id, el)}
+                                               onMarker={(id, el) => open('marker', id, el)} />)}</div>
+        {!O.attractors.length && <p className="mf-empty">No observability attractor yet. New capability cases appear only when inaccessible marker opportunities name a shared requirement.</p>}
+      </section>
 
       {pull.length > 0 && (
         <div className="mf-pull">
-          <h4>OPEN BLINDSPOTS WITHOUT A RESEARCH CASE <span>the pull on the research agent; what the controller does meanwhile</span></h4>
+          <h4>UNMAPPED INQUIRY VORTICES <span>structured limits without a live marker opportunity; current controller action remains visible</span></h4>
           <ul>{pull.map(b => (
             <li key={b.key} className={b.current ? 'cur' : ''} title={b.statement}>
               <b>{b.label}</b>{!b.current && <em>{b.batch}</em>}
               {b.actions.length > 0 && <span>controller acts: {[...new Set(b.actions.map(a => a.verb))].join(' · ')}</span>}
             </li>))}</ul>
         </div>)}
+
+      {O.roadmap.length > 0 && <Roadmap steps={O.roadmap} />}
 
       <Legend />
       {top && <Tray key={top.kind + top.id} top={top} depth={stack.length} ctx={ctx} onClose={close} onBack={() => setStack(s => s.slice(0, -1))} onPush={push} />}
@@ -110,8 +130,9 @@ function RailLabels({ segs }) {
   return <ol className="mf-rlab">{segs.map(s => <li key={s.gate} className={`s-${s.state}`}>{s.short}</li>)}</ol>;
 }
 
-function State({ s, kind }) {
-  return <span className={`mf-state st-${s.toLowerCase()} k-${kind}`}>{stateWord(s)}</span>;
+function State({ s, kind, label = null }) {
+  const cls = String(s).toLowerCase().replaceAll('_', '-').replaceAll(' ', '-');
+  return <span className={`mf-state st-${cls} k-${kind}`}>{label || stateWord(s)}</span>;
 }
 
 function Quals({ q }) {
@@ -156,6 +177,61 @@ function Legend() {
   );
 }
 
+function OpportunityMeta({ m }) {
+  return (
+    <span className="mf-ometa">
+      <i>{m.observability ? m.observability.label : 'CAPTURE STATUS OPEN'}</i>
+      <i>{(m.marker_kind || 'marker').toUpperCase()}</i>
+      <i>{representationWord(m.representation).toUpperCase()}</i>
+      {m.implementation_burden && <i>{m.implementation_burden.toUpperCase()} BURDEN</i>}
+    </span>
+  );
+}
+
+function VortexTags({ c, ctx }) {
+  const rows = vorticesFor(ctx.doc, c);
+  const kinds = [...new Set(rows.map(v => representationWord(v.kind)))];
+  if (!kinds.length) return null;
+  return <span className="mf-vortices">{kinds.slice(0, 3).map(kind => <i key={kind}>{kind}</i>)}</span>;
+}
+
+function FrontierRow({ m, ctx, onOpen }) {
+  return (
+    <article className="mf-frontier-row">
+      <span className="mf-rank" aria-label={`attention rank ${m.opportunity_rank}`}>{String(m.opportunity_rank).padStart(2, '0')}</span>
+      <div className="mf-frontier-main">
+        <div className="mf-card-h"><h3>{m.name}</h3><State s={m.status} kind="m" label={m.investigation_state} /></div>
+        <p className="mf-observable"><b>PERCEIVES</b> {m.observable}</p>
+        <p className="mf-frontier-why">{m.why_relevant}</p>
+        <OpportunityMeta m={m} /><VortexTags c={m} ctx={ctx} />
+      </div>
+      <button className="mf-open" onClick={e => onOpen(e.currentTarget)}>INSPECT BASIS <span aria-hidden="true">→</span></button>
+    </article>
+  );
+}
+
+function MarkerGroup({ title, note, markers, ctx, onOpen }) {
+  return (
+    <section className="mf-marker-group">
+      <header><h4>{title}</h4><span>{note}</span></header>
+      <div className="mf-mods">{markers.map(m => <MarkerCard key={m.id} m={m} ctx={ctx} onOpen={el => onOpen('marker', m.id, el)} />)}</div>
+      {!markers.length && <p className="mf-empty">No supported opportunity in this class.</p>}
+    </section>
+  );
+}
+
+function Roadmap({ steps }) {
+  return (
+    <section className="mf-roadmap" aria-label="Acquisition opportunity roadmap">
+      <h4>OPPORTUNITY ROADMAP <span>derived from the current opportunity topology</span></h4>
+      <ol>{steps.map((s, i) => {
+        const n = (s.marker_refs || s.capability_refs || []).length;
+        return <li key={s.id}><b>{String(i + 1).padStart(2, '0')} · {s.label}</b><p>{s.purpose}</p>{n > 0 && <span>{n} linked opportunit{n === 1 ? 'y' : 'ies'}</span>}</li>;
+      })}</ol>
+    </section>
+  );
+}
+
 // ---------------------------------------------------------------- cards
 function MarkerCard({ m, ctx, onOpen }) {
   const segs = railSegments(ctx.doc, 'marker', m);
@@ -163,16 +239,17 @@ function MarkerCard({ m, ctx, onOpen }) {
   const chips = blindspotChips(ctx.doc, m, ctx.batch);
   return (
     <article className={`mf-card ${dv && dv.current ? 'current' : ''} ${m.fixture ? 'is-fx' : ''}`}>
-      <div className="mf-card-h"><h3>{m.name}</h3><State s={m.status} kind="m" /></div>
-      <Quals q={m.qualifiers} />
-      <p className="mf-prop">{m.proposition}</p>
+      <div className="mf-card-h"><h3>{m.name}</h3><State s={m.status} kind="m" label={m.investigation_state} /></div>
+      <p className="mf-observable"><b>PERCEIVES</b> {m.observable || m.proposition}</p>
+      <p className="mf-prop why"><b>Why it may matter.</b> {m.why_relevant}</p>
+      <OpportunityMeta m={m} />
       <dl className="mf-dl">
-        <dt>CLOSES</dt><dd><Chips chips={chips} ctx={ctx} /></dd>
-        {dv && <><dt>DECISION VALUE</dt><dd className="mf-dv">{dv.text}</dd></>}
+        <dt>INQUIRY</dt><dd><Chips chips={chips} ctx={ctx} /></dd>
+        {dv && <><dt>LEVERAGE</dt><dd className="mf-dv">{dv.text}</dd></>}
       </dl>
       <Rail segs={segs} /><RailLabels segs={segs} />
       <div className="mf-foot"><Counts items={markerCounts(m)} />
-        <button className="mf-open" onClick={e => onOpen(e.currentTarget)}>OPEN EVIDENCE <span aria-hidden="true">→</span></button></div>
+        <button className="mf-open" onClick={e => onOpen(e.currentTarget)}>INSPECT BASIS <span aria-hidden="true">→</span></button></div>
     </article>
   );
 }
@@ -181,16 +258,17 @@ function AsideRow({ m, ctx, onOpen }) {
   const segs = railSegments(ctx.doc, 'marker', m);
   return (
     <div className="mf-row">
-      <State s={m.status} kind="m" />
+      <State s={m.status} kind="m" label={m.investigation_state} />
       <div className="mf-row-t"><b>{m.name}</b><span>{m.status_basis}</span></div>
       <Rail segs={segs} size="mini" />
-      <button className="mf-open sm" onClick={e => onOpen(e.currentTarget)} aria-label={`open evidence: ${m.name}`}>EVIDENCE <span aria-hidden="true">→</span></button>
+      <button className="mf-open sm" onClick={e => onOpen(e.currentTarget)} aria-label={`inspect basis: ${m.name}`}>BASIS <span aria-hidden="true">→</span></button>
     </div>
   );
 }
 
 function CapabilityCard({ c, ctx, onOpen, onMarker }) {
   const { M } = casesById(ctx.doc);
+  const pool = c.marker_pool || c.markers_unlocked || [];
   const segs = railSegments(ctx.doc, 'capability', c);
   const chips = blindspotChips(ctx.doc, c, ctx.batch);
   const dv = decisionValue(ctx.doc, c, ctx.batch);
@@ -198,23 +276,23 @@ function CapabilityCard({ c, ctx, onOpen, onMarker }) {
   const nRes = chips.filter(x => !x.external).length, nGen = chips.length - nRes;
   return (
     <article className={`mf-card cap ${dv && dv.current ? 'current' : ''} ${c.fixture ? 'is-fx' : ''}`}>
-      <div className="mf-card-h"><h3>{c.name}</h3><State s={c.status} kind="c" /></div>
-      <Quals q={c.qualifiers} />
+      <div className="mf-card-h"><h3>{c.name}</h3><State s={c.status} kind="c" label={c.attractor_state} /></div>
+      <p className="mf-attractor-scope">This capability would unlock a defined marker pool; it is not a procurement recommendation.</p>
       <dl className="mf-dl">
         <dt>UNLOCKS</dt>
-        <dd><span className="mf-big">{c.markers_unlocked.length}</span> marker{c.markers_unlocked.length === 1 ? '' : 's'}
-          <span className="mf-chips">{c.markers_unlocked.map(id => (
+        <dd><span className="mf-big">{pool.length}</span> marker opportunit{pool.length === 1 ? 'y' : 'ies'}
+          <span className="mf-chips">{pool.map(id => (
             <button key={id} className={`mf-mk ${M[id].fixture ? 'fx' : ''}`} onClick={e => { e.stopPropagation(); onMarker(id, e.currentTarget); }}>
               {M[id].name}{M[id].fixture && <em>fixture</em>}</button>))}</span></dd>
-        <dt>CLOSES</dt>
-        <dd><span className="mf-big">{nRes}</span> blindspot{nRes === 1 ? '' : 's'}{nCons > 0 && <> · <b className="mf-consn">{nCons} consequential</b></>}
+        <dt>ADDRESSES</dt>
+        <dd><span className="mf-big">{nRes}</span> observed limit{nRes === 1 ? '' : 's'}{nCons > 0 && <> · <b className="mf-consn">{nCons} decision-consequential</b></>}
           {nGen > 0 && <span className="mf-muted-i"> · {nGen} vocabulary gap{nGen === 1 ? '' : 's'}</span>}
           <Chips chips={chips} ctx={ctx} /></dd>
       </dl>
-      {c.why_current_workflow_cannot_resolve && <p className="mf-prop why"><b>Why current capture cannot substitute.</b> {c.why_current_workflow_cannot_resolve}</p>}
+      {c.why_current_workflow_cannot_resolve && <p className="mf-prop why"><b>Why current data is insufficient.</b> {c.why_current_workflow_cannot_resolve}</p>}
       <Rail segs={segs} /><RailLabels segs={segs} />
       <div className="mf-foot"><Counts items={capabilityCounts(c)} />
-        <button className="mf-open" onClick={e => onOpen(e.currentTarget)}>OPEN CAPABILITY CASE <span aria-hidden="true">→</span></button></div>
+        <button className="mf-open" onClick={e => onOpen(e.currentTarget)}>INSPECT PAYLOAD <span aria-hidden="true">→</span></button></div>
     </article>
   );
 }
@@ -238,23 +316,22 @@ function Tray({ top, depth, ctx, onClose, onBack, onPush }) {
   return (
     <div className="mf-tray-wrap">
       <div className="mf-scrim" onClick={onClose} aria-hidden="true" />
-      <aside ref={ref} tabIndex={-1} className="mf-tray" role="dialog" aria-modal="true" aria-label={`${kind} case: ${c.name}`}>
+      <aside ref={ref} tabIndex={-1} className="mf-tray" role="dialog" aria-modal="true" aria-label={`${kind === 'marker' ? 'marker opportunity' : 'observability attractor'}: ${c.name}`}>
         <header className="mf-tray-h">
           <div className="mf-tray-nav">
             {depth > 1 && <button className="mf-back" onClick={onBack}>← back</button>}
-            <span className="mf-eyebrow">{kind === 'marker' ? 'MARKER CASE' : 'CAPABILITY CASE'} · {c.id}</span>
+            <span className="mf-eyebrow">{kind === 'marker' ? 'MARKER OPPORTUNITY' : 'OBSERVABILITY ATTRACTOR'}</span>
             <button className="mf-x" onClick={onClose} aria-label="close evidence tray">×</button>
           </div>
-          <div className="mf-card-h"><h3>{c.name}</h3><State s={c.status} kind={kind[0]} /></div>
-          <Quals q={c.qualifiers} />
-          <p className="mf-basis">{c.status_basis}</p>
+          <div className="mf-card-h"><h3>{c.name}</h3><State s={c.status} kind={kind[0]} label={kind === 'marker' ? c.investigation_state : c.attractor_state} /></div>
+          <p className="mf-basis">{(c.ranking_factors || []).join(' · ')}</p>
         </header>
         <div className="mf-tray-b">
-          <TraySection title="SUMMARY">
+          <TraySection title={kind === 'marker' ? 'WHAT THIS MARKER WOULD PERCEIVE' : 'CAPABILITY PAYLOAD'}>
             {kind === 'marker' ? <MarkerSummary m={c} ctx={ctx} /> : <CapabilitySummary c={c} ctx={ctx} onPush={onPush} />}
           </TraySection>
 
-          <TraySection title="EVIDENCE STATE">
+          <TraySection title="INVESTIGATION BASIS">
             <Rail segs={segs} size="tray" /><RailLabels segs={segs} />
             <table className="mf-gates"><tbody>
               {[...segs.map(s => s.gate), ...(kind === 'marker' ? ['non_redundancy'] : [])].map(g => {
@@ -272,12 +349,12 @@ function Tray({ top, depth, ctx, onClose, onBack, onPush }) {
             </tbody></table>
           </TraySection>
 
-          <TraySection title={`PAPERS (${papers.length})`}>
-            {!papers.length && <p className="mf-empty">No literature attached yet. Papers appear here automatically when a research bundle assesses <code>{c.id}</code> (docs/MARKER_FRONTIER.md).</p>}
+          <TraySection title={`LITERATURE BASIS (${papers.length})`}>
+            {!papers.length && <p className="mf-empty">No literature attached yet. This remains an open research task; no literature support is implied.</p>}
             {papers.map(p => <Paper key={p.id} p={p} />)}
           </TraySection>
 
-          <TraySection title={`PROJECT RECORDS AND ENGINE FACTS (${records.length})`}>
+          <TraySection title={`CURRENT-DATA AND PROJECT EVIDENCE (${records.length})`}>
             {!records.length && <p className="mf-empty">None.</p>}
             {records.map(r => (
               <div key={r.id} className={`mf-rec ${r.fixture ? 'is-fx' : ''}`}>
@@ -291,6 +368,8 @@ function Tray({ top, depth, ctx, onClose, onBack, onPush }) {
 
           <TraySection title="PROVENANCE">
             <table className="mf-kv"><tbody>
+              <tr><td>governed id</td><td><code>{c.id}</code></td></tr>
+              <tr><td>derived state</td><td>{c.status} · {c.status_basis}</td></tr>
               <tr><td>bundle</td><td>{c.bundle}{c.extended_by.length ? ` (extended by ${c.extended_by.join(', ')})` : ''}{c.fixture && <span className="mf-tag fx">FIXTURE</span>}</td></tr>
               <tr><td>origin</td><td>{c.provenance.kind || '—'}{c.provenance.basis ? ` · ${c.provenance.basis}` : ''}</td></tr>
               <tr><td>review</td><td>{c.review ? `${c.review.decision} · ${c.review.by} · ${c.review.date}${c.review.note ? ' · ' + c.review.note : ''}` : 'none recorded'}</td></tr>
@@ -312,18 +391,19 @@ function MarkerSummary({ m, ctx }) {
   const cc = m.current_capture_compatible === true ? 'yes' : m.current_capture_compatible === false ? 'no' : 'unknown';
   return (
     <>
-      <p className="mf-lead">{m.proposition}</p>
+      <p className="mf-lead">{m.observable || m.proposition}</p>
       <table className="mf-kv"><tbody>
-        <tr><td>closes</td><td><Chips chips={chips} ctx={ctx} />{chips.filter(x => x.statement).map(x => <p key={x.key} className="mf-muted">{x.label}: {x.statement}</p>)}</td></tr>
-        {m.decision_refs.length > 0 && <tr><td>decisions affected</td><td>{m.decision_refs.map((d, i) => <div key={i}>{d.batch} · {d.collection}{d.id ? ' · ' + d.id : ''}{d.path ? ' › ' + d.path : ''}{!d.resolved && <b className="bad"> unresolved</b>}</div>)}
-          {decisionValue(ctx.doc, m, ctx.batch) && <p className="mf-muted">{decisionValue(ctx.doc, m, ctx.batch).text}</p>}</td></tr>}
-        <tr><td>why relevant</td><td>{m.why_relevant || '—'}</td></tr>
+        <tr><td>marker form</td><td>{m.marker_kind} · {representationWord(m.representation)}</td></tr>
+        {m.scientific_question && <tr><td>question</td><td>{m.scientific_question}</td></tr>}
+        <tr><td>why it may matter</td><td>{m.why_relevant || '—'}</td></tr>
+        <tr><td>related inquiry</td><td><Chips chips={chips} ctx={ctx} />{chips.filter(x => x.statement).map(x => <p key={x.key} className="mf-muted">{x.label}: {x.statement}</p>)}</td></tr>
+        {decisionValue(ctx.doc, m, ctx.batch) && <tr><td>decision leverage</td><td>{decisionValue(ctx.doc, m, ctx.batch).text}</td></tr>}
         <tr><td>scientific definition</td><td>{m.scientific_definition || '—'}</td></tr>
-        <tr><td>measurement definition</td><td>{m.measurement_definition || '—'}</td></tr>
-        <tr><td>current capture</td><td>compatible: <b>{cc}</b> · test: {testWord(t.status)}{t.note ? ` · ${t.note}` : ''}
+        <tr><td>observation protocol</td><td>{m.measurement_definition || '—'}</td></tr>
+        <tr><td>observability</td><td><b>{m.observability ? m.observability.label : cc === 'yes' ? 'CURRENT CAPTURE' : 'OPEN'}</b> · test: {testWord(t.status)}{t.note ? ` · ${t.note}` : ''}
           {m.capture_requirements && <p className="mf-muted">{m.capture_requirements}</p>}
           {t.requires_actions.length > 0 && <p className="mf-muted">controller action: {t.requires_actions.map(a => `${a.verb} (${a.batch}, tier ${a.tier})`).join(' · ')}</p>}
-          {m.required_capabilities.length > 0 && <p className="mf-muted">requires capability: {m.required_capabilities.join(', ')}</p>}</td></tr>
+          {m.required_capabilities.length > 0 && <p className="mf-muted">requires a new capability represented by the attractor below</p>}</td></tr>
         <tr><td>known confounds</td><td>{m.known_confounds.length ? m.known_confounds.map(x => (
           <div key={x.id}>{x.label} · <b>{x.controlled === true ? 'controlled' : x.controlled === false ? 'not controlled' : 'unassessed'}</b>
             {(x.basis || []).length > 0 && <span className="mf-muted"> ({x.basis.map(b => basisLabel(ctx.doc, b).text).join('; ')})</span>}</div>)) : '—'}</td></tr>
@@ -336,23 +416,26 @@ function MarkerSummary({ m, ctx }) {
 
 function CapabilitySummary({ c, ctx, onPush }) {
   const { M } = casesById(ctx.doc);
+  const pool = c.marker_pool || c.markers_unlocked || [];
+  const required = c.required_information || [];
   const chips = blindspotChips(ctx.doc, c, ctx.batch);
   const I = c.integration || {};
   return (
     <>
       <p className="mf-lead">{c.why_current_workflow_cannot_resolve || '—'}</p>
       <table className="mf-kv"><tbody>
-        <tr><td>unlocks</td><td>{c.markers_unlocked.map(id => (
-          <button key={id} className={`mf-mk ${M[id].fixture ? 'fx' : ''}`} onClick={() => onPush('marker', id)}>{M[id].name} · {stateWord(M[id].status)}{M[id].fixture && <em>fixture</em>}</button>))}
-          <p className="mf-muted">{c.marker_demands.length} counted demand{c.marker_demands.length === 1 ? '' : 's'} · {c.credible_demands.length} credible (scientific relevance met)</p></td></tr>
-        <tr><td>closes</td><td><Chips chips={chips} ctx={ctx} />{chips.filter(x => x.statement).map(x => <p key={x.key} className="mf-muted">{x.label}: {x.statement}</p>)}</td></tr>
-        <tr><td>decisions affected</td><td>{c.decisions_affected.length ? c.decisions_affected.map(d => `${d.action} (${d.batch})`).join(' · ') : '—'}</td></tr>
-        <tr><td>substitutes</td><td>{(c.existing_capability_substitutes || []).length ? c.existing_capability_substitutes.map(s => (
+        <tr><td>unlocks</td><td>{pool.map(id => (
+          <button key={id} className={`mf-mk ${M[id].fixture ? 'fx' : ''}`} onClick={() => onPush('marker', id)}>{M[id].name} · {M[id].investigation_state || stateWord(M[id].status)}{M[id].fixture && <em>fixture</em>}</button>))}
+          <p className="mf-muted">{pool.length} active opportunity{pool.length === 1 ? '' : 'ies'} · {c.credible_demands.length} with scientific basis met</p></td></tr>
+        <tr><td>would expose</td><td>{required.length ? required.map(x => <div key={x}>{x}</div>) : '—'}</td></tr>
+        <tr><td>related inquiry</td><td><Chips chips={chips} ctx={ctx} />{chips.filter(x => x.statement).map(x => <p key={x.key} className="mf-muted">{x.label}: {x.statement}</p>)}</td></tr>
+        <tr><td>current action links</td><td>{c.decisions_affected.length ? c.decisions_affected.map(d => `${d.action} (${d.batch})`).join(' · ') : 'none'}</td></tr>
+        <tr><td>lower-cost alternatives</td><td>{(c.existing_capability_substitutes || []).length ? c.existing_capability_substitutes.map(s => (
           <div key={s.id} className="mf-sub"><b>{s.label}</b> · <span className={`mf-out o-${s.ruled_out === true ? 'passed' : s.ruled_out === false ? 'failed' : 'inconclusive'}`}>
             {s.ruled_out === true ? 'ruled out' : s.ruled_out === false ? 'adequate substitute' : 'not assessed'}</span>
             {(s.basis || []).length > 0 && <div className="mf-muted">basis: {s.basis.map(b => basisLabel(ctx.doc, b).text).join('; ')}</div>}
             {s.note && <div className="mf-muted">{s.note}</div>}</div>)) : 'none listed'}</td></tr>
-        <tr><td>integration</td><td>{c.integration ? <>
+        <tr><td>lab fit</td><td>{c.integration ? <>
           burden <b>{I.burden || '—'}</b> · acquisition cost <b>{I.acquisition_cost_class || '—'}</b> · accepted <b>{I.acceptable === true ? 'yes' : I.acceptable === false ? 'no' : 'not decided'}</b>
           {I.workflow_effect && <p className="mf-muted">{I.workflow_effect}</p>}
           {(I.requirements || []).length > 0 && <p className="mf-muted">requires: {I.requirements.join(' · ')}</p>}

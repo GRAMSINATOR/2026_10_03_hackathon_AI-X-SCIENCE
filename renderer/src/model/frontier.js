@@ -4,9 +4,9 @@
 export const GATE_WORD = { met: 'met', partial: 'partly supported', contested: 'contested', failed: 'failed', open: 'open' };
 // short stage names for the card rail; the full names come from the document (frontier.rails)
 const SHORT = {
-  scientific_relevance: 'RELEVANCE', measurability: 'MEASURABLE NOW', robustness: 'ROBUSTNESS', blindspot_closure: 'CLOSES BLINDSPOT',
-  admission: 'ADMISSION', marker_demand: 'MARKER DEMAND', literature_convergence: 'LITERATURE', consequential_closure: 'CONSEQUENTIAL',
-  non_substitutability: 'NON-SUBSTITUTABLE', integration_case: 'INTEGRATION',
+  scientific_relevance: 'BASIS', measurability: 'TESTABLE NOW', robustness: 'ROBUSTNESS', blindspot_closure: 'INQUIRY VALUE',
+  admission: 'PROMOTION', marker_demand: 'MARKER POOL', literature_convergence: 'LITERATURE', consequential_closure: 'INQUIRY VALUE',
+  non_substitutability: 'NO SUBSTITUTE', integration_case: 'LAB FIT',
 };
 export const STATE_WORD = { BUILDING_CASE: 'BUILDING CASE', CRITICAL_MASS: 'CRITICAL MASS' };
 export const stateWord = s => STATE_WORD[s] || s;
@@ -15,6 +15,7 @@ export const isTerminal = c => TERMINAL.has(c.status);
 const TEST_WORD = { passed: 'passed on current data', failed: 'failed on current data', inconclusive: 'inconclusive on current data',
   requires_acquisition: 'needs a new acquisition (current modality)', not_run: 'not run yet', not_observable: 'not observable with current capture' };
 export const testWord = s => TEST_WORD[s] || s;
+export const representationWord = s => (s || 'other').replaceAll('_', ' ');
 const TEST_SHORT = { passed: 'passed', failed: 'failed', inconclusive: 'inconclusive', requires_acquisition: 'needs acquisition',
   not_run: 'not run', not_observable: 'not observable' };
 const plural = (n, w) => (n === 1 ? w : w + 's');
@@ -43,6 +44,31 @@ export function lanes(frontier) {
   const { M, C } = casesById(frontier);
   const markers = frontier.lanes.current_capture.map(id => M[id]);
   return { active: markers.filter(m => !isTerminal(m)), setAside: markers.filter(isTerminal), capabilities: frontier.lanes.new_capability.map(id => C[id]) };
+}
+
+// Opportunity hierarchy derived in qc/frontier.py. Fallback keeps older marker-frontier/1 documents renderable.
+export function opportunityView(frontier) {
+  const { M, C } = casesById(frontier), O = frontier.opportunity_map;
+  if (!O) {
+    const L = lanes(frontier);
+    return { currentFrontier: L.active.slice(0, 3), computableNow: L.active, needsCapture: [], observabilityGaps: [],
+             setAside: L.setAside, attractors: L.capabilities, roadmap: [], rankingPolicy: [] };
+  }
+  const take = ids => (ids || []).map(id => M[id]).filter(Boolean);
+  return {
+    currentFrontier: take(O.current_frontier),
+    computableNow: take(O.candidate_markers.computable_now),
+    needsCapture: take(O.candidate_markers.needs_targeted_capture),
+    observabilityGaps: take(O.candidate_markers.requires_new_observability),
+    setAside: take(O.candidate_markers.set_aside),
+    attractors: (O.tooling_attractors || []).map(id => C[id]).filter(Boolean),
+    roadmap: O.roadmap || [], rankingPolicy: O.ranking_policy || [], question: O.question, localLoop: O.local_loop,
+  };
+}
+
+export function vorticesFor(frontier, c) {
+  const V = Object.fromEntries((frontier.vortices || []).map(v => [v.id, v]));
+  return (c.vortex_refs || []).map(id => V[id]).filter(Boolean);
 }
 
 // blindspot chips of a case: resolved first (consequential first), then general vocabulary gaps; `current` = this batch

@@ -4,16 +4,18 @@ import { STAGES } from '../model/adapter.js';
 import { BLOCK_LABEL, describeRef } from '../model/brief.js';
 import { HERO_HUE } from './Hero.jsx';
 
-// SUMMARY -> CLAIM -> PROOF -> RAW: the traced claim is shown exactly as the brief states it, then its proof references
-// with their raw values from the field, so the meaning cannot drift while drilling down.
+// The traced claim keeps its governed context and proof references without presenting them as a second navigation system.
 function Trace({ M, c, onClear }) {
   const hue = HERO_HUE[c.block] || '#55524c';
+  const context = (BLOCK_LABEL[c.block] || c.block).replace('SURVIVING ', '').replace('ACQUISITION ', '');
+  const value = c.label && c.label.toUpperCase() !== context.toUpperCase() ? c.label : null;
   return (
     <section className="px-trace" key={c.id} style={{ '--hue': hue }}>
-      <div className="trail" role="list" aria-label="proof trail">
-        {['BRIEF', (BLOCK_LABEL[c.block] || c.block).replace('SURVIVING ', '').replace('ACQUISITION ', ''), c.label, 'PROOF'].map((t, i) => <span key={i} role="listitem" style={{ '--i': i }}>{t}</span>)}
+      <header className="trace-head">
+        <b>{context} proof</b>
+        {value && <span>{value}</span>}
         <button onClick={onClear} aria-label="close trace">×</button>
-      </div>
+      </header>
       <p className="tr-claim">{c.text}</p>
       {c.fact && <p className="tr-fact">{c.fact}</p>}
       {c.details.length > 0 && <ul className="tr-details">{c.details.map((d, i) => <li key={i}>{d.text}</li>)}</ul>}

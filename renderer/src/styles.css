@@ -183,17 +183,15 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
 .px-rec-leverage { margin: 8px 0 7px; padding-top: 7px; border-top: 1px solid rgba(52,46,38,.13); color: var(--ink); font-size: 10px; font-weight: 720; letter-spacing: .035em; }
 .px-rec-meta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
 .px-rec-meta span { padding: 3px 6px; border-radius: 2px; color: var(--ink2); background: rgba(52,46,38,.07); font: 720 9px/1.2 Inter, sans-serif; letter-spacing: .08em; }
-/* proof trail: a sub-readout on the same display plane; the trail is a tapered strip of chamfered segments */
+/* traced proof: a compact contextual heading on the same display plane */
 .px-trace { --hue: #55524c; margin: 0 0 12px; padding: 9px 11px 10px; border-radius: 5px; background: rgba(255,255,255,.45); box-shadow: var(--seam), inset 0 1px 0 #fff;
   animation: tr-in .7s ease-out 1; }
 @keyframes tr-in { from { box-shadow: var(--seam), inset 0 0 0 2px color-mix(in oklab, var(--hue) 60%, transparent); } to { box-shadow: var(--seam), inset 0 1px 0 #fff; } }
-.trail { display: flex; align-items: center; margin-bottom: 8px; }
-.trail span { padding: 5px 16px 5px 14px; margin-left: -4px; font: 720 9.5px/1.2 Inter, sans-serif; letter-spacing: .12em; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis;
-  background: color-mix(in oklab, var(--hue) calc(100% - var(--i) * 26%), #e3e1db); color: #fff;
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 8px 50%); }
-.trail span:first-child { margin-left: 0; padding-left: 10px; clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%); }
-.trail span:first-child, .trail span:nth-child(4) { flex: 0 0 auto; } .trail span:nth-child(n+3) { color: var(--ink); }
-.trail button { margin-left: auto; border: 0; background: transparent; font-size: 16px; color: var(--mut); cursor: pointer; }
+.trace-head { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding-bottom: 7px; border-bottom: 1px solid rgba(52,46,38,.13); }
+.trace-head::before { content: ''; width: 8px; height: 8px; flex: 0 0 8px; border-radius: 1px; background: var(--hue); box-shadow: 0 0 0 1px rgba(52,46,38,.16); }
+.trace-head b { color: var(--ink); font: 720 9.5px/1.2 Inter, sans-serif; letter-spacing: .12em; text-transform: uppercase; }
+.trace-head span { padding: 3px 6px; border-radius: 2px; color: var(--ink2); background: rgba(52,46,38,.07); font: 720 9px/1.2 Inter, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.trace-head button { margin-left: auto; border: 0; background: transparent; font-size: 16px; color: var(--mut); cursor: pointer; }
 .tr-claim { margin: 2px 0; font-size: 13.5px; font-weight: 640; } .tr-fact { margin: 2px 0 4px; font-size: 12.5px; color: var(--ink2); font-variant-numeric: tabular-nums; }
 .tr-details { margin: 4px 0 6px; padding-left: 16px; font-size: 12px; color: var(--ink2); }
 .tr-refs { width: 100%; border-collapse: collapse; font-size: 11px; } .tr-refs td { padding: 2px 0; vertical-align: top; border-top: 1px solid var(--rule); }

@@ -24,7 +24,7 @@ function Preview() {
   return (
     <div className="app">
       <header className="bar"><div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{state.field ? state.field.context.batch : '—'}</b>
-        <span className="muted">Marker Frontier · standalone preview</span></div></header>
+        <span className="muted">Agentic Marker Frontier · standalone preview</span></div></header>
       {traced && <p className="muted" role="status">Examiner Matrix target (integrated page): <b>{traced.id}</b> · {traced.text}</p>}
       <MarkerFrontier frontier={state.frontier} field={state.field} brief={state.brief} onTrace={c => setTraced(c)} />
     </div>

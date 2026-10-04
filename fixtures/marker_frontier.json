@@ -21,10 +21,10 @@
     "produced_at": "2026-10-04",
     "notes": "No literature. Every evidence item is an engine fact (a reference into epistemic-field/1) or a project research-log record. Literature is the research agent's lane (qte77): papers attach to these cases by id.",
     "n": {
-     "markers": 5,
+     "markers": 8,
      "capabilities": 2,
      "papers": 0,
-     "records": 8,
+     "records": 11,
      "reviews": 2
     }
    }
@@ -37,11 +37,11 @@
   "marker": [
    {
     "gate": "scientific_relevance",
-    "label": "SCIENTIFIC RELEVANCE"
+    "label": "SCIENTIFIC BASIS"
    },
    {
     "gate": "measurability",
-    "label": "MEASURABLE WITH CURRENT CAPTURE"
+    "label": "TESTABLE WITH CURRENT CAPTURE"
    },
    {
     "gate": "robustness",
@@ -49,33 +49,33 @@
    },
    {
     "gate": "blindspot_closure",
-    "label": "BLINDSPOT CLOSURE"
+    "label": "INQUIRY VALUE"
    },
    {
     "gate": "admission",
-    "label": "ADMISSION"
+    "label": "PROMOTION REVIEW"
    }
   ],
   "capability": [
    {
     "gate": "marker_demand",
-    "label": "MARKER DEMAND"
+    "label": "MARKER POOL"
    },
    {
     "gate": "literature_convergence",
-    "label": "LITERATURE CONVERGENCE"
+    "label": "LITERATURE BASIS"
    },
    {
     "gate": "consequential_closure",
-    "label": "CONSEQUENTIAL BLINDSPOT CLOSURE"
+    "label": "INQUIRY VALUE"
    },
    {
     "gate": "non_substitutability",
-    "label": "NON-SUBSTITUTABILITY"
+    "label": "NO ADEQUATE SUBSTITUTE"
    },
    {
     "gate": "integration_case",
-    "label": "INTEGRATION CASE"
+    "label": "LAB FIT"
    }
   ]
  },
@@ -97,6 +97,7 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     },
     {
@@ -104,6 +105,7 @@
      "verb": "BASELINE",
      "tier": 3,
      "status": "computed",
+     "cost": "high",
      "title": "Expand the approved reference (+5 independent micrographs)"
     }
    ],
@@ -126,6 +128,7 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     }
    ],
@@ -148,6 +151,7 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     }
    ],
@@ -170,6 +174,7 @@
      "verb": "REPEAT",
      "tier": 1,
      "status": "grounded",
+     "cost": "low",
      "title": "Repeat M2060 under the approved acquisition settings"
     },
     {
@@ -177,6 +182,7 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     },
     {
@@ -184,6 +190,7 @@
      "verb": "BASELINE",
      "tier": 3,
      "status": "computed",
+     "cost": "high",
      "title": "Expand the approved reference (+5 independent micrographs)"
     }
    ],
@@ -206,6 +213,7 @@
      "verb": "ZOOM",
      "tier": 1,
      "status": "grounded",
+     "cost": "low",
      "title": "Higher magnification + low-kV BSE on M2060 fines"
     }
    ],
@@ -230,10 +238,13 @@
      "verb": "EXTEND",
      "tier": 1,
      "status": "computed",
+     "cost": "low",
      "title": "Extend the M2060 mosaic beyond its start"
     }
    ],
-   "addressed_by": []
+   "addressed_by": [
+    "marker:open_edge_persistence"
+   ]
   },
   {
    "key": "Batch_3/rims/composition:M2060",
@@ -252,12 +263,14 @@
      "verb": "EDS",
      "tier": 1,
      "status": "future",
+     "cost": "medium",
      "title": "Paired EDS: M2060 fines vs approved additive"
     }
    ],
    "addressed_by": [
     "capability:eds",
-    "marker:high_z_composition"
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution"
    ]
   },
   {
@@ -277,6 +290,7 @@
      "verb": "EXTEND",
      "tier": 2,
      "status": "computed",
+     "cost": "low",
      "title": "Extend the M2088 mosaic beyond its end"
     },
     {
@@ -284,10 +298,13 @@
      "verb": "SPACE",
      "tier": 2,
      "status": "computed",
+     "cost": "medium",
      "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
     }
    ],
-   "addressed_by": []
+   "addressed_by": [
+    "marker:open_edge_persistence"
+   ]
   },
   {
    "key": "Batch_3/rims/spatial-dimension:additive_density",
@@ -306,10 +323,13 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     }
    ],
-   "addressed_by": []
+   "addressed_by": [
+    "marker:spatial_correlation_length"
+   ]
   },
   {
    "key": "Batch_3/rims/spatial-dimension:porosity",
@@ -328,6 +348,7 @@
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
+     "cost": "medium",
      "title": "Independent cross-sections from the lot (not adjacent tiles)"
     },
     {
@@ -335,10 +356,13 @@
      "verb": "SPACE",
      "tier": 2,
      "status": "computed",
+     "cost": "medium",
      "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
     }
    ],
-   "addressed_by": []
+   "addressed_by": [
+    "marker:spatial_correlation_length"
+   ]
   },
   {
    "key": "Batch_3/missing_dimensions/M2060:composition",
@@ -362,6 +386,7 @@
      "verb": "EDS",
      "tier": 1,
      "status": "future",
+     "cost": "medium",
      "title": "Paired EDS: M2060 fines vs approved additive"
     }
    ],
@@ -371,14 +396,520 @@
    ]
   }
  ],
+ "vortices": [
+  {
+   "id": "vortex:Batch_2/rims/population:Batch_2",
+   "label": "PREVALENCE · Batch_2",
+   "kind": "sampling_uncertainty",
+   "statement": "approved reference = 5-6 micrographs; 3 independent incoming micrographs; verdict rests on M2048, M2068, M2272; out-of-family prevalence 0/3 (95% CI 0-71%)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_2",
+     "collection": "rims",
+     "id": "population:Batch_2"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    },
+    {
+     "id": "baseline:2",
+     "verb": "BASELINE",
+     "tier": 3,
+     "status": "computed",
+     "cost": "high",
+     "title": "Expand the approved reference (+5 independent micrographs)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_2/rims/spatial-dimension:additive_density",
+   "label": "EXTENT · additive_density",
+   "kind": "unresolved_spatial_structure",
+   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_2",
+     "collection": "rims",
+     "id": "spatial-dimension:additive_density"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_2/rims/spatial-dimension:porosity",
+   "label": "EXTENT · porosity",
+   "kind": "unresolved_spatial_structure",
+   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_2",
+     "collection": "rims",
+     "id": "spatial-dimension:porosity"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/population:Batch_3",
+   "label": "PREVALENCE · Batch_3",
+   "kind": "sampling_uncertainty",
+   "statement": "approved reference = 5-6 micrographs; 6 independent incoming micrographs; verdict rests on M2060; out-of-family prevalence 1/6 (95% CI 0-64%)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "population:Batch_3"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "repeat:1",
+     "verb": "REPEAT",
+     "tier": 1,
+     "status": "grounded",
+     "cost": "low",
+     "title": "Repeat M2060 under the approved acquisition settings"
+    },
+    {
+     "id": "sections:5",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    },
+    {
+     "id": "baseline:8",
+     "verb": "BASELINE",
+     "tier": 3,
+     "status": "computed",
+     "cost": "high",
+     "title": "Expand the approved reference (+5 independent micrographs)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/scale:M2060",
+   "label": "SCALE · M2060",
+   "kind": "resolution_limit",
+   "statement": "68% of the excess high-Z objects are < 0.7 µm and the excess ratio peaks at the 0.36 µm detection floor (2.3×): the anomalous population is truncated by the pixel size.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "scale:M2060"
+    }
+   ],
+   "marker_refs": [
+    "marker:fines_subfloor_size"
+   ],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "zoom:2",
+     "verb": "ZOOM",
+     "tier": 1,
+     "status": "grounded",
+     "cost": "low",
+     "title": "Higher magnification + low-kV BSE on M2060 fines"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/spatial:M2060:additive_density",
+   "label": "EXTENT · M2060 · Additive density",
+   "kind": "unresolved_spatial_structure",
+   "statement": "deviation still outside the approved local band at the start of the 698 µm captured section",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial:M2060:additive_density"
+    }
+   ],
+   "marker_refs": [
+    "marker:open_edge_persistence"
+   ],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "extend:4",
+     "verb": "EXTEND",
+     "tier": 1,
+     "status": "computed",
+     "cost": "low",
+     "title": "Extend the M2060 mosaic beyond its start"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/composition:M2060",
+   "label": "COMPOSITION · M2060",
+   "kind": "identity_uncertainty",
+   "statement": "the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot separate a finer additive from a different lower-Z phase.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "composition:M2060"
+    }
+   ],
+   "marker_refs": [
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution"
+   ],
+   "capability_refs": [
+    "capability:eds"
+   ],
+   "current_actions": [
+    {
+     "id": "eds:3",
+     "verb": "EDS",
+     "tier": 1,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2060 fines vs approved additive"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/spatial:M2088:porosity",
+   "label": "EXTENT · M2088 · Porosity",
+   "kind": "unresolved_spatial_structure",
+   "statement": "deviation still outside the approved local band at the end of the 524 µm captured section",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial:M2088:porosity"
+    }
+   ],
+   "marker_refs": [
+    "marker:open_edge_persistence"
+   ],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "extend:6",
+     "verb": "EXTEND",
+     "tier": 2,
+     "status": "computed",
+     "cost": "low",
+     "title": "Extend the M2088 mosaic beyond its end"
+    },
+    {
+     "id": "space:7",
+     "verb": "SPACE",
+     "tier": 2,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/spatial-dimension:additive_density",
+   "label": "EXTENT · additive_density",
+   "kind": "unresolved_spatial_structure",
+   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial-dimension:additive_density"
+    }
+   ],
+   "marker_refs": [
+    "marker:spatial_correlation_length"
+   ],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:5",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/spatial-dimension:porosity",
+   "label": "EXTENT · porosity",
+   "kind": "unresolved_spatial_structure",
+   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial-dimension:porosity"
+    }
+   ],
+   "marker_refs": [
+    "marker:spatial_correlation_length"
+   ],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:5",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    },
+    {
+     "id": "space:7",
+     "verb": "SPACE",
+     "tier": 2,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/missing_dimensions/M2060:composition",
+   "label": "COMPOSITION · M2060 (not acquired)",
+   "kind": "identity_uncertainty",
+   "statement": "Composition of the high-Z phase: not acquired; consequential for M2060",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "missing_dimensions",
+     "id": "M2060:composition"
+    }
+   ],
+   "marker_refs": [
+    "marker:high_z_composition"
+   ],
+   "capability_refs": [
+    "capability:eds"
+   ],
+   "current_actions": [
+    {
+     "id": "eds:3",
+     "verb": "EDS",
+     "tier": 1,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2060 fines vs approved additive"
+    }
+   ]
+  },
+  {
+   "id": "vortex:general/process_progression",
+   "label": "continuous process drift between lots is not in the KPI vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:latent_progression"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:general/spatial_arrangement",
+   "label": "particle and pore arrangement (clustering) is not in the KPI vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:multiscale_heterogeneity"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:general/three_d_transport_structure",
+   "label": "3-D transport-relevant pore structure is outside the 2-D section vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:pore_connectivity_3d"
+   ],
+   "capability_refs": [
+    "capability:tomography_3d"
+   ],
+   "current_actions": []
+  }
+ ],
  "open_blindspots": [
   "Batch_2/rims/population:Batch_2",
-  "Batch_3/rims/population:Batch_3",
-  "Batch_3/rims/spatial:M2060:additive_density"
+  "Batch_3/rims/population:Batch_3"
  ],
+ "opportunity_map": {
+  "question": "What additional useful ways of perceiving the current dataset should be investigated?",
+  "local_loop": "NEXT CAPTURE resolves the current decision; this map searches for better representations and future observability.",
+  "current_frontier": [
+   "marker:open_edge_persistence",
+   "marker:fines_subfloor_size",
+   "marker:high_z_composition"
+  ],
+  "candidate_markers": {
+   "computable_now": [
+    "marker:open_edge_persistence",
+    "marker:spatial_correlation_length"
+   ],
+   "needs_targeted_capture": [
+    "marker:fines_subfloor_size"
+   ],
+   "requires_new_observability": [
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution",
+    "marker:pore_connectivity_3d"
+   ],
+   "set_aside": [
+    "marker:latent_progression",
+    "marker:multiscale_heterogeneity"
+   ]
+  },
+  "tooling_attractors": [
+   "capability:eds",
+   "capability:tomography_3d"
+  ],
+  "roadmap": [
+   {
+    "id": "test_current_data",
+    "label": "TEST CURRENT DATA",
+    "purpose": "Implement or validate marker protocols supported by the loaded data.",
+    "marker_refs": [
+     "marker:open_edge_persistence",
+     "marker:spatial_correlation_length"
+    ]
+   },
+   {
+    "id": "capture_same_modality",
+    "label": "TARGETED CAPTURE",
+    "purpose": "Use an existing modality at the scale or sampling pattern the marker requires.",
+    "marker_refs": [
+     "marker:fines_subfloor_size"
+    ]
+   },
+   {
+    "id": "expand_observability",
+    "label": "EXPAND OBSERVABILITY",
+    "purpose": "Evaluate capability payloads that unlock otherwise inaccessible marker families.",
+    "capability_refs": [
+     "capability:eds",
+     "capability:tomography_3d"
+    ]
+   },
+   {
+    "id": "reobserve",
+    "label": "RE-OBSERVE",
+    "purpose": "Feed validated markers and newly acquired information back through the local Examiner loop.",
+    "depends_on": [
+     "test_current_data",
+     "capture_same_modality",
+     "expand_observability"
+    ]
+   }
+  ],
+  "ranking_policy": [
+   "decision-consequential inquiry first",
+   "then current-data testability",
+   "then existing evidence and implementation burden",
+   "stable id breaks remaining ties"
+  ]
+ },
  "lanes": {
   "current_capture": [
    "marker:fines_subfloor_size",
+   "marker:open_edge_persistence",
+   "marker:spatial_correlation_length",
    "marker:latent_progression",
    "marker:multiscale_heterogeneity"
   ],
@@ -399,6 +930,11 @@
    "decision_relevance": null,
    "capture_requirements": "Higher-magnification, low-kV BSE on M2060 and on approved micrographs. No new instrument capability: the same acquisition as the controller's ZOOM action.",
    "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "marker_kind": "quantitative",
+   "representation": "distribution",
+   "observable": "The number and size distribution of fine high-Z objects below the present detection floor.",
+   "scientific_question": "Is M2060's excess a true fine-particle population or an artefact of scale truncation?",
    "required_modalities": [
     "BSE"
    ],
@@ -441,6 +977,7 @@
       "verb": "ZOOM",
       "tier": 1,
       "status": "grounded",
+      "cost": "low",
       "title": "Higher magnification + low-kV BSE on M2060 fines"
      }
     ]
@@ -475,6 +1012,9 @@
     "Batch_3/rims/scale:M2060"
    ],
    "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/scale:M2060"
+   ],
    "status": "BUILDING",
    "status_basis": "partly supported: measurability, non redundancy; scientific relevance not met",
    "review": null,
@@ -590,7 +1130,26 @@
    "provenance": {
     "kind": "controller_seed",
     "basis": "rim scale:M2060 and the ZOOM action rationale in epistemic-field/1"
-   }
+   },
+   "observability": {
+    "cls": "needs_targeted_capture",
+    "label": "NEEDS TARGETED CAPTURE",
+    "basis": "the current modality can measure it, but the required capture is not in the loaded data",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a decision-consequential inquiry vortex",
+    "linked to a current decision",
+    "needs targeted capture",
+    "scientific literature basis remains open",
+    "low implementation burden"
+   ],
+   "opportunity_rank": 2,
+   "priority_band": "current_frontier"
   },
   {
    "id": "marker:high_z_composition",
@@ -603,6 +1162,11 @@
    "decision_relevance": null,
    "capture_requirements": "Elemental spectroscopy co-registered with the BSE fields.",
    "current_capture_compatible": false,
+   "implementation_burden": "medium",
+   "marker_kind": "hybrid",
+   "representation": "categorical_state",
+   "observable": "Whether the excess fines share the approved additive's elemental identity.",
+   "scientific_question": "Are the M2060 fines approved additive, another phase, or a mixed interaction-volume signal?",
    "required_modalities": [
     "elemental spectroscopy"
    ],
@@ -670,6 +1234,10 @@
     "Batch_3/missing_dimensions/M2060:composition"
    ],
    "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/composition:M2060",
+    "vortex:Batch_3/missing_dimensions/M2060:composition"
+   ],
    "status": "UNAVAILABLE",
    "status_basis": "current capture cannot observe it; it counts as demand on the capability it names",
    "review": null,
@@ -795,7 +1363,28 @@
    "provenance": {
     "kind": "controller_seed",
     "basis": "dimension composition (kind missing, would_require) and rim composition:M2060"
-   }
+   },
+   "observability": {
+    "cls": "requires_new_observability",
+    "label": "REQUIRES NEW OBSERVABILITY",
+    "basis": "the marker names information or a capability absent from the current capture",
+    "required_modalities": [
+     "elemental spectroscopy"
+    ],
+    "required_capabilities": [
+     "capability:eds"
+    ]
+   },
+   "investigation_state": "OBSERVABILITY GAP",
+   "ranking_factors": [
+    "addresses a decision-consequential inquiry vortex",
+    "linked to a current decision",
+    "requires new observability",
+    "scientific literature basis remains open",
+    "medium implementation burden"
+   ],
+   "opportunity_rank": 3,
+   "priority_band": "current_frontier"
   },
   {
    "id": "marker:latent_progression",
@@ -808,6 +1397,11 @@
    "decision_relevance": null,
    "capture_requirements": null,
    "current_capture_compatible": true,
+   "implementation_burden": null,
+   "marker_kind": "quantitative",
+   "representation": "multiscale_signature",
+   "observable": "A continuous image-embedding axis that would order material states if robust.",
+   "scientific_question": "Is there a stable process progression that discrete KPIs miss?",
    "required_modalities": [
     "BSE",
     "SE",
@@ -855,6 +1449,9 @@
      "general": "process_progression",
      "label": "continuous process drift between lots is not in the KPI vocabulary"
     }
+   ],
+   "vortex_refs": [
+    "vortex:general/process_progression"
    ],
    "status": "CONFOUNDED",
    "status_basis": "a tested confound explains the signal under current capture",
@@ -1002,7 +1599,27 @@
    "provenance": {
     "kind": "project_record",
     "basis": "docs/RESEARCH_LOG.md rows 5 and 6"
-   }
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE",
+     "SE",
+     "InLens"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "DEPRIORITIZED",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "tested and set aside"
+   ],
+   "opportunity_rank": null,
+   "priority_band": "set_aside"
   },
   {
    "id": "marker:multiscale_heterogeneity",
@@ -1015,6 +1632,11 @@
    "decision_relevance": null,
    "capture_requirements": null,
    "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "marker_kind": "quantitative",
+   "representation": "multiscale_signature",
+   "observable": "How local phase-fraction variability changes with observation window size.",
+   "scientific_question": "Does spatial scaling discriminate micrographs beyond existing phase-fraction KPIs?",
    "required_modalities": [
     "BSE"
    ],
@@ -1050,6 +1672,9 @@
      "general": "spatial_arrangement",
      "label": "particle and pore arrangement (clustering) is not in the KPI vocabulary"
     }
+   ],
+   "vortex_refs": [
+    "vortex:general/spatial_arrangement"
    ],
    "status": "REJECTED",
    "status_basis": "tested: no decision value; rejected by a recorded review",
@@ -1185,7 +1810,500 @@
    "provenance": {
     "kind": "project_record",
     "basis": "docs/RESEARCH_LOG.md row 7"
-   }
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "DEPRIORITIZED",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "scientific literature basis remains open",
+    "low implementation burden",
+    "tested and set aside"
+   ],
+   "opportunity_rank": null,
+   "priority_band": "set_aside"
+  },
+  {
+   "id": "marker:open_edge_persistence",
+   "name": "Open-edge deviation phenotype",
+   "family": "spatial_pattern",
+   "proposition": "Classifies each registered deviation as bounded, open at the start, open at the end, or open at both edges.",
+   "scientific_definition": "A structural phenotype of a spatial KPI profile based on whether it returns to the approved local band before each captured edge.",
+   "measurement_definition": "Evaluate registered 100 µm profile windows against the approximate approved local band; record start/end persistence and captured extent without inventing distance beyond the image.",
+   "why_relevant": "The same scalar deviation can imply a bounded inclusion or an extended zone; the engine already uses the open edge to justify EXTEND without claiming unseen geometry.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "marker_kind": "qualitative",
+   "representation": "categorical_state",
+   "observable": "Whether a measured deviation closes inside the registered section or remains open at a captured edge.",
+   "scientific_question": "Is the observed shift a bounded local feature or part of a larger spatial zone?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "local_band_approximation",
+     "label": "the approved local band is an approximate analysis support",
+     "controlled": true,
+     "basis": [
+      {
+       "batch": "Batch_3",
+       "collection": "spatial_profiles",
+       "id": "M2060:additive_density",
+       "path": "reference_band.approximate"
+      }
+     ]
+    }
+   ],
+   "known_failure_modes": [
+    "short profiles can leave both boundaries unresolved",
+    "registration gaps cannot be interpreted as physical distance"
+   ],
+   "redundant_with": [],
+   "existing_data_test": {
+    "status": "passed",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "key": "Batch_3/rims/spatial:M2060:additive_density",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial:M2060:additive_density",
+     "resolved": true,
+     "external": false,
+     "consequential": true,
+     "type": "spatial",
+     "label": "EXTENT · M2060 · Additive density",
+     "not_acquired": false
+    },
+    {
+     "key": "Batch_3/rims/spatial:M2088:porosity",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial:M2088:porosity",
+     "resolved": true,
+     "external": false,
+     "consequential": false,
+     "type": "spatial",
+     "label": "EXTENT · M2088 · Porosity",
+     "not_acquired": false
+    }
+   ],
+   "decision_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "entities",
+     "id": "M2060",
+     "path": "leverage",
+     "resolved": true
+    }
+   ],
+   "closes": [
+    "Batch_3/rims/spatial:M2060:additive_density",
+    "Batch_3/rims/spatial:M2088:porosity"
+   ],
+   "closes_consequential": [
+    "Batch_3/rims/spatial:M2060:additive_density"
+   ],
+   "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/spatial:M2060:additive_density",
+    "vortex:Batch_3/rims/spatial:M2088:porosity"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: measurability, robustness, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "met",
+     "basis": [
+      "record:engine.open_edge_M2060"
+     ],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "partial",
+     "basis": [
+      "confound:local_band_approximation"
+     ],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "met",
+     "basis": [
+      "Batch_3/rims/spatial:M2060:additive_density",
+      "record:engine.open_edge_M2060"
+     ],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "met",
+     "basis": [
+      "record:engine.open_edge_M2060"
+     ],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "open"
+    },
+    {
+     "gate": "measurability",
+     "state": "met"
+    },
+    {
+     "gate": "robustness",
+     "state": "partial"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "met"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "no counted literature yet: needs one strong source (direct or transferable) plus an independent supporting source"
+    },
+    {
+     "gate": "robustness",
+     "text": "every listed confound needs a control backed by evidence, and the perturbation test must pass"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [
+    "OPEN CONSEQUENTIAL BLINDSPOT",
+    "RESEARCH CASE OPEN"
+   ],
+   "evidence": [
+    {
+     "source": "record",
+     "id": "record:engine.open_edge_M2060",
+     "gate": "decision_value",
+     "counts": true,
+     "claim": "The open start is the structured trigger for extending the M2060 mosaic.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.open_edge_M2060",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "The registered profile supports a bounded/open-edge categorical state from current data without extrapolating beyond the image.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.open_edge_M2060",
+     "gate": "non_redundancy",
+     "counts": true,
+     "claim": "The edge state adds spatial extent information beyond the micrograph-level scalar deviation.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 0,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 1
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "controller_seed",
+    "basis": "spatial profile open_at_start/open_at_end and EXTEND action triggers in epistemic-field/1"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a decision-consequential inquiry vortex",
+    "linked to a current decision",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "scientific literature basis remains open",
+    "low implementation burden"
+   ],
+   "opportunity_rank": 1,
+   "priority_band": "current_frontier"
+  },
+  {
+   "id": "marker:phase_conditioned_fines_distribution",
+   "name": "Phase-conditioned fines distribution",
+   "family": "cross_modality",
+   "proposition": "Conditions the M2060 fine-object distribution on elemental identity so size and composition are not conflated.",
+   "scientific_definition": "Per-phase number-size distribution of fine objects, with phase identity defined by co-registered elemental spectra or maps.",
+   "measurement_definition": "Co-register EDS with higher-resolution BSE; assign fine objects to elemental classes; compare per-class size distributions and densities with approved material.",
+   "why_relevant": "The decision-driving fines are also at the dim end of the approved BSE range; size and phase identity must be separated before attributing the population.",
+   "decision_relevance": null,
+   "capture_requirements": "Co-registered higher-resolution BSE and EDS on M2060 and approved additive particles.",
+   "current_capture_compatible": false,
+   "implementation_burden": "medium",
+   "marker_kind": "hybrid",
+   "representation": "distribution",
+   "observable": "Fine-particle size and density separated by elemental phase identity rather than BSE brightness alone.",
+   "scientific_question": "Does the excess persist within the approved additive chemistry, or belong to another phase?",
+   "required_modalities": [
+    "BSE",
+    "elemental spectroscopy"
+   ],
+   "required_capabilities": [
+    "capability:eds"
+   ],
+   "known_confounds": [
+    {
+     "id": "eds_interaction_volume",
+     "label": "matrix signal can mix into spectra from sub-micrometre fines",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "elemental classes unresolved at the chosen interaction volume"
+   ],
+   "redundant_with": [
+    {
+     "ref": "marker:fines_subfloor_size",
+     "increment": "adds elemental phase conditioning to the size distribution"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_observable",
+    "note": "Current BSE intensity cannot assign elemental phase identity.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "key": "Batch_3/rims/composition:M2060",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "composition:M2060",
+     "resolved": true,
+     "external": false,
+     "consequential": true,
+     "type": "composition",
+     "label": "COMPOSITION · M2060",
+     "not_acquired": false
+    }
+   ],
+   "decision_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "entities",
+     "id": "M2060",
+     "path": "leverage",
+     "resolved": true
+    }
+   ],
+   "closes": [
+    "Batch_3/rims/composition:M2060"
+   ],
+   "closes_consequential": [
+    "Batch_3/rims/composition:M2060"
+   ],
+   "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/composition:M2060"
+   ],
+   "status": "UNAVAILABLE",
+   "status_basis": "current capture cannot observe it; it counts as demand on the capability it names",
+   "review": null,
+   "lane": "new_capability",
+   "gates": {
+    "scientific_relevance": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "failed",
+     "basis": [
+      "record:engine.composition_M2060"
+     ],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "met",
+     "basis": [
+      "Batch_3/rims/composition:M2060",
+      "record:rl11"
+     ],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "open"
+    },
+    {
+     "gate": "measurability",
+     "state": "failed"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "met"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "no counted literature yet: needs one strong source (direct or transferable) plus an independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "current capture cannot observe it: demand routes to the capability it names"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [
+    "OPEN CONSEQUENTIAL BLINDSPOT",
+    "RESEARCH CASE OPEN"
+   ],
+   "evidence": [
+    {
+     "source": "record",
+     "id": "record:rl11",
+     "gate": "decision_value",
+     "counts": true,
+     "claim": "Conditioning the fine-object distribution on phase identity would discriminate approved additive fines from another lower-Z phase.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "project_record"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.composition_M2060",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "A phase-conditioned size distribution requires elemental identity that the current BSE capture does not contain.",
+     "note": null,
+     "outcome": "failed",
+     "kind": "engine_fact"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 0,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 2
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "controller_seed",
+    "basis": "joint scale and composition limits on the same M2060 fine-object population"
+   },
+   "observability": {
+    "cls": "requires_new_observability",
+    "label": "REQUIRES NEW OBSERVABILITY",
+    "basis": "the marker names information or a capability absent from the current capture",
+    "required_modalities": [
+     "BSE",
+     "elemental spectroscopy"
+    ],
+    "required_capabilities": [
+     "capability:eds"
+    ]
+   },
+   "investigation_state": "OBSERVABILITY GAP",
+   "ranking_factors": [
+    "addresses a decision-consequential inquiry vortex",
+    "linked to a current decision",
+    "requires new observability",
+    "scientific literature basis remains open",
+    "medium implementation burden"
+   ],
+   "opportunity_rank": 4,
+   "priority_band": "investigate"
   },
   {
    "id": "marker:pore_connectivity_3d",
@@ -1198,6 +2316,11 @@
    "decision_relevance": null,
    "capture_requirements": null,
    "current_capture_compatible": false,
+   "implementation_burden": null,
+   "marker_kind": "quantitative",
+   "representation": "topological_descriptor",
+   "observable": "Connected pore volume and path tortuosity through the electrode thickness.",
+   "scientific_question": "Does the observed 2-D pore morphology form a connected 3-D transport network?",
    "required_modalities": [
     "3-D volume"
    ],
@@ -1229,6 +2352,9 @@
      "general": "three_d_transport_structure",
      "label": "3-D transport-relevant pore structure is outside the 2-D section vocabulary"
     }
+   ],
+   "vortex_refs": [
+    "vortex:general/three_d_transport_structure"
    ],
    "status": "UNAVAILABLE",
    "status_basis": "current capture cannot observe it; it counts as demand on the capability it names",
@@ -1346,13 +2472,266 @@
    "provenance": {
     "kind": "controller_seed",
     "basis": "docs/CLAIMS.md (no tortuosity or 3-D claims from 2-D sections)"
-   }
+   },
+   "observability": {
+    "cls": "requires_new_observability",
+    "label": "REQUIRES NEW OBSERVABILITY",
+    "basis": "the marker names information or a capability absent from the current capture",
+    "required_modalities": [
+     "3-D volume"
+    ],
+    "required_capabilities": [
+     "capability:tomography_3d"
+    ]
+   },
+   "investigation_state": "OBSERVABILITY GAP",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "requires new observability",
+    "scientific literature basis remains open"
+   ],
+   "opportunity_rank": 6,
+   "priority_band": "investigate"
+  },
+  {
+   "id": "marker:spatial_correlation_length",
+   "name": "Spatial correlation length",
+   "family": "spatial_statistic",
+   "proposition": "Measures the characteristic spatial range of each supported KPI rather than treating adjacent fields as independent replicates.",
+   "scientific_definition": "The lag at which the registered semivariogram reaches its plateau, or a lower bound when no plateau is observed within the coherent capture.",
+   "measurement_definition": "Estimate per-KPI semivariograms from registered 25 µm columns, report range only when a plateau is supported, and otherwise report the longest tested lag as a lower bound.",
+   "why_relevant": "The loaded field already shows 175 µm porosity structure and additive-density structure longer than 400 µm; this changes field spacing and capture extent.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "marker_kind": "quantitative",
+   "representation": "scalar",
+   "observable": "The distance over which porosity or additive-density structure remains spatially correlated.",
+   "scientific_question": "How far apart must fields be to sample approximately independent structure, and is the present capture long enough?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "finite_capture",
+     "label": "a range longer than the mosaic cannot be estimated as a closed value",
+     "controlled": true,
+     "basis": [
+      {
+       "batch": "Batch_3",
+       "collection": "dimensions",
+       "id": "additive_density",
+       "path": "spatial_support.cls"
+      }
+     ]
+    }
+   ],
+   "known_failure_modes": [
+    "a finite mosaic can only lower-bound long-range structure"
+   ],
+   "redundant_with": [],
+   "existing_data_test": {
+    "status": "passed",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "key": "Batch_3/rims/spatial-dimension:additive_density",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial-dimension:additive_density",
+     "resolved": true,
+     "external": false,
+     "consequential": false,
+     "type": "spatial",
+     "label": "EXTENT · additive_density",
+     "not_acquired": false
+    },
+    {
+     "key": "Batch_3/rims/spatial-dimension:porosity",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial-dimension:porosity",
+     "resolved": true,
+     "external": false,
+     "consequential": false,
+     "type": "spatial",
+     "label": "EXTENT · porosity",
+     "not_acquired": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [
+    "Batch_3/rims/spatial-dimension:additive_density",
+    "Batch_3/rims/spatial-dimension:porosity"
+   ],
+   "closes_consequential": [],
+   "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/spatial-dimension:additive_density",
+    "vortex:Batch_3/rims/spatial-dimension:porosity"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: measurability, robustness, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "met",
+     "basis": [
+      "record:engine.range_additive",
+      "record:engine.range_porosity"
+     ],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "partial",
+     "basis": [
+      "confound:finite_capture"
+     ],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "met",
+     "basis": [
+      "record:engine.range_additive"
+     ],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "open"
+    },
+    {
+     "gate": "measurability",
+     "state": "met"
+    },
+    {
+     "gate": "robustness",
+     "state": "partial"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "no counted literature yet: needs one strong source (direct or transferable) plus an independent supporting source"
+    },
+    {
+     "gate": "robustness",
+     "text": "every listed confound needs a control backed by evidence, and the perturbation test must pass"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [
+    "RESEARCH CASE OPEN"
+   ],
+   "evidence": [
+    {
+     "source": "record",
+     "id": "record:engine.range_additive",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "The current registered fields support a variogram and a lower bound on additive-density correlation length.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.range_porosity",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "The current registered fields support an approximately 175 µm porosity correlation range.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.range_additive",
+     "gate": "non_redundancy",
+     "counts": true,
+     "claim": "Correlation range adds field-spacing and capture-extent information not present in mean additive density.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 0,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 2
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "controller_seed",
+    "basis": "implemented spatial_support variograms and SPACE/EXTEND actions in epistemic-field/1"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "scientific literature basis remains open",
+    "low implementation burden"
+   ],
+   "opportunity_rank": 5,
+   "priority_band": "investigate"
   }
  ],
  "capabilities": [
   {
    "id": "capability:eds",
-   "name": "EDS / elemental mapping",
+   "name": "Composition-sensitive mapping (EDS)",
    "capability_type": "spectroscopy",
    "why_current_workflow_cannot_resolve": "BSE contrast cannot distinguish a finer specified additive from a different lower-Z phase; no further BSE capture resolves chemistry.",
    "non_substitutability_evidence": null,
@@ -1418,13 +2797,27 @@
     "Batch_3/missing_dimensions/M2060:composition"
    ],
    "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/composition:M2060",
+    "vortex:Batch_3/missing_dimensions/M2060:composition"
+   ],
    "markers_unlocked": [
-    "marker:high_z_composition"
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution"
    ],
    "marker_demands": [
-    "marker:high_z_composition"
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution"
    ],
    "credible_demands": [],
+   "marker_pool": [
+    "marker:high_z_composition",
+    "marker:phase_conditioned_fines_distribution"
+   ],
+   "required_information": [
+    "Whether the excess fines share the approved additive's elemental identity.",
+    "Fine-particle size and density separated by elemental phase identity rather than BSE brightness alone."
+   ],
    "decision_refs": [
     {
      "batch": "Batch_3",
@@ -1447,7 +2840,8 @@
     "marker_demand": {
      "state": "partial",
      "basis": [
-      "marker:high_z_composition"
+      "marker:high_z_composition",
+      "marker:phase_conditioned_fines_distribution"
      ],
      "excluded_fixture": []
     },
@@ -1530,9 +2924,9 @@
     "contradictory": 0,
     "fixture_papers": 0,
     "records": 0,
-    "marker_demands": 1,
+    "marker_demands": 2,
     "credible_demands": 0,
-    "markers_unlocked": 1,
+    "markers_unlocked": 2,
     "markers_unlocked_fixture": 0,
     "integration_burden": "medium"
    },
@@ -1542,7 +2936,14 @@
    "provenance": {
     "kind": "controller_seed",
     "basis": "dimension composition would_require EDS; EDS action rationale and cost class in epistemic-field/1"
-   }
+   },
+   "attractor_state": "BUILDING PAYLOAD",
+   "ranking_factors": [
+    "unlocks 2 active marker opportunities",
+    "addresses a decision-consequential inquiry vortex",
+    "medium integration burden"
+   ],
+   "attractor_rank": 1
   },
   {
    "id": "capability:tomography_3d",
@@ -1569,6 +2970,9 @@
      "label": "3-D transport-relevant pore structure is outside the 2-D section vocabulary"
     }
    ],
+   "vortex_refs": [
+    "vortex:general/three_d_transport_structure"
+   ],
    "markers_unlocked": [
     "marker:pore_connectivity_3d"
    ],
@@ -1576,6 +2980,12 @@
     "marker:pore_connectivity_3d"
    ],
    "credible_demands": [],
+   "marker_pool": [
+    "marker:pore_connectivity_3d"
+   ],
+   "required_information": [
+    "Connected pore volume and path tortuosity through the electrode thickness."
+   ],
    "decision_refs": [],
    "decisions_affected": [],
    "status": "WATCHING",
@@ -1678,7 +3088,14 @@
    "provenance": {
     "kind": "controller_seed",
     "basis": "docs/CLAIMS.md"
-   }
+   },
+   "attractor_state": "EARLY SIGNAL",
+   "ranking_factors": [
+    "unlocks 1 active marker opportunity",
+    "no decision-consequential vortex linked",
+    "integration burden unassessed"
+   ],
+   "attractor_rank": 2
   }
  ],
  "papers": [],
@@ -1726,10 +3143,116 @@
      "outcome": "failed",
      "claim": "BSE alone cannot separate a finer additive from a different lower-Z phase.",
      "counts": true
+    },
+    {
+     "target": "marker:phase_conditioned_fines_distribution",
+     "gate": "measurability",
+     "outcome": "failed",
+     "claim": "A phase-conditioned size distribution requires elemental identity that the current BSE capture does not contain.",
+     "counts": true
     }
    ],
    "resolved": true,
    "preview": "the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot separate a finer additive from a different lower-Z phase."
+  },
+  {
+   "id": "record:engine.open_edge_M2060",
+   "kind": "engine_fact",
+   "title": "Registered profile: M2060 remains outside the local band at the captured start",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "provenance": {},
+   "source": null,
+   "field_ref": {
+    "batch": "Batch_3",
+    "collection": "spatial_profiles",
+    "id": "M2060:additive_density",
+    "path": "runs"
+   },
+   "assessments": [
+    {
+     "target": "marker:open_edge_persistence",
+     "gate": "decision_value",
+     "outcome": "passed",
+     "claim": "The open start is the structured trigger for extending the M2060 mosaic.",
+     "counts": true
+    },
+    {
+     "target": "marker:open_edge_persistence",
+     "gate": "measurability",
+     "outcome": "passed",
+     "claim": "The registered profile supports a bounded/open-edge categorical state from current data without extrapolating beyond the image.",
+     "counts": true
+    },
+    {
+     "target": "marker:open_edge_persistence",
+     "gate": "non_redundancy",
+     "outcome": "passed",
+     "claim": "The edge state adds spatial extent information beyond the micrograph-level scalar deviation.",
+     "counts": true
+    }
+   ],
+   "resolved": true,
+   "preview": "length_um 698"
+  },
+  {
+   "id": "record:engine.range_additive",
+   "kind": "engine_fact",
+   "title": "Spatial support: additive-density range exceeds the coherent reference capture",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "provenance": {},
+   "source": null,
+   "field_ref": {
+    "batch": "Batch_3",
+    "collection": "dimensions",
+    "id": "additive_density",
+    "path": "spatial_support"
+   },
+   "assessments": [
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "measurability",
+     "outcome": "passed",
+     "claim": "The current registered fields support a variogram and a lower bound on additive-density correlation length.",
+     "counts": true
+    },
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "non_redundancy",
+     "outcome": "passed",
+     "claim": "Correlation range adds field-spacing and capture-extent information not present in mean additive density.",
+     "counts": true
+    }
+   ],
+   "resolved": true,
+   "preview": "cls long-range · window_variance_slope -0.901 · tile_excess 1.88 · df 17"
+  },
+  {
+   "id": "record:engine.range_porosity",
+   "kind": "engine_fact",
+   "title": "Spatial support: porosity correlation range is approximately 175 µm",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "provenance": {},
+   "source": null,
+   "field_ref": {
+    "batch": "Batch_3",
+    "collection": "dimensions",
+    "id": "porosity",
+    "path": "spatial_support"
+   },
+   "assessments": [
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "measurability",
+     "outcome": "passed",
+     "claim": "The current registered fields support an approximately 175 µm porosity correlation range.",
+     "counts": true
+    }
+   ],
+   "resolved": true,
+   "preview": "cls fov-scale · window_variance_slope -0.856 · tile_excess 3.58 · df 18"
   },
   {
    "id": "record:engine.scale_M2060",
@@ -1775,6 +3298,13 @@
      "gate": "decision_value",
      "outcome": "passed",
      "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the approved BSE range).",
+     "counts": true
+    },
+    {
+     "target": "marker:phase_conditioned_fines_distribution",
+     "gate": "decision_value",
+     "outcome": "passed",
+     "claim": "Conditioning the fine-object distribution on phase identity would discriminate approved additive fines from another lower-Z phase.",
      "counts": true
     }
    ]

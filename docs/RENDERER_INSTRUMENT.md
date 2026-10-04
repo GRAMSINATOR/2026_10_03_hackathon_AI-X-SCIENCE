@@ -49,7 +49,7 @@ qc.field  ──►  reports/<batch>/field.json (epistemic-field/1)  ──►  
 │   [key bed (3D)]                                      [bevelled detail readout + proof trail]│
 │ IMAGING / INSPECTION BAY · control strip · bevelled aperture (micrograph │ ruler │ profile)  │
 │ SERVICE HATCH (raw statistical proof, flush, opens onto a recessed compartment)             │
-│ MARKER FRONTIER module · CURRENT CAPTURE MARKERS bay │ NEW CAPABILITY CASES bay             │
+│ AGENTIC MARKER FRONTIER · CURRENT FRONTIER → CANDIDATES → OBSERVABILITY EXPANSION            │
 ╰────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
@@ -94,9 +94,9 @@ The 3D key matrix is the quality reference, and everything else is built in the 
     over the micrograph, so the image sits behind the surface plane. A ruler edge (25 µm ticks, 100 µm long ticks)
     separates the image from the profile.
   * Raw proof is a flush service hatch.
-  * The Marker Frontier is a module with two recessed bays of chamfered modules. Each module has a sloped leading edge,
-    which becomes a lit indicator on the current decision's module. Evidence rails are machined grooves holding flat
-    enamel inlays.
+  * The Agentic Marker Frontier is an opportunity-map module: a compact ranked Current Frontier, separate current-data
+    candidate bays, observability-attractor payloads and a categorical roadmap. Marker and capability modules remain
+    chamfered instrument parts. Evidence rails are machined grooves holding flat enamel inlays.
 * **At rest.** Nothing moves: no running CSS or Web animation, and 0 WebGL frames.
 
 ## Instrument: physical object, straight-on

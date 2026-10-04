@@ -11,6 +11,16 @@ renderer(s): renderer/ = Evidence Instrument (React Three Fiber, primary; docs/R
              qc/hero.py = V1 exploratory/diagnostic renderer (legacy, parity checks) · tables · …
 ```
 
+`epistemic-field/1` is the canonical contract for the **local scientific examination and decision loop**. It answers
+what the loaded dataset supports, where that support stops, and which immediate acquisition action addresses the
+current decision. It continues to drive SIGNAL, SCRUTINY, FIELD, OUTER RIM and NEXT CAPTURE.
+
+The broader research-opportunity loop is a separate renderer-independent contract, `marker-frontier/1` (see
+`docs/MARKER_FRONTIER.md`). It derives inquiry vortices from the field's typed limits, then represents candidate marker
+protocols, current-data testability, observability gaps, capability pools and an acquisition roadmap. This separation
+keeps representation search and tooling opportunity out of the validated QC decision object while preserving
+reciprocal evidence references between them.
+
 * Schema: `schema/epistemic_field.v1.schema.json` (JSON Schema 2020-12).
 * Coherence rules that a schema cannot express live in `qc/contract.py:check`: referential integrity, status vs thresholds,
   scrutiny logic, shares summing to 1, leverage vs pivotal, action triggers resolvable, and no presentation vocabulary.

@@ -191,10 +191,69 @@ def test_seeded_states_follow_the_current_field(seed):
 
 def test_open_blindspots_pull_research(seed):
     doc = frontier.build(*seed)
-    assert 'Batch_3/rims/spatial:M2060:additive_density' in doc['open_blindspots']
+    assert 'Batch_3/rims/population:Batch_3' in doc['open_blindspots']
+    assert 'Batch_3/rims/spatial:M2060:additive_density' not in doc['open_blindspots']
     assert 'Batch_3/rims/composition:M2060' not in doc['open_blindspots']
     B = {b['key']: b for b in doc['blindspots']}
     assert [a['verb'] for a in B['Batch_3/rims/spatial:M2060:additive_density']['actions']] == ['EXTEND']
+
+
+# ---------------------------------------------------------------- opportunity topology
+def test_current_frontier_is_deterministic_categorical_attention(seed):
+    doc = frontier.build(*seed)
+    M = by_id(doc, 'markers')
+    assert doc['opportunity_map']['current_frontier'] == [
+        'marker:open_edge_persistence', 'marker:fines_subfloor_size', 'marker:high_z_composition'
+    ]
+    assert [M[mid]['opportunity_rank'] for mid in doc['opportunity_map']['current_frontier']] == [1, 2, 3]
+    assert doc['opportunity_map']['ranking_policy']
+    for m in doc['markers']:
+        assert m['ranking_factors']
+        assert not any(k.endswith('_score') for k in m)
+
+
+def test_candidate_classes_separate_capture_from_observability(seed):
+    doc = frontier.build(*seed)
+    groups = doc['opportunity_map']['candidate_markers']
+    assert groups['computable_now'] == ['marker:open_edge_persistence', 'marker:spatial_correlation_length']
+    assert groups['needs_targeted_capture'] == ['marker:fines_subfloor_size']
+    assert 'marker:phase_conditioned_fines_distribution' in groups['requires_new_observability']
+    assert groups['set_aside'] == ['marker:latent_progression', 'marker:multiscale_heterogeneity']
+    assert set().union(*map(set, groups.values())) == {m['id'] for m in doc['markers']}
+
+
+def test_qualitative_marker_and_vortex_links_are_first_class(seed):
+    doc = frontier.build(*seed)
+    M, V = by_id(doc, 'markers'), by_id(doc, 'vortices')
+    m = M['marker:open_edge_persistence']
+    assert m['marker_kind'] == 'qualitative' and m['representation'] == 'categorical_state'
+    assert m['observable'].startswith('Whether a measured deviation closes')
+    assert 'record:engine.open_edge_M2060' in {e['id'] for e in m['evidence']}
+    assert m['vortex_refs']
+    for vid in m['vortex_refs']:
+        assert m['id'] in V[vid]['marker_refs']
+        assert V[vid]['evidence_refs']
+
+
+def test_observability_attractor_pools_multiple_marker_opportunities(seed):
+    doc = frontier.build(*seed)
+    M, C = by_id(doc, 'markers'), by_id(doc, 'capabilities')
+    eds = C['capability:eds']
+    assert doc['opportunity_map']['tooling_attractors'][0] == eds['id']
+    assert eds['marker_pool'] == ['marker:high_z_composition', 'marker:phase_conditioned_fines_distribution']
+    assert len(eds['required_information']) == 2
+    for mid in eds['marker_pool']:
+        assert eds['id'] in M[mid]['required_capabilities']
+        assert M[mid]['observability']['cls'] == 'requires_new_observability'
+
+
+def test_roadmap_references_resolve_to_opportunities(seed):
+    doc = frontier.build(*seed)
+    M, C = by_id(doc, 'markers'), by_id(doc, 'capabilities')
+    steps = doc['opportunity_map']['roadmap']
+    assert [s['label'] for s in steps] == ['TEST CURRENT DATA', 'TARGETED CAPTURE', 'EXPAND OBSERVABILITY', 'RE-OBSERVE']
+    assert all(mid in M for s in steps for mid in s.get('marker_refs', []))
+    assert all(cid in C for s in steps for cid in s.get('capability_refs', []))
 
 
 # ---------------------------------------------------------------- fixture isolation
@@ -207,8 +266,9 @@ def test_fixture_evidence_never_advances_a_gate(seed, example):
             assert B[cid]['status'] == case['status']
     eds = by_id(b, 'capabilities')['capability:eds']
     assert eds['counts']['fixture_papers'] == 2 and eds['counts']['supporting'] == 0
-    assert eds['marker_demands'] == ['marker:high_z_composition']              # the fixture marker is not demand
+    assert eds['marker_demands'] == ['marker:high_z_composition', 'marker:phase_conditioned_fines_distribution']
     assert 'marker:fines_contaminant_screen' in eds['markers_unlocked']
+    assert 'marker:fines_contaminant_screen' not in eds['marker_demands']      # the fixture marker is not demand
     assert set(eds['gates']['literature_convergence']['excluded_fixture']) == {'paper:fixture-eds-mapping', 'paper:fixture-eds-resolution'}
 
 
@@ -304,6 +364,7 @@ def test_frontier_without_any_research(seed):
     doc = frontier.build(fields, [])
     assert frontier.check(doc, fields, []) == []
     assert doc['markers'] == [] and doc['capabilities'] == [] and doc['lanes'] == dict(current_capture=[], new_capability=[])
+    assert doc['opportunity_map']['roadmap'] == []
     assert set(doc['open_blindspots']) == {b['key'] for b in doc['blindspots'] if b['consequential']}
 
 

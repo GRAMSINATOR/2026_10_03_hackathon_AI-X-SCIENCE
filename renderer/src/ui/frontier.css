@@ -1,8 +1,7 @@
-/* MARKER FRONTIER: a lab module mounted in the same instrument (visual system V2; tokens in styles.css; light from
-   the upper-right front). Two recessed bays hold serviceable modules: flat rectangular parts with chamfered corners, a
-   sloped leading edge, a front lip and a seam. Evidence rails are thin machined grooves with flat enamel inlays, one
-   per gate, never a probability. Labels are machine legends. Sparse lane indices distinguish capture from capability;
-   the bays and modules remain neutral instrument parts. Nothing moves at rest. Everything is scoped under .mf. */
+/* AGENTIC MARKER FRONTIER: an opportunity-map module mounted in the same instrument (visual system V2; tokens in
+   styles.css; light from the upper-right front). A ranked frontier, candidate bays, observability-attractor payloads
+   and a roadmap use flat serviceable parts with chamfered corners. Evidence rails are thin machined grooves with flat
+   enamel inlays, one per categorical gate, never a probability. Nothing moves at rest. Everything is scoped under .mf. */
 .mf { --m: #39758d; --m2: #39758d; --c: #756584; --c2: #756584; --groove: #73716b; --plate: #f2f0eb;
   --ink: #1f1e1b; --ink2: #55524c; --mut: #87847c; --rule: rgba(52,46,38,.12); --crit: #c8392c; --ok: #12825f;
   margin: 0 0 6px; padding: 0 16px 16px; border-radius: 20px; color: var(--ink); font: 13px/1.45 Inter, system-ui, sans-serif;
@@ -20,6 +19,69 @@
 .mf-research { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
 .mf-research li { padding: 3px 0 3px 10px; border-left: 2px solid #aaa69e; color: var(--ink2); font: 650 9.5px/1.2 Inter, sans-serif; letter-spacing: .08em; }
 .mf-research li.fx, .mf-tag.fx, .mf-quals i.fx { background: repeating-linear-gradient(-45deg, #f1e3b5 0 6px, #f7eed2 6px 12px); color: #6b5310; }
+
+/* ---- three scopes: the local controller loop, the marker search and the acquisition horizon */
+.mf-distinction { display: grid; grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) 22px minmax(0, 1fr); align-items: stretch;
+  margin: 0 0 14px; padding: 8px 12px; border-radius: 9px; background: var(--grain), #dfdcd5; box-shadow: var(--cut); }
+.mf-distinction > div { min-width: 0; padding: 8px 10px; border-radius: 4px; }
+.mf-distinction > div.active { background: var(--grain), linear-gradient(180deg, #f3f1ec, #e9e6e0); box-shadow: inset 0 0 0 1px rgba(57,117,141,.34), 0 1px 0 #fff; }
+.mf-distinction > i { align-self: center; height: 1px; background: rgba(52,46,38,.24); box-shadow: 0 1px 0 rgba(255,255,255,.65); }
+.mf-distinction b, .mf-distinction span { display: block; }
+.mf-distinction b { font: 730 9.5px/1.2 Inter, sans-serif; letter-spacing: .15em; color: var(--ink2); }
+.mf-distinction .active b { color: var(--m); }
+.mf-distinction span { margin-top: 3px; font: 650 11px/1.3 Inter, sans-serif; color: var(--ink); }
+.mf-distinction p { margin: 5px 0 0; font-size: 11.5px; line-height: 1.35; color: var(--mut); }
+
+/* ---- opportunity-map sections are machined bays; each uses a different density for a different job */
+.mf-frontier, .mf-candidates, .mf-observe { margin-top: 14px; padding: 12px 14px 14px; border: 6px solid transparent; border-radius: 12px;
+  background: var(--grain) padding-box, linear-gradient(#e3e0da, #e3e0da) padding-box, var(--bevel-in, #ddd) border-box; box-shadow: var(--cut-deep); }
+.mf-section-h { display: flex; align-items: flex-start; gap: 11px; margin: 0 0 11px; padding: 0 2px 9px;
+  box-shadow: inset 0 -1px 0 rgba(52,46,38,.13), inset 0 -2px 0 rgba(255,255,255,.55); }
+.mf-section-h > span { display: grid; place-items: center; width: 22px; height: 22px; flex: 0 0 22px; border-radius: 2px;
+  background: var(--m); color: #fff; font: 760 10px/1 Inter, sans-serif; box-shadow: inset 0 1px 0 rgba(255,255,255,.32), 0 0 0 1px rgba(52,46,38,.2); }
+.mf-observe .mf-section-h > span { background: var(--c); }
+.mf-section-h h3 { margin: 0; font: 750 11px/1.2 Inter, sans-serif; letter-spacing: .16em; color: var(--ink); }
+.mf-section-h p { margin: 3px 0 0; font-size: 11.8px; color: var(--mut); }
+
+/* compact ranked frontier: a linear attention module rather than a score table */
+.mf-frontier-list { display: grid; gap: 5px; }
+.mf-frontier-row { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; gap: 13px; align-items: center; min-width: 0; padding: 11px 12px 11px 8px;
+  border-radius: 4px; background: var(--grain), linear-gradient(200deg, #f7f5f1, #ebe8e2); box-shadow: inset 0 1px 0 #fff, inset 0 -1px 0 rgba(52,46,38,.1), -2px 3px 5px rgba(52,46,38,.1); }
+.mf-rank { display: grid; place-items: center; width: 34px; height: 34px; color: var(--m); font: 760 13px/1 ui-monospace, SFMono-Regular, Consolas, monospace;
+  background: #d9d7d1; box-shadow: var(--cut); }
+.mf-frontier-main { min-width: 0; }
+.mf-frontier-main .mf-card-h { justify-content: flex-start; align-items: baseline; }
+.mf-frontier-main .mf-card-h h3 { font-size: 14px; }
+.mf-observable { margin: 5px 0 2px; font-size: 12.4px; color: var(--ink); }
+.mf-observable b { margin-right: 6px; font: 720 9px/1 Inter, sans-serif; letter-spacing: .13em; color: var(--m); }
+.mf-frontier-why { margin: 2px 0 7px; font-size: 11.8px; color: var(--ink2); }
+.mf-ometa, .mf-vortices { display: inline-flex; flex-wrap: wrap; gap: 5px 12px; vertical-align: middle; }
+.mf-ometa i, .mf-vortices i { color: var(--mut); font: 670 8.8px/1.35 Inter, sans-serif; letter-spacing: .09em; font-style: normal; }
+.mf-ometa i::before { content: ''; display: inline-block; width: 4px; height: 4px; margin-right: 5px; vertical-align: 1px; background: #8c8982; }
+.mf-vortices { margin-left: 14px; }
+.mf-vortices i { color: var(--ink2); box-shadow: inset 0 -1px 0 rgba(52,46,38,.2); }
+.mf-rank-policy { margin: 9px 2px 0; color: var(--mut); font-size: 10.5px; }
+.mf-rank-policy b { margin-right: 7px; color: var(--ink2); font-size: 9px; letter-spacing: .13em; }
+
+/* marker classes stay visibly distinct from acquisition attractors */
+.mf-candidate-lanes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.mf-marker-group { min-width: 0; padding: 10px 10px 0; border-radius: 7px; background: var(--grain), #dcd9d2; box-shadow: var(--cut); }
+.mf-marker-group > header { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 0 2px 9px; }
+.mf-marker-group > header h4 { margin: 0; font: 710 9.5px/1.3 Inter, sans-serif; letter-spacing: .13em; color: var(--ink2); }
+.mf-marker-group > header span { color: var(--mut); font-size: 10.5px; }
+.mf-attractors { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mf-attractors .mf-card { --lane: var(--c); --lane2: var(--c2); margin-bottom: 0; }
+.mf-attractor-scope { margin: 6px 0 9px; padding-left: 10px; border-left: 2px solid color-mix(in oklab, var(--c) 56%, #aaa69e); font-size: 11.8px; color: var(--ink2); }
+
+/* a categorical roadmap. Order is a workflow, never a numeric confidence score. */
+.mf-roadmap { margin-top: 14px; padding: 11px 14px 13px; border-radius: 8px; background: var(--grain), #e0ddd7; box-shadow: var(--cut); }
+.mf-roadmap h4 { margin: 0 0 9px; font: 690 9.5px/1.3 Inter, sans-serif; letter-spacing: .15em; color: var(--ink2); }
+.mf-roadmap h4 span { margin-left: 8px; font-weight: 500; letter-spacing: .02em; color: var(--mut); }
+.mf-roadmap ol { list-style: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin: 0; padding: 0; background: rgba(52,46,38,.14); }
+.mf-roadmap li { min-width: 0; padding: 9px 10px; background: var(--grain), #ece9e3; }
+.mf-roadmap li b { font: 690 9.5px/1.35 Inter, sans-serif; letter-spacing: .08em; color: var(--ink); }
+.mf-roadmap li p { margin: 5px 0; font-size: 11px; line-height: 1.35; color: var(--ink2); }
+.mf-roadmap li span { color: var(--mut); font-size: 10px; }
 
 /* ---- two recessed bays */
 .mf-lanes { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
@@ -221,9 +283,16 @@
 /* ---- responsive: stack the bays; tray full width */
 @media (max-width: 1100px) {
   .mf-lanes { grid-template-columns: minmax(0, 1fr); }
+  .mf-candidate-lanes, .mf-attractors { grid-template-columns: minmax(0, 1fr); }
+  .mf-roadmap ol { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .mf-head { grid-template-columns: minmax(0, 1fr); } .mf-research { justify-content: flex-start; }
 }
 @media (max-width: 640px) {
+  .mf-distinction { grid-template-columns: minmax(0, 1fr); gap: 1px; }
+  .mf-distinction > i { width: 1px; height: 12px; margin-left: 20px; }
+  .mf-frontier-row { grid-template-columns: 36px minmax(0, 1fr); }
+  .mf-frontier-row > .mf-open { grid-column: 2; justify-self: start; }
+  .mf-roadmap ol { grid-template-columns: minmax(0, 1fr); }
   .mf-dl { grid-template-columns: minmax(0, 1fr); } .mf-row { grid-template-columns: minmax(0, 1fr) auto; } .mf-row .mf-rail { display: none; }
   .mf-gates td:first-child, .mf-kv td:first-child { width: 120px; }
 }

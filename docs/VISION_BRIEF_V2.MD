@@ -2,7 +2,7 @@
 
 ## Product category
 
-We are building an **epistemic acquisition controller for agentic microscopy**.
+We are building a **dataset-challenge and observability-planning layer for agentic microscopy**.
 
 The system sits between scientific intent and instrument execution.
 
@@ -10,9 +10,11 @@ A higher-level scientific agent may know the objective.
 
 The microscope may already know how to move, image, switch detector, change magnification or trigger another measurement.
 
-Our layer decides:
+Our layer asks two connected questions:
 
 > **Given what we currently know, what should the instrument measure next — and why?**
+
+> **Is the current way of perceiving this dataset sufficient, and what new observational handles are worth developing?**
 
 Polaron's battery-electrode QC challenge is the proving ground.
 
@@ -32,7 +34,7 @@ The long-term architecture is:
 → **updated uncertainty field**  
 → **epistemic acquisition controller again**
 
-The controller does not replace:
+Parallax does not replace:
 
 - the scientific agent;
 - the microscope-control API;
@@ -40,9 +42,11 @@ The controller does not replace:
 - the physical instrument;
 - the QC classifier.
 
-It is the **measurement-policy layer under uncertainty**.
+It is the **measurement-policy and perceptual-expansion layer under uncertainty**.
 
-Its job is to decide how the observational process should adapt.
+Its job is to decide how the immediate observation should adapt, while mapping better representations and justified
+future measurement capabilities. The local five-lens Examiner and NEXT CAPTURE handle the current decision. The
+Agentic Marker Frontier turns structured limits into marker investigations, observability gaps and capability pools.
 
 ---
 
@@ -72,9 +76,9 @@ It is:
 
 ---
 
-# 3. The canonical internal object: the uncertainty field
+# 3. The local scientific object: the uncertainty field
 
-The product must still have **one canonical epistemological object**.
+The local decision loop has **one canonical epistemological object**.
 
 That object is the:
 
@@ -106,7 +110,9 @@ Every major system component must either:
 3. challenge whether the field is missing a dimension;
 4. or choose an acquisition action expected to reshape it usefully.
 
-No parallel epistemologies.
+The research-opportunity loop consumes this field through `marker-frontier/1`; it does not alter or duplicate the
+field's scientific verdict. Its opportunity map records inquiry vortices, marker protocols and observability
+dependencies for research and planning agents.
 
 ---
 

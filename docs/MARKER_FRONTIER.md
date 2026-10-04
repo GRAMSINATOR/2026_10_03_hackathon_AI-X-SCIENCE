@@ -1,191 +1,181 @@
-# Marker Frontier `marker-frontier/1`
+# Agentic Marker Frontier `marker-frontier/1`
 
-> A scientific controller should not only decide what to measure next. It should accumulate evidence about what else
-> becomes worth measuring, and when that evidence justifies expanding what the laboratory can observe.
+> Parallax challenges whether the current way of seeing a dataset is sufficient. It maps new observational handles
+> that can be tested now, the valuable handles that cannot yet be observed, and the measurement capabilities that
+> would unlock them.
 
+The Polaron QC pipeline is the working scientific instance. It remains responsible for the configured-reference
+verdict, provenance, independence, robustness, support boundaries and immediate actions. The Agentic Marker Frontier
+sits around that local decision loop and asks a broader question:
+
+> **What additional useful ways of perceiving the current dataset should the agent investigate?**
+
+```text
+scientific model ──► epistemic-field/1 ──► five-lens Examiner + NEXT CAPTURE
+                              │
+                              ├─ structured limits / missing dimensions
+research/*.json ──────────────┤
+                              ▼
+                       qc/frontier.py
+              resolve → derive gates → rank opportunity
+                              │
+                              ▼
+                       marker-frontier/1
+        vortices → marker protocols → observability gaps
+                     → capability pools → roadmap
+                              │
+                              ▼
+               renderer/src/ui/MarkerFrontier.jsx
 ```
-epistemic-field/1 (rims, missing dimensions, actions)      research/*.json  (marker-research/1: the qte77 socket)
-                     \                                       /
-                      qc/frontier.py  merge -> resolve blindspots -> derive gates -> derive states -> check()
-                                              |
-                                  marker-frontier/1 (lab-level; fixtures/marker_frontier*.json)
-                                              |
-         renderer/src/ui/MarkerFrontier.jsx (two lanes · evidence rail · evidence tray), below the Examiner Matrix
+
+The five Examiner lenses remain the local loop:
+
+1. **SIGNAL** — what changed;
+2. **SCRUTINY** — whether the evidence survives acquisition and validity challenges;
+3. **FIELD** — the uncertainty and support structure around it;
+4. **OUTER RIM** — where justified inference stops;
+5. **NEXT CAPTURE** — the next observation that resolves the current decision.
+
+The global opportunity loop is: **observe → challenge → locate inquiry vortices → define candidate marker protocols →
+test and rank current-data markers → identify observability gaps → pool them into capability attractors → acquire →
+re-observe**.
+
+## Contract objects
+
+### Inquiry vortex
+
+A vortex is a structured reason to inquire. It may be a sampling limit, unresolved spatial structure, resolution-floor
+effect, acquisition sensitivity, missing identity or missing modality. It is not automatically a defect or anomaly.
+
+`vortices[]` is derived from the typed `rims` and consequential `missing_dimensions` in every loaded
+`epistemic-field/1`, plus explicitly declared general vocabulary gaps. Each vortex carries:
+
+* stable `id`, plain `label`, `kind` and `statement`;
+* whether it is instantiated by loaded data;
+* `attention` and `consequential` without a probability score;
+* source `evidence_refs` and current controller actions;
+* reciprocal `marker_refs` and `capability_refs`.
+
+Weak evidence is not promoted into a vortex to populate the interface. Unresolved non-general references fail
+coherence checks.
+
+### Marker protocol
+
+A marker is **a defined protocol for perceiving a scientifically meaningful property of a system**. It is broader
+than a scalar KPI or binary biomarker. The contract supports quantitative, qualitative and hybrid protocols with
+representations such as scalar, distribution, relational graph, spatial field, topological descriptor,
+morphological class, categorical state, multiscale signature and cross-marker relation.
+
+Research bundles may provide:
+
+* `name`, `marker_kind`, `representation`, `observable`, `scientific_question`;
+* `scientific_definition`, `measurement_definition`, `why_relevant`;
+* `current_capture_compatible`, modalities, capability dependencies and capture requirements;
+* existing-data test plan, implementation burden, confounds, failure modes and overlap;
+* blindspot and decision references.
+
+The builder derives:
+
+* resolved inquiry-vortex and evidence links;
+* the categorical gates and governed status;
+* `observability` class and investigation wording;
+* inspectable `ranking_factors`, deterministic `opportunity_rank` and `priority_band`;
+* evidence, contradictions, counts, remaining work and provenance.
+
+No paper automatically creates a marker. Literature may supply a technique or descriptor, but the marker remains a
+candidate until its applicability, measurement definition, current-data support, robustness and information value
+are investigated.
+
+### Observability attractor
+
+A capability case is rendered as an observability attractor when active inaccessible markers share that requirement.
+It is a payload argument, not an equipment recommendation:
+
+```text
+candidate marker protocols
+        → required information
+        → shared observability requirement
+        → scoped capability opportunity
 ```
 
-Loop: **blindspot → candidate marker → evidence → measurability / confounds → (current capture: Marker Admission) or
-(new capability: Capability Expansion) → expanded measurement vocabulary.**
+Derived fields include `marker_pool`, `required_information`, reciprocal vortex links, current controller actions,
+categorical `attractor_state`, `ranking_factors` and `attractor_rank`. The evidence drawer preserves substitutes,
+integration burden, workflow requirements, literature and project evidence. A capability reaches critical mass only
+through convergent credible marker demand, consequential value, non-substitutability and uncontested literature.
 
-## 1. Objects
+## Opportunity map
 
-**Marker Case.** A tracked, interpretable observable: a scalar, distribution, spatial pattern, morphology family,
-cross-modality relation, acquisition signature or composition. It carries:
+`opportunity_map` is renderer-independent and contains:
 
-* inputs: `name`, `family`, `proposition`, `scientific_definition`, `measurement_definition`,
-  `current_capture_compatible`, `required_modalities`, `required_capabilities`, `capture_requirements`,
-  `existing_data_test` (a plan only), `blindspot_refs`, `decision_refs`, `why_relevant`, `known_confounds`
-  (`controlled` + basis), `known_failure_modes`, `redundant_with` (+ increment);
-* derived: `status`, `status_basis`, `lane`, `gates`, `rail`, `closes`, `closes_consequential`, `general_gaps`,
-  `evidence`, `contradictory_evidence`, `counts`, `next` (what remains to advance), `qualifiers`, `review`.
+* `current_frontier`: at most three active marker opportunities;
+* `candidate_markers.computable_now`;
+* `candidate_markers.needs_targeted_capture` — same modality, missing scale or sampling;
+* `candidate_markers.requires_new_observability`;
+* `candidate_markers.set_aside` — negative results remain visible;
+* `tooling_attractors`;
+* a four-step roadmap: test current data, targeted capture, expand observability, re-observe;
+* the explicit categorical ranking policy.
 
-**Capability Case.** A capability the lab should gain (EDS, Raman, tomography, a detector mode, …). Demand
-accumulates across Marker Cases.
+The ranking orders research attention, not scientific truth. It uses, in order: whether the case is live, whether it
+addresses a decision-consequential vortex, observability class, existing-data test state, available evidence,
+implementation burden and stable id. Each row explains its factors. There is no universal confidence, probability or
+0–100 score; `check()` rejects score-like keys.
 
-* inputs: `name`, `capability_type`, `why_current_workflow_cannot_resolve`, `blindspot_refs`, `decision_refs`,
-  `existing_capability_substitutes` (`ruled_out` + basis), and `integration` (`requirements`, `burden`,
-  `acquisition_cost_class`, `workflow_effect`, `data_interface_requirements`, `acceptable`);
-* derived: `markers_unlocked`, `marker_demands`, `credible_demands`, `closes`, `closes_consequential`,
-  `decisions_affected` (controller actions on those blindspots), plus the same derived block as a Marker Case.
+## Observability classes
 
-**Paper Evidence.** Fields: `id`, `title`, `authors`, `year`, `venue`, `doi`, `url` (canonical; the default is
-`https://doi.org/<doi>`), `independence_group`, `blindspot_refs`, `provenance` (retrieved_by / at, query, source_api)
-and `assessments[]`. Each assessment bears on **one** target and **one** gate, because directness depends on the
-question:
+| Class | Meaning | Typical next work |
+|---|---|---|
+| `computable_now` | Loaded data can support implementation or a defined test | implement, perturb and validate |
+| `needs_targeted_capture` | Current modality is suitable, but required scale or sampling is absent | use the local acquisition controller |
+| `requires_new_observability` | Required information or capability is absent | evaluate the aggregated capability payload |
 
-* `target`, `gate`, `direction` (SUPPORTIVE | CONTRADICTORY | NEUTRAL), `claim` (the exact proposition), `note` (why it
-  matters);
-* `directness`: direct / adjacent / indirect;
-* `method_strength`: strong / moderate / weak;
-* `transferability`: {material, modality, scale, task, process} ∈ same / similar / different / unknown.
+This is separate from scientific value and admission state. A marker can be easy to compute and weakly grounded, or
+scientifically promising and currently unobservable.
 
-The frontier derives `marker_refs` / `capability_refs` from the targets. It also derives a direction-free `strength`
-and a display `label`, and keeps the underlying dimensions beside them.
+## Evidence and governance
 
-**Record.** Internal evidence: a `project_record` (a file + locator, e.g. a research-log row), an `engine_fact` (a
-reference into epistemic-field/1) or a `current_data_test`. Each record assessment has `target`, `gate`
-(scientific_relevance | measurability | robustness | decision_value | non_redundancy) and `outcome`
-(passed | failed | inconclusive).
+Paper assessments attach to one target and one gate. They retain direction, directness, method strength,
+transferability, claim, note, canonical link and independence group. One aligned source is partial support, not
+consensus. Contradictory evidence stays visible.
 
-**Review.** `{target, decision: admit | reject | recommend | integrated | defer, by, date}`. Selection is a person's
-decision (JOB_SPLIT_V2 §1). It can never lift a case whose gates are not met; an ignored review is listed in
-`governance.ignored`.
+Project records may be a `project_record`, `engine_fact` or `current_data_test`. Reviews select an eligible case but
+cannot lift gates that evidence has not met. Fixture bundles may demonstrate rendering and contradiction handling but
+never advance a gate or count as demand.
 
-There is no overall score anywhere. `check()` rejects score-like keys (score, confidence, probability, likelihood,
-credence), and the ingestion schema rejects them as property names.
+Marker gates remain categorical: scientific basis, measurability, robustness, inquiry value, non-redundancy and
+promotion review. Capability gates remain categorical: marker pool, literature basis, inquiry value, no adequate
+substitute and lab fit. Governed internal states remain available in provenance; the primary UI uses operational
+phrasing such as `INVESTIGATING`, `TESTABLE` and `BUILDING PAYLOAD`.
 
-## 2. Evidence label (paper assessment)
+## Seeded Polaron opportunities
 
-transferability: `low` if material or modality is different; `high` if both are same/similar and no axis is
-different; otherwise `partial`.
+The committed seed is intentionally sparse and contains no claimed literature support.
 
-relevance: direct + high/partial transferability = R1; adjacent + high = R2; direct + low or adjacent + partial = R3;
-otherwise R4.
+* **Open-edge deviation phenotype** — qualitative categorical state already represented by registered profiles;
+  distinguishes a bounded feature from a deviation that remains open at a captured edge.
+* **Spatial correlation length** — quantitative scalar based on the implemented variogram support; reports supported
+  range or a lower bound without extrapolating past capture.
+* **Sub-floor fines size distribution** — quantitative distribution requiring the existing higher-magnification
+  capture action.
+* **High-Z phase elemental identity** and **phase-conditioned fines distribution** — require composition-sensitive
+  data and pool under the EDS attractor.
+* **3-D pore connectivity** — requires volumetric observation and remains exploratory.
+* Pseudotime and multiscale heterogeneity keep their negative project results and remain set aside.
 
-| method \ relevance | R1 | R2 | R3 | R4 |
-|---|---|---|---|---|
-| strong | STRONG DIRECT | STRONG TRANSFERABLE | SUPPORTING | INDIRECT |
-| moderate | SUPPORTING | SUPPORTING | SUPPORTING | INDIRECT |
-| weak | WEAK | WEAK | WEAK | WEAK |
+`fixtures/frontier/example.qte77.json` contains clearly marked synthetic evidence for ingestion and contradiction
+tests. It changes display counts, never scientific state.
 
-The label shows CONTRADICTORY / NEUTRAL when the direction is not supportive. The strength is kept regardless.
+## Build and validation
 
-## 3. Gates (categorical: met · partial · contested · failed · open)
+Research ingestion validates against `schema/marker_research.v1.schema.json`. A producer sends definitions and
+evidence, never states or scores. Conflicting scalar extensions are recorded and not overwritten.
 
-**Literature gate** (marker `scientific_relevance`, capability `literature_convergence`). Counted papers only:
+```text
+python -m qc.frontier fixtures
+python -m qc.frontier build --fields … --bundles research --out …
+cd renderer && npm test
+```
 
-* **met**: one strong source (STRONG DIRECT or STRONG TRANSFERABLE) plus a second independent supporting source
-  (distinct `independence_group`), uncontested;
-* **contested**: a contradictory source at least as strong as the best support, or a counted project record that
-  failed the proposition;
-* **partial**: some support;
-* **open**: no counted literature.
-
-Marker gates:
-
-| gate | rule |
-|---|---|
-| measurability | failed if `current_capture_compatible` is false or a record failed; met if a record passed; partial if compatible or inconclusive; else open |
-| robustness | failed if a robustness record failed; contested by counted contradictory papers without a passing test; met if a test passed and every listed confound is controlled with evidence; partial on any test or control |
-| blindspot_closure | failed if decision value was tested and failed; met if a ref resolves to a consequential rim / missing dimension (or decision value passed); partial for non-consequential or general refs |
-| non_redundancy | failed / met by record; met by construction if it measures a dimension the field records as not acquired; partial if overlap is stated |
-| admission | met = all five evidence gates met **and** a non-fixture `admit` review; partial = eligible, awaiting review |
-
-Capability gates:
-
-| gate | rule |
-|---|---|
-| marker_demand | met = ≥ 2 credible demands (active, non-fixture markers with scientific relevance met); partial = any active demand |
-| consequential_closure | met if its own refs or its demanding markers' refs include a consequential blindspot |
-| non_substitutability | failed if a substitute is shown adequate with evidence; met if every listed substitute is ruled out with evidence; partial if some are |
-| integration_case | met = `acceptable: true` and a non-fixture `recommend` / `integrated` review; partial = drafted (burden stated) |
-
-## 4. States (functions of the gates; research cannot assert them)
-
-| Marker | rule (first match) |
-|---|---|
-| CONFOUNDED | robustness failed |
-| REJECTED | review reject, decision value failed, or redundant |
-| UNAVAILABLE | measurability failed → demand on the named capability (shown in the right lane) |
-| ADMITTED | admission met (every evidence gate + review) |
-| TRACKABLE | scientific relevance and measurability met |
-| SUPPORTED | scientific relevance met |
-| BUILDING | some evidence gate partly supported |
-| CANDIDATE | links only (a blindspot link is a relationship, not evidence) |
-
-ADMITTED means "credible relevance, a measurable definition observed under current acquisition, confound control,
-non-redundant blindspot / decision value, selected by a person". It does not mean universally validated science.
-
-| Capability | rule (first match) |
-|---|---|
-| REJECTED | review reject, or an adequate substitute |
-| INTEGRATED | integrated review with an accepted integration case |
-| RECOMMENDED | critical mass and integration case met |
-| CRITICAL_MASS | demand met, literature met, consequential closure met, non-substitutability met |
-| BUILDING_CASE | demand met, or one need that closes a consequential blindspot |
-| WATCHING | otherwise |
-
-Critical mass is stricter than "convergent demand + consequential blindspot + non-substitutability": it also needs
-uncontested literature convergence. It is never "number of papers > N".
-
-## 5. Blindspot closure
-
-Bundles reference blindspots as `{batch, collection: rims | missing_dimensions, id}` (the same addressing as
-decision-brief proof refs, plus the batch), or as `{general, label}` for a vocabulary gap that no loaded field
-instantiates. Every rim of every loaded field (plus consequential missing dimensions) is indexed in
-`blindspots[]`. Each entry carries the controller actions that already address it and `addressed_by` (the cases).
-An unresolved, non-general ref is a violation.
-
-`open_blindspots` lists consequential blindspots that no live, non-fixture case addresses. This is the pull on the
-research agent, shown with what the controller does meanwhile (EXTEND, SECTIONS, …).
-
-The frontier is lab-level: states do not change with the batch on screen. The renderer marks blindspots of the
-current batch. A blindspot chip is clickable only when the decision brief already makes a claim about that limit
-(`limit.<rim id>`, or a matching focus ref); the click opens that claim in the Examiner Matrix.
-
-## 6. Ingestion contract (qte77)
-
-* One file per research run in `research/` (env `QC_RESEARCH`). It must validate against
-  `schema/marker_research.v1.schema.json`. Never edit another producer's bundle.
-* `bundle.kind`: `research_agent` (qte77), `controller_seed`, or `fixture`.
-* Cases may be new, or extend an existing id. A later bundle may only extend lists (`blindspot_refs`, substitutes,
-  confounds, …) and fill unset scalars. A conflicting scalar is recorded in `governance.conflicts` and never
-  overwritten. A fixture bundle cannot extend a real case.
-* Papers attach to any case by `assessments[].target`; they appear in that case's tray automatically.
-* A paper that is not fixture needs `doi` or an https `url`.
-* A marker that current capture cannot observe must name `required_capabilities`. A missing capability case becomes a
-  visible `derived_stub`.
-* Do not send `status`, scores or confidences. Send evidence.
-
-Rebuild: `python -m qc.frontier fixtures` (fixtures), or `python -m qc.frontier build --fields … --bundles research
---out …`. The app attaches the frontier over every `reports/<batch>/field.json` (`qc.frontier.attach`, which fails
-open: a broken bundle never takes the decision surface down).
-
-## 7. What is real and what is fixture
-
-* `research/seed.controller.json` (real, no literature):
-  * engine facts from epistemic-field/1 (rims `scale:M2060`, `composition:M2060`);
-  * research-log rows #4–#7 and #11;
-  * a `docs/CLAIMS.md` record.
-* Its cases:
-  * EDS = BUILDING CASE (one consequential need: composition of the M2060 fines; literature open);
-  * sub-floor fines size distribution = BUILDING (closes `scale:M2060`; needs the controller's ZOOM acquisition);
-  * pseudotime = CONFOUNDED (log #5);
-  * multiscale heterogeneity = REJECTED (log #7);
-  * 3-D pore connectivity → tomography = WATCHING (exploratory).
-* `fixtures/frontier/example.qte77.json` is **FIXTURE**: synthetic placeholder papers (titles prefixed `FIXTURE ·`,
-  no DOI, no link) and one candidate. It is used to show and test ingestion and contradiction rendering. By rule it
-  changes counts, never gates or states (tested).
-
-Tests: `tests/test_frontier.py` (socket, resolution, governance, fixture isolation, reproducibility, no research) and
-`renderer/test/frontier.test.js` (view model). Visual QA: `python work/qa_frontier.py [integrated]` with
-`npm run dev -- --port 5199`.
+`qc.frontier.check()` verifies referential integrity, deterministic ranking, observability partitions, reciprocal
+vortex links, marker pools, roadmap references, state derivation, fixture isolation and the absence of opaque scores.
+The renderer consumes only JSON; the opportunity graph remains usable by future planning and research agents.

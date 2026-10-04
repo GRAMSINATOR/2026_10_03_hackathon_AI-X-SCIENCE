@@ -38,11 +38,11 @@ MARKER_STATES = ['ADMITTED', 'TRACKABLE', 'SUPPORTED', 'BUILDING', 'CANDIDATE', 
 CAPABILITY_STATES = ['INTEGRATED', 'RECOMMENDED', 'CRITICAL_MASS', 'BUILDING_CASE', 'WATCHING', 'REJECTED']
 TERMINAL = {'REJECTED', 'CONFOUNDED'}
 GATE_STATES = ('met', 'partial', 'contested', 'failed', 'open')
-MARKER_RAIL = [('scientific_relevance', 'SCIENTIFIC RELEVANCE'), ('measurability', 'MEASURABLE WITH CURRENT CAPTURE'),
-               ('robustness', 'ROBUSTNESS / CONFOUND CONTROL'), ('blindspot_closure', 'BLINDSPOT CLOSURE'), ('admission', 'ADMISSION')]
-CAPABILITY_RAIL = [('marker_demand', 'MARKER DEMAND'), ('literature_convergence', 'LITERATURE CONVERGENCE'),
-                   ('consequential_closure', 'CONSEQUENTIAL BLINDSPOT CLOSURE'), ('non_substitutability', 'NON-SUBSTITUTABILITY'),
-                   ('integration_case', 'INTEGRATION CASE')]
+MARKER_RAIL = [('scientific_relevance', 'SCIENTIFIC BASIS'), ('measurability', 'TESTABLE WITH CURRENT CAPTURE'),
+               ('robustness', 'ROBUSTNESS / CONFOUND CONTROL'), ('blindspot_closure', 'INQUIRY VALUE'), ('admission', 'PROMOTION REVIEW')]
+CAPABILITY_RAIL = [('marker_demand', 'MARKER POOL'), ('literature_convergence', 'LITERATURE BASIS'),
+                   ('consequential_closure', 'INQUIRY VALUE'), ('non_substitutability', 'NO ADEQUATE SUBSTITUTE'),
+                   ('integration_case', 'LAB FIT')]
 MARKER_GATES = [g for g, _ in MARKER_RAIL[:4]] + ['non_redundancy', 'admission']
 EVIDENCE_GATES = ('scientific_relevance', 'measurability', 'robustness', 'non_redundancy')   # gates fed by evidence, not by links
 ADMISSION_GATES = ('scientific_relevance', 'measurability', 'robustness', 'blindspot_closure', 'non_redundancy')
@@ -55,6 +55,20 @@ STRENGTH = {'strong': {'R1': 'STRONG DIRECT', 'R2': 'STRONG TRANSFERABLE', 'R3':
 RANK = {'STRONG DIRECT': 4, 'STRONG TRANSFERABLE': 3, 'SUPPORTING': 2, 'INDIRECT': 1, 'WEAK': 0}
 TYPE_LABEL = {'scale': 'SCALE', 'composition': 'COMPOSITION', 'spatial': 'EXTENT', 'population': 'PREVALENCE',
               'acquisition': 'ACQUISITION', 'validity': 'VALIDITY'}
+VORTEX_KIND = {'scale': 'resolution_limit', 'composition': 'identity_uncertainty', 'spatial': 'unresolved_spatial_structure',
+               'population': 'sampling_uncertainty', 'acquisition': 'acquisition_sensitivity', 'validity': 'measurement_validity'}
+FAMILY_REPRESENTATION = {'scalar': 'scalar', 'distribution': 'distribution', 'spatial_pattern': 'spatial_field',
+                         'morphology': 'morphological_class', 'cross_modality': 'cross_marker_relation',
+                         'acquisition_signature': 'categorical_state', 'spatial_statistic': 'scalar',
+                         'composition': 'categorical_state', 'process_variation': 'multiscale_signature', 'other': 'other'}
+QUALITATIVE_REPRESENTATIONS = {'morphological_class', 'categorical_state'}
+OBSERVABILITY_LABEL = {'computable_now': 'COMPUTABLE / TESTABLE NOW', 'needs_targeted_capture': 'NEEDS TARGETED CAPTURE',
+                       'requires_new_observability': 'REQUIRES NEW OBSERVABILITY'}
+INVESTIGATION_STATE = {'ADMITTED': 'PROMOTED', 'TRACKABLE': 'TESTABLE', 'SUPPORTED': 'PROMISING',
+                       'BUILDING': 'INVESTIGATING', 'CANDIDATE': 'CANDIDATE', 'UNAVAILABLE': 'OBSERVABILITY GAP',
+                       'CONFOUNDED': 'DEPRIORITIZED', 'REJECTED': 'DEPRIORITIZED'}
+ATTRACTOR_STATE = {'INTEGRATED': 'INTEGRATED', 'RECOMMENDED': 'READY FOR REVIEW', 'CRITICAL_MASS': 'STRONG PAYLOAD',
+                   'BUILDING_CASE': 'BUILDING PAYLOAD', 'WATCHING': 'EARLY SIGNAL', 'REJECTED': 'SET ASIDE'}
 OPAQUE_KEYS = re.compile(r'(score|confidence|probability|likelihood|credence)', re.I)
 
 STATUS_BASIS = {
@@ -204,7 +218,7 @@ def blindspot_index(fields):
             out.append(dict(key=f"{b}/rims/{r['id']}", batch=b, collection='rims', id=r['id'], type=r['type'], scope=r['scope'],
                             target=r['target'], consequential=bool(r['consequential']), statement=r['statement'],
                             label=f"{TYPE_LABEL.get(r['type'], r['type'].upper())} · {_short(F, r['target'])}",
-                            actions=[dict(id=a['id'], verb=a['verb'], tier=a['tier'], status=a['status'], title=a['title'])
+                            actions=[dict(id=a['id'], verb=a['verb'], tier=a['tier'], status=a['status'], cost=a['cost'], title=a['title'])
                                      for a in acts if r['id'] in a['triggered_by']]))
         dims = {d['id']: d for d in F['dimensions']}
         for m in F['missing_dimensions']:
@@ -215,7 +229,7 @@ def blindspot_index(fields):
                             scope='entity', target=m['entity'], consequential=True, not_acquired=True, would_require=d.get('would_require', []),
                             statement=f"{d['label']}: not acquired; consequential for {m['entity']}",
                             label=f"{TYPE_LABEL.get(d['family'], d['family'].upper())} · {m['entity']} (not acquired)",
-                            actions=[dict(id=a['id'], verb=a['verb'], tier=a['tier'], status=a['status'], title=a['title']) for a in acts
+                            actions=[dict(id=a['id'], verb=a['verb'], tier=a['tier'], status=a['status'], cost=a['cost'], title=a['title']) for a in acts
                                      if m['dimension'] in a['targets']['dimensions'] and m['entity'] in a['targets']['entities']]))
     return out
 
@@ -341,6 +355,98 @@ def capability_status(G, review):
     return 'WATCHING'
 
 
+def _vortex_id(ref):
+    """Stable inquiry-vortex id for a resolved field limit or an explicit external vocabulary gap."""
+    if ref.get('resolved'):
+        return 'vortex:' + ref['key']
+    if ref.get('external') and ref.get('general'):
+        return 'vortex:general/' + ref['general']
+    # Keep malformed input buildable so check() can report the actual unresolved-reference violation.
+    return 'vortex:unresolved/' + ref.get('key', 'unknown')
+
+
+def _observability(marker, test):
+    """What is needed to instantiate this marker. This classifies availability; it does not judge scientific value."""
+    if marker.get('current_capture_compatible') is False or marker.get('required_capabilities'):
+        cls = 'requires_new_observability'
+        basis = 'the marker names information or a capability absent from the current capture'
+    elif test['status'] == 'requires_acquisition':
+        cls = 'needs_targeted_capture'
+        basis = 'the current modality can measure it, but the required capture is not in the loaded data'
+    else:
+        cls = 'computable_now'
+        basis = 'the loaded data can support the defined test or implementation'
+    return dict(cls=cls, label=OBSERVABILITY_LABEL[cls], basis=basis,
+                required_modalities=marker.get('required_modalities', []),
+                required_capabilities=marker.get('required_capabilities', []))
+
+
+def _marker_factors(marker):
+    factors = []
+    if marker['closes_consequential']:
+        factors.append('addresses a decision-consequential inquiry vortex')
+    elif marker['vortex_refs']:
+        factors.append('addresses a structured inquiry vortex')
+    if any(r['resolved'] for r in marker['decision_refs']):
+        factors.append('linked to a current decision')
+    factors.append(marker['observability']['label'].lower())
+    if marker['existing_data_test']['status'] == 'passed':
+        factors.append('implemented test passed on current data')
+    if marker['gates']['scientific_relevance']['state'] == 'open':
+        factors.append('scientific literature basis remains open')
+    if marker.get('implementation_burden'):
+        factors.append(f"{marker['implementation_burden']} implementation burden")
+    if marker['status'] in TERMINAL:
+        factors.append('tested and set aside')
+    return factors
+
+
+def _opportunity_order(marker):
+    """Attention order, not truth: live and consequential first, then observability, evidence, burden and stable id."""
+    obs = {'computable_now': 0, 'needs_targeted_capture': 1, 'requires_new_observability': 2}
+    burden = {'low': 0, 'medium': 1, 'high': 2, None: 3}
+    tested = {'passed': 0, 'inconclusive': 1, 'not_run': 2, 'requires_acquisition': 3, 'not_observable': 4, 'failed': 5}
+    return (marker['status'] in TERMINAL, marker['fixture'], 0 if marker['closes_consequential'] else 1,
+            obs[marker['observability']['cls']], tested.get(marker['existing_data_test']['status'], 6),
+            -len(marker['evidence']), burden.get(marker.get('implementation_burden'), 3), marker['id'])
+
+
+def _attractor_order(capability):
+    burden = {'low': 0, 'medium': 1, 'high': 2, None: 3}
+    return (capability['status'] == 'REJECTED', capability['fixture'], -len(capability['closes_consequential']),
+            -len(capability['marker_pool']), burden.get((capability.get('integration') or {}).get('burden'), 3), capability['id'])
+
+
+def _vortices(blindspots, markers, capabilities):
+    """Structured reasons to inquire, derived from field limits plus explicitly declared representation gaps."""
+    out = []
+    M, C = {m['id']: m for m in markers}, {c['id']: c for c in capabilities}
+    for b in blindspots:
+        refs = b.get('addressed_by', [])
+        out.append(dict(
+            id='vortex:' + b['key'], label=b['label'], kind=VORTEX_KIND.get(b['type'], 'structured_uncertainty'),
+            statement=b['statement'], source='epistemic-field/1', instantiated=True,
+            attention='decision_consequential' if b['consequential'] else 'structured_limit', consequential=b['consequential'],
+            evidence_refs=[dict(batch=b['batch'], collection=b['collection'], id=b['id'])],
+            marker_refs=sorted(x for x in refs if x in M), capability_refs=sorted(x for x in refs if x in C),
+            current_actions=b['actions']))
+    general = {}
+    for marker in markers:
+        for g in marker['general_gaps']:
+            x = general.setdefault(g['general'], dict(label=g['label'], markers=set(), capabilities=set()))
+            x['markers'].add(marker['id'])
+    for capability in capabilities:
+        for g in capability['general_gaps']:
+            x = general.setdefault(g['general'], dict(label=g['label'], markers=set(), capabilities=set()))
+            x['capabilities'].add(capability['id'])
+    for key, g in sorted(general.items()):
+        out.append(dict(id='vortex:general/' + key, label=g['label'], kind='representational_gap',
+                        statement='A proposed vocabulary gap; no loaded field directly instantiates it.', source='research_bundle',
+                        instantiated=False, attention='external_hypothesis', consequential=False, evidence_refs=[],
+                        marker_refs=sorted(g['markers']), capability_refs=sorted(g['capabilities']), current_actions=[]))
+    return out
+
+
 # ---------------------------------------------------------------- build
 def build(fields, bundles):
     """marker-frontier/1 from the loaded epistemic fields and research bundles. Deterministic."""
@@ -464,14 +570,20 @@ def build(fields, bundles):
                 or ('requires_acquisition' if declared == 'requires_acquisition' else 'inconclusive' if 'inconclusive' in o else 'not_run'))
         req_acts = [dict(batch=b['batch'], **a) for b in bs if b['resolved'] for a in BI[b['key']]['actions']] if test == 'requires_acquisition' else []
         ev = evidence_rows(rows)
-        markers.append(dict(
+        existing_test = dict(m.get('existing_data_test') or {}, status=test, requires_actions=req_acts)
+        representation = m.get('representation') or FAMILY_REPRESENTATION.get(m['family'], 'other')
+        marker_kind = m.get('marker_kind') or ('qualitative' if representation in QUALITATIVE_REPRESENTATIONS else 'quantitative')
+        marker = dict(
             {k: m.get(k) for k in ('id', 'name', 'family', 'proposition', 'scientific_definition', 'measurement_definition', 'why_relevant',
-                                   'decision_relevance', 'capture_requirements', 'current_capture_compatible')},
+                                   'decision_relevance', 'capture_requirements', 'current_capture_compatible', 'implementation_burden')},
+            marker_kind=marker_kind, representation=representation, observable=m.get('observable') or m['proposition'],
+            scientific_question=m.get('scientific_question'),
             required_modalities=m.get('required_modalities', []), required_capabilities=m.get('required_capabilities', []),
             known_confounds=conf, known_failure_modes=m.get('known_failure_modes', []), redundant_with=m.get('redundant_with', []),
-            existing_data_test=dict(m.get('existing_data_test') or {}, status=test, requires_actions=req_acts),
+            existing_data_test=existing_test,
             blindspot_refs=bs, decision_refs=dec, closes=[b['key'] for b in bs if b['resolved']], closes_consequential=[b['key'] for b in cons],
             general_gaps=[dict(general=b['general'], label=b['label']) for b in bs if b['external']],
+            vortex_refs=[_vortex_id(b) for b in bs],
             status=status, status_basis=why(status, G, rv['decision'] if rv else None), review=rv,
             lane='new_capability' if G['measurability']['state'] == 'failed' and m.get('required_capabilities') else 'current_capture',
             gates=G, rail=[dict(gate=x, state=G[x]['state']) for x, _ in MARKER_RAIL],
@@ -479,7 +591,11 @@ def build(fields, bundles):
             qualifiers=_qualifiers(status, cons, G['scientific_relevance']['state'], m['fixture']),
             evidence=[e for e in ev if e.get('direction') != 'CONTRADICTORY'],
             contradictory_evidence=[e for e in ev if e.get('direction') == 'CONTRADICTORY'],
-            counts=_counts(rows), fixture=m['fixture'], bundle=m['bundle'], extended_by=m.get('extended_by', []), provenance=m.get('provenance', {})))
+            counts=_counts(rows), fixture=m['fixture'], bundle=m['bundle'], extended_by=m.get('extended_by', []), provenance=m.get('provenance', {}))
+        marker['observability'] = _observability(m, existing_test)
+        marker['investigation_state'] = INVESTIGATION_STATE[status]
+        marker['ranking_factors'] = _marker_factors(marker)
+        markers.append(marker)
     MK = {m['id']: m for m in markers}
 
     # ---- capabilities (demand accumulates across marker cases)
@@ -520,12 +636,14 @@ def build(fields, bundles):
         dec_refs = [dict(r, resolved=_field_ref(r, FB)[0]) for r in c.get('decision_refs', [])]
         acts = sorted({(b['batch'], a['id']) for b in cons for a in BI[b['key']]['actions']})
         ev = evidence_rows(rows)
-        caps.append(dict(
+        capability = dict(
             {k: c.get(k) for k in ('id', 'name', 'capability_type', 'why_current_workflow_cannot_resolve', 'non_substitutability_evidence')},
             existing_capability_substitutes=subs, integration=c.get('integration'),
             blindspot_refs=own, closes=[b['key'] for b in bs if b['resolved']], closes_consequential=[b['key'] for b in cons],
             general_gaps=[dict(general=b['general'], label=b['label']) for b in bs if b['external']],
+            vortex_refs=[_vortex_id(b) for b in bs],
             markers_unlocked=[m['id'] for m in demanding], marker_demands=[m['id'] for m in active], credible_demands=[m['id'] for m in credible],
+            marker_pool=[m['id'] for m in active], required_information=[m['observable'] for m in active],
             decision_refs=dec_refs, decisions_affected=[dict(batch=b, action=a) for b, a in acts],
             status=status, status_basis=why(status, G, rv['decision'] if rv else None), review=rv,
             gates=G, rail=[dict(gate=x, state=G[x]['state']) for x, _ in CAPABILITY_RAIL],
@@ -536,7 +654,12 @@ def build(fields, bundles):
             counts=dict(_counts(rows), marker_demands=len(active), credible_demands=len(credible),
                         markers_unlocked=len(demanding), markers_unlocked_fixture=sum(m['fixture'] for m in demanding),
                         integration_burden=integ.get('burden')),
-            fixture=c['fixture'], bundle=c['bundle'], extended_by=c.get('extended_by', []), provenance=c.get('provenance', {})))
+            fixture=c['fixture'], bundle=c['bundle'], extended_by=c.get('extended_by', []), provenance=c.get('provenance', {}))
+        capability['attractor_state'] = ATTRACTOR_STATE[status]
+        capability['ranking_factors'] = ([f"unlocks {len(active)} active marker opportunit{'y' if len(active) == 1 else 'ies'}"] if active else []) + \
+            (['addresses a decision-consequential inquiry vortex'] if cons else ['no decision-consequential vortex linked']) + \
+            ([f"{integ.get('burden')} integration burden"] if integ.get('burden') else ['integration burden unassessed'])
+        caps.append(capability)
 
     addressed = {}
     for case in markers + caps:
@@ -545,6 +668,46 @@ def build(fields, bundles):
     for b in idx:
         b['addressed_by'] = sorted(addressed.get(b['key'], []))
     live = {x['id'] for x in markers + caps if x['status'] not in TERMINAL and not x['fixture']}
+    opportunity_markers = sorted([m for m in markers if m['status'] not in TERMINAL and not m['fixture']], key=_opportunity_order)
+    current_frontier = [m['id'] for m in opportunity_markers[:3]]
+    for rank, marker in enumerate(opportunity_markers, 1):
+        marker['opportunity_rank'] = rank
+        marker['priority_band'] = 'current_frontier' if marker['id'] in current_frontier else 'investigate'
+    for marker in markers:
+        if marker['status'] in TERMINAL:
+            marker['opportunity_rank'] = None
+            marker['priority_band'] = 'set_aside'
+        elif marker['fixture']:
+            marker['opportunity_rank'] = None
+            marker['priority_band'] = 'fixture'
+    # A capability becomes an attractor only through an active marker payload. A bare capability case remains
+    # inspectable in the contract but is not surfaced as a tooling opportunity or roadmap recommendation.
+    attractors = sorted([c for c in caps if c['status'] != 'REJECTED' and not c['fixture'] and c['marker_pool']], key=_attractor_order)
+    for rank, capability in enumerate(attractors, 1):
+        capability['attractor_rank'] = rank
+    for capability in caps:
+        if capability not in attractors:
+            capability['attractor_rank'] = None
+    vortices = _vortices(idx, markers, caps)
+    candidate_markers = {
+        cls: [m['id'] for m in opportunity_markers if m['observability']['cls'] == cls]
+        for cls in ('computable_now', 'needs_targeted_capture', 'requires_new_observability')
+    }
+    candidate_markers['set_aside'] = [m['id'] for m in sorted([m for m in markers if m['status'] in TERMINAL], key=_marker_order)]
+    roadmap = [
+        dict(id='test_current_data', label='TEST CURRENT DATA',
+             purpose='Implement or validate marker protocols supported by the loaded data.',
+             marker_refs=candidate_markers['computable_now']),
+        dict(id='capture_same_modality', label='TARGETED CAPTURE',
+             purpose='Use an existing modality at the scale or sampling pattern the marker requires.',
+             marker_refs=candidate_markers['needs_targeted_capture']),
+        dict(id='expand_observability', label='EXPAND OBSERVABILITY',
+             purpose='Evaluate capability payloads that unlock otherwise inaccessible marker families.',
+             capability_refs=[c['id'] for c in attractors]),
+        dict(id='reobserve', label='RE-OBSERVE',
+             purpose='Feed validated markers and newly acquired information back through the local Examiner loop.',
+             depends_on=['test_current_data', 'capture_same_modality', 'expand_observability']),
+    ] if markers or attractors else []
     lanes = dict(current_capture=[m['id'] for m in sorted([m for m in markers if m['lane'] == 'current_capture'], key=_marker_order)],
                  new_capability=[c['id'] for c in sorted(caps, key=_cap_order)])
     doc = dict(
@@ -555,7 +718,15 @@ def build(fields, bundles):
                      research_agent_present=any(b['kind'] == 'research_agent' for b in I['bundles'])),
         rails=dict(marker=[dict(gate=g, label=l) for g, l in MARKER_RAIL], capability=[dict(gate=g, label=l) for g, l in CAPABILITY_RAIL]),
         blindspots=idx,
+        vortices=vortices,
         open_blindspots=[b['key'] for b in idx if b['consequential'] and not set(b['addressed_by']) & live],
+        opportunity_map=dict(
+            question='What additional useful ways of perceiving the current dataset should be investigated?',
+            local_loop='NEXT CAPTURE resolves the current decision; this map searches for better representations and future observability.',
+            current_frontier=current_frontier, candidate_markers=candidate_markers,
+            tooling_attractors=[c['id'] for c in attractors], roadmap=roadmap,
+            ranking_policy=['decision-consequential inquiry first', 'then current-data testability',
+                            'then existing evidence and implementation burden', 'stable id breaks remaining ties']),
         lanes=lanes, markers=markers, capabilities=caps, papers=papers, records=records,
         reviews=sorted(I['reviews'], key=lambda r: (r['target'], r.get('date') or '', r['bundle'])),
         governance=dict(rules=GOVERNANCE_RULES, status_basis=STATUS_BASIS, conflicts=conflicts, ignored=ignored))
@@ -598,6 +769,7 @@ def check(doc, fields=None, bundles=None, root=ROOT):
     if doc.get('schema_version') != SCHEMA_VERSION:
         bad.append('schema_version')
     M, C = {m['id']: m for m in doc['markers']}, {c['id']: c for c in doc['capabilities']}
+    V = {v['id']: v for v in doc.get('vortices', [])}
     P, R = {p['id']: p for p in doc['papers']}, {r['id']: r for r in doc['records']}
     for name, coll in (('markers', doc['markers']), ('capabilities', doc['capabilities']), ('papers', doc['papers']), ('records', doc['records'])):
         if len({x['id'] for x in coll}) != len(coll):
@@ -651,6 +823,16 @@ def check(doc, fields=None, bundles=None, root=ROOT):
                 bad.append(f"{m['id']}: required capability {cid} has no case")
         if m['current_capture_compatible'] is False and not m['required_capabilities']:
             bad.append(f"{m['id']}: current capture cannot observe it, but it names no capability that could")
+        expected_obs = _observability(m, m['existing_data_test'])['cls']
+        if m.get('observability', {}).get('cls') != expected_obs:
+            bad.append(f"{m['id']}: observability class does not follow from capture compatibility and test state")
+        if m.get('marker_kind') not in ('quantitative', 'qualitative', 'hybrid'):
+            bad.append(f"{m['id']}: marker kind is not quantitative, qualitative or hybrid")
+        if not m.get('representation') or not m.get('observable'):
+            bad.append(f"{m['id']}: marker protocol lacks a representation or observable")
+        for vid in m.get('vortex_refs', []):
+            if vid not in V:
+                bad.append(f"{m['id']}: inquiry vortex {vid} does not resolve")
     for c in doc['capabilities']:
         G = {g: v['state'] for g, v in c['gates'].items()}
         if capability_status(c['gates'], (c['review'] or {}).get('decision')) != c['status']:
@@ -664,10 +846,48 @@ def check(doc, fields=None, bundles=None, root=ROOT):
             bad.append(f"{c['id']}: {c['status']} without convergent marker demand / consequential blindspot / non-substitutability")
         if any(M[m]['fixture'] for m in c['marker_demands'] if m in M):
             bad.append(f"{c['id']}: a fixture marker counts as demand")
+        expected_pool = [m['id'] for m in doc['markers'] if c['id'] in m['required_capabilities'] and m['status'] not in TERMINAL and not m['fixture']]
+        if c.get('marker_pool') != expected_pool:
+            bad.append(f"{c['id']}: tooling-attractor marker pool does not match active inaccessible markers")
+        for vid in c.get('vortex_refs', []):
+            if vid not in V:
+                bad.append(f"{c['id']}: inquiry vortex {vid} does not resolve")
+    for v in V.values():
+        for mid in v['marker_refs']:
+            if mid not in M or v['id'] not in M[mid]['vortex_refs']:
+                bad.append(f"{v['id']}: marker link {mid} is not reciprocal")
+        for cid in v['capability_refs']:
+            if cid not in C or v['id'] not in C[cid]['vortex_refs']:
+                bad.append(f"{v['id']}: capability link {cid} is not reciprocal")
     if doc['lanes']['current_capture'] != [m['id'] for m in sorted([m for m in doc['markers'] if m['lane'] == 'current_capture'], key=_marker_order)]:
         bad.append('lanes.current_capture not in rule order')
     if doc['lanes']['new_capability'] != [c['id'] for c in sorted(doc['capabilities'], key=_cap_order)]:
         bad.append('lanes.new_capability not in rule order')
+    O = doc.get('opportunity_map') or {}
+    active = sorted([m for m in doc['markers'] if m['status'] not in TERMINAL and not m['fixture']], key=_opportunity_order)
+    expected_frontier = [m['id'] for m in active[:3]]
+    if O.get('current_frontier') != expected_frontier:
+        bad.append('opportunity_map.current_frontier not in deterministic attention order')
+    groups = O.get('candidate_markers') or {}
+    for cls in ('computable_now', 'needs_targeted_capture', 'requires_new_observability'):
+        expected = [m['id'] for m in active if m['observability']['cls'] == cls]
+        if groups.get(cls) != expected:
+            bad.append(f'opportunity_map.candidate_markers.{cls} is incoherent')
+    expected_attractors = [c['id'] for c in sorted([c for c in doc['capabilities']
+                                                   if c['status'] != 'REJECTED' and not c['fixture'] and c['marker_pool']],
+                                                  key=_attractor_order)]
+    if O.get('tooling_attractors') != expected_attractors:
+        bad.append('opportunity_map.tooling_attractors not in deterministic payload order')
+    roadmap_refs = {x for step in O.get('roadmap', []) for x in step.get('marker_refs', [])}
+    roadmap_caps = {x for step in O.get('roadmap', []) for x in step.get('capability_refs', [])}
+    roadmap_ids = {step.get('id') for step in O.get('roadmap', [])}
+    roadmap_deps = {x for step in O.get('roadmap', []) for x in step.get('depends_on', [])}
+    if roadmap_refs - set(M):
+        bad.append('opportunity roadmap contains an unknown marker')
+    if roadmap_caps - set(C):
+        bad.append('opportunity roadmap contains an unknown capability')
+    if roadmap_deps - roadmap_ids:
+        bad.append('opportunity roadmap contains an unknown dependency')
 
     def keys(o, path=''):
         if isinstance(o, dict):

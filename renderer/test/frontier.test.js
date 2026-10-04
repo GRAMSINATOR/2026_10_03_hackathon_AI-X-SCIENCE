@@ -2,9 +2,12 @@
 // that the view never invents precision, keeps contradictions, and works before any research has arrived.
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
+import { createElement } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import MarkerFrontier from '../src/ui/MarkerFrontier.jsx';
 import {
   railSegments, lanes, blindspotChips, decisionValue, markerCounts, capabilityCounts, papersFor, recordsFor, researchState,
-  openPull, briefClaimFor, casesById,
+  openPull, briefClaimFor, casesById, opportunityView, vorticesFor, representationWord,
 } from '../src/model/frontier.js';
 
 const load = n => JSON.parse(readFileSync(new URL(`../../fixtures/${n}`, import.meta.url), 'utf8'));
@@ -39,7 +42,9 @@ describe('evidence rail', () => {
 describe('lanes and cases', () => {
   it('keeps rule order; tested-and-set-aside markers are split off; unobservable markers live under their capability', () => {
     const L = lanes(SEED);
-    expect(L.active.map(m => m.id)).toEqual(['marker:fines_subfloor_size']);
+    expect(L.active.map(m => m.id)).toEqual([
+      'marker:fines_subfloor_size', 'marker:open_edge_persistence', 'marker:spatial_correlation_length',
+    ]);
     expect(L.setAside.map(m => m.status)).toEqual(['CONFOUNDED', 'REJECTED']);
     expect(L.capabilities.map(c => c.id)).toEqual(['capability:eds', 'capability:tomography_3d']);
     expect([...L.active, ...L.setAside].some(m => m.status === 'UNAVAILABLE')).toBe(false);
@@ -62,6 +67,62 @@ describe('lanes and cases', () => {
     expect(k.find(x => x.fixture).v).toBe(2);
     expect(k.find(x => x.k === 'contradictory').v).toBe(0);           // the contradictory source is a fixture: not counted
     expect(markerCounts(M(SEED, 'marker:fines_subfloor_size')).find(x => x.k === 'current data').v).toBe('needs acquisition');
+  });
+});
+
+describe('opportunity map', () => {
+  it('renders a deterministic shortlist without converting categorical factors into a score', () => {
+    const O = opportunityView(SEED);
+    expect(O.currentFrontier.map(m => [m.opportunity_rank, m.id])).toEqual([
+      [1, 'marker:open_edge_persistence'],
+      [2, 'marker:fines_subfloor_size'],
+      [3, 'marker:high_z_composition'],
+    ]);
+    expect(O.computableNow.map(m => m.id)).toEqual([
+      'marker:open_edge_persistence', 'marker:spatial_correlation_length',
+    ]);
+    expect(O.needsCapture.map(m => m.id)).toEqual(['marker:fines_subfloor_size']);
+    expect(O.observabilityGaps.map(m => m.id)).toContain('marker:phase_conditioned_fines_distribution');
+    expect(O.rankingPolicy).toEqual(expect.arrayContaining([
+      'decision-consequential inquiry first', 'then current-data testability',
+    ]));
+    for (const m of SEED.markers) expect(m).not.toHaveProperty('opportunity_score');
+  });
+
+  it('supports qualitative observation protocols and reciprocal inquiry-vortex links', () => {
+    const m = M(SEED, 'marker:open_edge_persistence');
+    expect(m).toMatchObject({ marker_kind: 'qualitative', representation: 'categorical_state' });
+    expect(representationWord(m.representation)).toBe('categorical state');
+    expect(vorticesFor(SEED, m).length).toBeGreaterThan(0);
+    for (const v of vorticesFor(SEED, m)) expect(v.marker_refs).toContain(m.id);
+  });
+
+  it('pools multiple inaccessible markers under one observability attractor', () => {
+    const O = opportunityView(SEED), eds = C(SEED, 'capability:eds');
+    expect(O.attractors[0].id).toBe('capability:eds');
+    expect(eds.marker_pool).toEqual(expect.arrayContaining([
+      'marker:high_z_composition', 'marker:phase_conditioned_fines_distribution',
+    ]));
+    expect(eds.required_information.length).toBeGreaterThan(0);
+    for (const mid of eds.marker_pool) expect(M(SEED, mid).required_capabilities).toContain(eds.id);
+  });
+
+  it('degrades to an honest sparse state when cases are absent', () => {
+    const O = opportunityView(EMPTY);
+    expect(O.currentFrontier).toEqual([]);
+    expect(O.computableNow).toEqual([]);
+    expect(O.observabilityGaps).toEqual([]);
+    expect(O.attractors).toEqual([]);
+  });
+
+  it('renders both populated and sparse opportunity surfaces', () => {
+    const populated = renderToStaticMarkup(createElement(MarkerFrontier, { frontier: SEED }));
+    expect(populated).toContain('AGENTIC MARKER FRONTIER');
+    expect(populated).toContain('Open-edge deviation phenotype');
+    expect(populated).toContain('Composition-sensitive mapping (EDS)');
+    const sparse = renderToStaticMarkup(createElement(MarkerFrontier, { frontier: EMPTY }));
+    expect(sparse).toContain('No grounded marker opportunity yet');
+    expect(sparse).toContain('No observability attractor yet');
   });
 });
 

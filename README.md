@@ -7,7 +7,9 @@ Parallax uses each incoming microscopy batch for two jobs at once:
 1. **material QC:** detect whether the incoming material departs from a configured reference; and
 2. **dataset self-audit:** ask whether the current sampling, capture geometry, modalities and reference population are actually strong enough to support the inference being made.
 
-The second job is the product thesis.
+The broader product thesis is to challenge the dataset's current representation: identify structured limits, define
+new observational handles, test what can be extracted now, and map which additional measurements would unlock
+valuable marker families.
 
 An incoming batch is not only something to classify. It is a **probe of the measurement regime itself**.
 
@@ -365,13 +367,16 @@ It is generated from the current evidence state and the limits that evidence exp
 
 ---
 
-# Marker Frontier: expanding what the lab can know
+# Agentic Marker Frontier: expanding what the lab can perceive
 
 Parallax has a second recursive loop.
 
 The acquisition controller can discover that the **current vocabulary of measurements is itself incomplete**.
 
-A **Marker** is an interpretable pattern, feature family or data dimension worth tracking because it can close a current blindspot or materially improve a scientific decision.
+A **marker** is a defined quantitative, qualitative or hybrid protocol for perceiving a scientifically meaningful
+property. It may be a scalar, distribution, spatial field, categorical phenotype, relation or topology. Structured
+limits in the current representation become **inquiry vortices**: reasons to investigate, rather than automatic
+defects or anomalies.
 
 Examples might include:
 
@@ -381,9 +386,14 @@ Examples might include:
 - chemical identity;
 - 3-D pore connectivity.
 
-Marker Frontier separates two questions.
+The **AGENTIC MARKER FRONTIER** separates three questions.
 
-## A. Can we track a useful new marker with the capture we already have?
+## A. What should be investigated first?
+
+**CURRENT FRONTIER** is a short deterministic attention order. The visible factors state why each opportunity is
+near the top. It is a research-priority ranking, not a truth, certainty or confidence score.
+
+## B. Can we test a useful marker with what we already capture?
 
 ```text
 current blindspot
@@ -394,10 +404,13 @@ scientific evidence
     ↓
 test measurability + confounds on current data
     ↓
-admit the marker only if it adds non-redundant value
+test its value, robustness and complementarity
 ```
 
-## B. Does the evidence justify adding a new lab capability?
+Candidates are split into **COMPUTABLE / TESTABLE NOW**, **NEEDS TARGETED CAPTURE**, and **REQUIRES NEW
+OBSERVABILITY**. This keeps representation search distinct from NEXT CAPTURE, which optimises the immediate decision.
+
+## C. Do inaccessible marker opportunities justify an observability expansion?
 
 ```text
 multiple useful markers
@@ -406,7 +419,7 @@ all require a capability the lab lacks
     ↓
 literature + blindspot relevance + non-substitutability accumulate
     ↓
-case for adding the measurement capability
+scoped capability payload and acquisition-roadmap opportunity
 ```
 
 For example, multiple chemistry-related marker needs can accumulate into a case for **EDS / elemental mapping**.
@@ -415,7 +428,13 @@ The point is not to count papers.
 
 The point is:
 
-> **Do multiple independently supported information needs converge on a measurement capability that would close a consequential blindspot?**
+> **Do valuable marker opportunities converge on information the current workflow cannot observe, with enough evidence
+> and no adequate substitute to justify evaluating a new capability?**
+
+The resulting **OBSERVABILITY EXPANSION** section is a marker-pool argument, not an equipment wishlist. It shows what
+the capability would expose, which inquiry vortices it addresses, why current data are insufficient, and its burden
+and alternatives. The renderer-independent `marker-frontier/1` contract also exposes a roadmap for downstream agents:
+test current-data protocols, make targeted captures, evaluate observability expansion, then re-observe.
 
 The research / literature agent proposes Marker and Capability cases. It does **not** silently modify the validated controller.
 
@@ -548,7 +567,7 @@ Its major surfaces are:
 - **human readout** — dataset self-audit, surviving signal, open limits, next acquisition;
 - **Examiner Control Matrix** — detailed proof/challenge surface;
 - **Imaging / Inspection Bay** — registered microscopy, segmentation and spatial profiles;
-- **Marker Frontier** — recursive measurement-vocabulary / capability expansion;
+- **Agentic Marker Frontier** — ranked marker research, observability gaps and capability-pool roadmap;
 - **Service Hatch** — raw statistical proof.
 
 The scientific state remains renderer-independent.
