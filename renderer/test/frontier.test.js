@@ -43,7 +43,10 @@ describe('lanes and cases', () => {
   it('keeps rule order; tested-and-set-aside markers are split off; unobservable markers live under their capability', () => {
     const L = lanes(SEED);
     expect(L.active.map(m => m.id)).toEqual([
-      'marker:fines_subfloor_size', 'marker:open_edge_persistence', 'marker:spatial_correlation_length',
+      'marker:fines_subfloor_size', 'marker:count_overdispersion_curve', 'marker:high_z_nearest_neighbour',
+      'marker:high_z_pair_correlation', 'marker:minkowski_phase_morphology', 'marker:open_edge_persistence',
+      'marker:phase_boundary_morphology', 'marker:phase_chord_distribution',
+      'marker:phase_fraction_heterogeneity_curve', 'marker:phase_lineal_path', 'marker:spatial_correlation_length',
     ]);
     expect(L.setAside.map(m => m.status)).toEqual(['CONFOUNDED', 'REJECTED']);
     expect(L.capabilities.map(c => c.id)).toEqual(['capability:eds', 'capability:tomography_3d']);
@@ -74,12 +77,15 @@ describe('opportunity map', () => {
   it('renders a deterministic shortlist without converting categorical factors into a score', () => {
     const O = opportunityView(SEED);
     expect(O.currentFrontier.map(m => [m.opportunity_rank, m.id])).toEqual([
-      [1, 'marker:open_edge_persistence'],
-      [2, 'marker:fines_subfloor_size'],
-      [3, 'marker:high_z_composition'],
+      [1, 'marker:fines_subfloor_size'],
+      [2, 'marker:high_z_composition'],
+      [3, 'marker:phase_conditioned_fines_distribution'],
     ]);
     expect(O.computableNow.map(m => m.id)).toEqual([
-      'marker:open_edge_persistence', 'marker:spatial_correlation_length',
+      'marker:open_edge_persistence', 'marker:phase_fraction_heterogeneity_curve', 'marker:spatial_correlation_length',
+      'marker:count_overdispersion_curve', 'marker:high_z_pair_correlation', 'marker:phase_chord_distribution',
+      'marker:high_z_nearest_neighbour', 'marker:minkowski_phase_morphology', 'marker:phase_boundary_morphology',
+      'marker:phase_lineal_path',
     ]);
     expect(O.needsCapture.map(m => m.id)).toEqual(['marker:fines_subfloor_size']);
     expect(O.observabilityGaps.map(m => m.id)).toContain('marker:phase_conditioned_fines_distribution');
@@ -127,8 +133,10 @@ describe('opportunity map', () => {
 });
 
 describe('papers and records', () => {
-  it('renders with zero papers', () => {
-    for (const c of [...SEED.markers, ...SEED.capabilities]) expect(papersFor(SEED, c.id)).toEqual([]);
+  it('shows primary method papers only on the candidate protocols they assess', () => {
+    expect(papersFor(SEED, 'marker:count_overdispersion_curve').map(p => p.id)).toEqual(['paper:zachary2011_local_fluctuations']);
+    expect(papersFor(SEED, 'marker:high_z_nearest_neighbour').map(p => p.id)).toEqual(['paper:leggoe2005_nearest_neighbour']);
+    expect(papersFor(SEED, 'marker:fines_subfloor_size')).toEqual([]);
   });
   it('contradictory papers stay listed, after the supportive ones', () => {
     const ps = papersFor(EX, 'capability:eds');

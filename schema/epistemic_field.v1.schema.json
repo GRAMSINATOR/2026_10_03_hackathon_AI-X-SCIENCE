@@ -2,11 +2,14 @@
  "$schema": "https://json-schema.org/draft/2020-12/schema",
  "$id": "epistemic-field/1",
  "title": "Uncertainty field (renderer-independent epistemic state)",
- "description": "What was measured, how it relates to the approved population, what bounds each envelope, which evidence survives scrutiny, where support fades (rims), and which acquisition actions follow (each pointing back to its triggers). Contains no visual instructions. Prose fields (statement, title, evidence, rationale, reasons, label, note) annotate structured fields beside them. Values are in canonical units (dimensions[].unit); dimensions[].display gives a conventional display unit and factor. Array order carries no meaning except actions (ranked).",
+ "description": "What was measured, the explicit scientific reference frame, how measurements relate to that frame, what remains stable across eligible frames, what bounds each envelope, which evidence survives scrutiny, where support fades (rims), and which acquisition actions follow (each pointing back to its triggers). Contains no visual instructions. Prose fields (statement, title, evidence, rationale, reasons, label, note) annotate structured fields beside them. Values are in canonical units (dimensions[].unit); dimensions[].display gives a conventional display unit and factor. Array order carries no meaning except actions (ranked).",
  "type": "object",
  "required": [
   "schema_version",
   "context",
+  "quantity_scope",
+  "reference_frames",
+  "reference_sensitivity",
   "decision",
   "dimensions",
   "entities",
@@ -28,6 +31,7 @@
    "required": [
     "batch",
     "reference",
+    "reference_frame",
     "statistical_unit",
     "model"
    ],
@@ -38,6 +42,18 @@
     },
     "reference": {
      "type": "string"
+    },
+    "reference_frame": {
+     "type": "object",
+     "required": ["id", "label", "selection", "externally_approved", "support"],
+     "additionalProperties": false,
+     "properties": {
+      "id": {"type": "string"},
+      "label": {"type": "string"},
+      "selection": {"const": "explicit"},
+      "externally_approved": {"type": "boolean"},
+      "support": {"type": "object"}
+     }
     },
     "statistical_unit": {
      "const": "parent_micrograph"
@@ -52,6 +68,55 @@
      ],
      "description": "absent = incoming. reference = the configured reference population auditing itself (leave-one-parent-micrograph-out); it never carries a QC verdict."
     }
+   }
+  },
+  "quantity_scope": {
+   "type": "object",
+   "required": ["intrinsic", "reference_relative"],
+   "additionalProperties": false,
+   "properties": {
+    "intrinsic": {"type": "array", "items": {"type": "string"}},
+    "reference_relative": {"type": "array", "items": {"type": "string"}}
+   }
+  },
+  "reference_frames": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "type": "object",
+    "required": ["id", "label", "eligible", "unavailable_reasons", "support_quality", "support", "selected", "externally_approved"],
+    "properties": {
+     "id": {"type": "string"},
+     "label": {"type": "string"},
+     "eligible": {"type": "boolean"},
+     "unavailable_reasons": {"type": "array", "items": {"type": "string"}},
+     "support_quality": {"enum": ["supported", "limited", "unavailable"]},
+     "support": {"type": "object"},
+     "selected": {"type": "boolean"},
+     "externally_approved": {"type": "boolean"}
+    }
+   }
+  },
+  "reference_sensitivity": {
+   "type": "object",
+   "required": ["schema_version", "mode", "eligible_frames", "frames_evaluated", "complete", "intrinsic_unchanged",
+                "conclusion", "verdicts_by_frame", "stable_dimensions", "sensitive_dimensions", "invariant_findings",
+                "frame_dependent_findings", "findings", "guardrail"],
+   "properties": {
+    "schema_version": {"const": "reference-sensitivity/1"},
+    "mode": {"const": "comparative_exploration_not_classification"},
+    "eligible_frames": {"type": "array", "items": {"type": "string"}},
+    "frames_evaluated": {"type": "array", "items": {"type": "string"}},
+    "complete": {"type": "boolean"},
+    "intrinsic_unchanged": {"type": "boolean"},
+    "conclusion": {"enum": ["not_evaluated", "reference_sensitive", "reference_insensitive"]},
+    "verdicts_by_frame": {"type": "object"},
+    "stable_dimensions": {"type": "array", "items": {"type": "string"}},
+    "sensitive_dimensions": {"type": "array", "items": {"type": "string"}},
+    "invariant_findings": {"type": "array", "items": {"type": "string"}},
+    "frame_dependent_findings": {"type": "array", "items": {"type": "string"}},
+    "findings": {"type": "array"},
+    "guardrail": {"type": "string"}
    }
   },
   "decision": {
@@ -379,6 +444,22 @@
    "minItems": 2,
    "maxItems": 2
   },
+  "uncertaintyModel": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "observation_family",
+    "support_model",
+    "uncertainty_adapter",
+    "reference_protocol"
+   ],
+   "properties": {
+    "observation_family": {"type": "string"},
+    "support_model": {"type": "string"},
+    "uncertainty_adapter": {"type": "string"},
+    "reference_protocol": {"type": "string"}
+   }
+  },
   "kpiDimension": {
    "type": "object",
    "additionalProperties": false,
@@ -393,6 +474,7 @@
     "display",
     "modalities",
     "cross_checks",
+    "uncertainty_model",
     "robustness",
     "reference",
     "spatial_support"
@@ -450,6 +532,9 @@
       ]
      }
     },
+    "uncertainty_model": {
+     "$ref": "#/$defs/uncertaintyModel"
+    },
     "robustness": {
      "type": "object",
      "required": [
@@ -499,7 +584,10 @@
          ]
         },
         "tile_excess_ci95": {
-         "$ref": "#/$defs/num2"
+         "type": "array",
+         "items": {"type": ["number", "null"]},
+         "minItems": 2,
+         "maxItems": 2
         },
         "range_um": {
          "type": [
@@ -883,6 +971,8 @@
     "window_um",
     "deviation_direction",
     "reference_band",
+    "comparison_support",
+    "whole_profile_excursion",
     "run_separation",
     "runs",
     "captured_length_um"
@@ -923,6 +1013,58 @@
       "hi",
       "approximate"
      ]
+    },
+    "comparison_support": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "observed_statistic",
+      "observed_window_um",
+      "reference_statistic",
+      "reference_window_um",
+      "raw_column_um",
+      "matched",
+      "raw_columns_inference"
+     ],
+     "properties": {
+      "observed_statistic": {"const": "local_window_mean"},
+      "observed_window_um": {"type": "number"},
+      "reference_statistic": {"const": "local_window_mean"},
+      "reference_window_um": {"type": "number"},
+      "raw_column_um": {"type": "number"},
+      "matched": {"const": true},
+      "raw_columns_inference": {"const": false}
+     }
+    },
+    "whole_profile_excursion": {
+     "type": "object",
+     "additionalProperties": false,
+     "required": [
+      "kind",
+      "max_standardized_excursion",
+      "approved_parent_maximum",
+      "ratio_to_approved_parent_maximum",
+      "exceeds_approved_parent_maximum",
+      "n_profile_windows",
+      "window_count_matched",
+      "n_reference_parents",
+      "calibrated",
+      "support_matched",
+      "note"
+     ],
+     "properties": {
+      "kind": {"const": "maximum_absolute_standardized_excursion"},
+      "max_standardized_excursion": {"type": "number"},
+      "approved_parent_maximum": {"type": ["number", "null"]},
+      "ratio_to_approved_parent_maximum": {"type": ["number", "null"]},
+      "exceeds_approved_parent_maximum": {"type": "boolean"},
+      "n_profile_windows": {"type": "integer", "minimum": 0},
+      "window_count_matched": {"type": "boolean"},
+      "n_reference_parents": {"type": "integer", "minimum": 0},
+      "calibrated": {"const": false},
+      "support_matched": {"const": true},
+      "note": {"type": "string"}
+     }
     },
     "runs": {
      "type": "array",

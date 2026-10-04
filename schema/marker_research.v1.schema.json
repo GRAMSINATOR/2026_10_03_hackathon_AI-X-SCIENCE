@@ -35,7 +35,7 @@
    "required": ["batch", "collection"],
    "properties": {
     "batch": {"type": "string"},
-    "collection": {"enum": ["rims", "missing_dimensions", "dimensions", "entities", "observations", "spatial_profiles", "actions", "decision", "summary", "context"]},
+    "collection": {"enum": ["rims", "missing_dimensions", "dimensions", "entities", "observations", "spatial_profiles", "actions", "decision", "summary", "context", "reference_sensitivity"]},
     "id": {"type": "string"},
     "path": {"type": ["string", "null"]}
    }
@@ -43,7 +43,7 @@
   "blindspotRef": {
    "oneOf": [
     {"type": "object", "required": ["batch", "collection", "id"],
-     "properties": {"batch": {"type": "string"}, "collection": {"enum": ["rims", "missing_dimensions"]}, "id": {"type": "string"}}, "additionalProperties": false},
+     "properties": {"batch": {"type": "string"}, "collection": {"enum": ["rims", "missing_dimensions", "reference_sensitivity"]}, "id": {"type": "string"}}, "additionalProperties": false},
     {"type": "object", "required": ["general", "label"], "description": "A vocabulary gap that no loaded field instantiates (explicitly external).",
      "properties": {"general": {"type": "string"}, "label": {"type": "string"}}, "additionalProperties": false}
    ]
@@ -76,6 +76,10 @@
     "proposition": {"type": "string", "description": "one short scientific meaning"},
     "scientific_definition": {"type": "string"},
     "measurement_definition": {"type": "string"},
+    "observation_family": {"type": "string", "description": "Type of scientific object produced by the marker."},
+    "support_model": {"type": "string", "description": "Physical and independence support of one observation."},
+    "uncertainty_adapter": {"type": "string", "description": "Provisional marker-specific uncertainty method."},
+    "reference_protocol": {"type": "string", "description": "Provisional comparison protocol; metadata is not implementation readiness."},
     "why_relevant": {"type": "string"},
     "decision_relevance": {"type": "string"},
     "current_capture_compatible": {"type": ["boolean", "null"]},

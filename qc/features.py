@@ -16,7 +16,7 @@ EDGE_CROP = 4      # px; removes the 1-4 px green stitching column (provenance e
 KPI_CROP = 8       # px; margin for KPI computation
 N_STRIPS = 4       # spatial sub-windows for within-field uncertainty
 THUMB = 4          # display downsampling
-FEATURE_VERSION = 2  # bump to invalidate cached field records
+FEATURE_VERSION = 3  # rich equal-area spatial summaries; invalidate legacy variance-only records
 
 
 def _chords_mean(mask, axis, px_um):

@@ -31,16 +31,16 @@
    "claims": [
     "evidence.summary",
     "evidence.M2060:additive_density",
+    "evidence.M2068:additive_d50_um",
     "evidence.non_surviving"
    ]
   },
   "limits": {
    "title": "LIMITS",
-   "state": "SCALE · COMPOSITION · EXTENT · PREVALENCE",
+   "state": "SCALE · COMPOSITION · PREVALENCE",
    "claims": [
     "limit.scale:M2060",
     "limit.composition:M2060",
-    "limit.spatial:M2060:additive_density",
     "limit.population:Batch_3"
    ]
   },
@@ -48,15 +48,19 @@
    "title": "ACQUISITION POLICY",
    "state": "VERIFY FIRST",
    "mode": "verify_first",
-   "sequence": "Repeat M2060 → resolve scale → chemistry (future) → extent → independent sections",
+   "sequence": "Repeat M2060 → resolve scale → chemistry (future) → independent sections",
    "claims": [
     "action.repeat:1",
     "action.zoom:2",
     "action.eds:3",
-    "action.extend:4",
-    "action.sections:5"
+    "action.sections:4"
    ],
    "later": [
+    {
+     "action": "eds:5",
+     "step": "chemistry",
+     "tier": 2
+    },
     {
      "action": "extend:6",
      "step": "extent",
@@ -103,7 +107,7 @@
       "id": "batch",
       "path": "p_batch"
      },
-     "value": 0.01666,
+     "value": 0.01692,
      "fmt": "p"
     },
     {
@@ -126,7 +130,7 @@
         "id": "batch",
         "path": "tests.severity_p"
        },
-       "value": 0.00833,
+       "value": 0.00846,
        "fmt": "p"
       },
       {
@@ -135,7 +139,7 @@
         "id": "batch",
         "path": "tests.count_p"
        },
-       "value": 0.22255,
+       "value": 0.22297,
        "fmt": "p"
       },
       {
@@ -192,7 +196,7 @@
    "scope": "Batch_3",
    "status": "dataset_scope",
    "label": "SCOPE",
-   "template": "Decision under this dataset only: approved reference {0} ({1}–{2} micrographs); {3}.",
+   "template": "Decision for this target and selected reference frame only: {0} ({1}–{2} micrographs); {3}.",
    "values": [
     {
      "ref": {
@@ -227,7 +231,7 @@
       "id": "batch",
       "path": "model"
      },
-     "value": "two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian",
+     "value": "two-level random-effects (reference population + tile sampling + reference support), simulation-calibrated; not Bayesian",
      "fmt": "str"
     }
    ],
@@ -255,7 +259,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "Decision under this dataset only: approved reference Batch_1 (5–6 micrographs); two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian.",
+   "text": "Decision for this target and selected reference frame only: Batch_1 (5–6 micrographs); two-level random-effects (reference population + tile sampling + reference support), simulation-calibrated; not Bayesian.",
    "fact": null,
    "focus": {
     "collection": "context",
@@ -278,7 +282,7 @@
       "id": "batch",
       "path": "n_surviving"
      },
-     "value": 1,
+     "value": 2,
      "fmt": "int"
     },
     {
@@ -310,7 +314,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "1 of 4 deviations survive scrutiny.",
+   "text": "2 of 4 deviations survive scrutiny.",
    "fact": null,
    "focus": {
     "collection": "summary",
@@ -325,7 +329,7 @@
    "scope": "M2060:additive_density",
    "status": "survives",
    "label": "M2060 · ADDITIVE DENSITY",
-   "template": "{0} in {1} is above the approved envelope and survives scrutiny.",
+   "template": "{0} in {1} is above the selected reference-frame envelope and survives scrutiny.",
    "values": [
     {
      "ref": {
@@ -346,7 +350,7 @@
      "fmt": "str"
     }
    ],
-   "fact_template": "{0} vs approved {1} {2} · without {3}: {4} (p = {5})",
+   "fact_template": "{0} vs selected reference {1} {2} · without {3}: {4} (p = {5})",
    "fact_values": [
     {
      "ref": {
@@ -399,7 +403,7 @@
       "id": "M2060",
       "path": "leverage.p_without"
      },
-     "value": 0.4482,
+     "value": 0.43665,
      "fmt": "p"
     }
    ],
@@ -413,7 +417,7 @@
         "id": "M2060:additive_density",
         "path": "reference_relation.z"
        },
-       "value": 6.72935,
+       "value": 6.88689,
        "fmt": "z"
       },
       {
@@ -422,7 +426,7 @@
         "id": "M2060:additive_density",
         "path": "reference_relation.q99"
        },
-       "value": 3.7391,
+       "value": 3.82911,
        "fmt": "f2"
       },
       {
@@ -435,7 +439,7 @@
        "fmt": "str"
       }
      ],
-     "text": "z = +6.7 against q99 = 3.74 (status out)"
+     "text": "z = +6.9 against q99 = 3.83 (status out)"
     },
     {
      "template": "{0} of {1} fields beyond the 95% envelope",
@@ -534,22 +538,30 @@
     "repeat:1",
     "zoom:2",
     "eds:3",
-    "extend:4",
-    "sections:5"
+    "sections:4"
    ],
    "role": "content",
-   "text": "Additive particle number density in M2060 is above the approved envelope and survives scrutiny.",
-   "fact": "34.4 vs approved 19.5 /1000 µm² · without M2060: ACCEPT (p = 0.448)"
+   "text": "Additive particle number density in M2060 is above the selected reference-frame envelope and survives scrutiny.",
+   "fact": "34.4 vs selected reference 19.5 /1000 µm² · without M2060: ACCEPT (p = 0.437)"
   },
   {
-   "id": "evidence.non_surviving",
-   "kind": "context",
+   "id": "evidence.M2068:additive_d50_um",
+   "kind": "surviving_evidence",
    "block": "surviving_evidence",
-   "scope": "Batch_3",
-   "status": "fails",
-   "label": "DID NOT SURVIVE",
-   "template": "Did not survive: {0} {1} ({2}), {3} {4} ({5}), {6} {7} ({8}).",
+   "scope": "M2068:additive_d50_um",
+   "status": "survives",
+   "label": "M2068 · ADDITIVE D50",
+   "template": "{0} in {1} is above the selected reference-frame envelope and survives scrutiny.",
    "values": [
+    {
+     "ref": {
+      "collection": "dimensions",
+      "id": "additive_d50_um",
+      "path": "label"
+     },
+     "value": "Additive median particle size (ECD)",
+     "fmt": "str"
+    },
     {
      "ref": {
       "collection": "observations",
@@ -558,25 +570,179 @@
      },
      "value": "M2068",
      "fmt": "str"
-    },
+    }
+   ],
+   "fact_template": "{0} vs selected reference {1} {2}",
+   "fact_values": [
     {
      "ref": {
-      "collection": "dimensions",
-      "id": "additive_d50_um",
-      "path": "short_label"
+      "collection": "observations",
+      "id": "M2068:additive_d50_um",
+      "path": "value"
      },
-     "value": "Additive D50",
-     "fmt": "str"
+     "value": 1.24499,
+     "fmt": "kpi:additive_d50_um"
     },
     {
      "ref": {
       "collection": "observations",
       "id": "M2068:additive_d50_um",
-      "path": "scrutiny.failed.0"
+      "path": "reference_relation.approved_mean"
      },
-     "value": "spatially_inconsistent",
-     "fmt": "failure"
+     "value": 0.875497,
+     "fmt": "kpi:additive_d50_um"
     },
+    {
+     "ref": {
+      "collection": "dimensions",
+      "id": "additive_d50_um",
+      "path": "unit"
+     },
+     "value": "µm",
+     "fmt": "str"
+    }
+   ],
+   "details": [
+    {
+     "template": "z = {0} against q99 = {1} (status {2})",
+     "values": [
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "reference_relation.z"
+       },
+       "value": 2.838,
+       "fmt": "z"
+      },
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "reference_relation.q99"
+       },
+       "value": 3.33638,
+       "fmt": "f2"
+      },
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "reference_relation.status"
+       },
+       "value": "deviant",
+       "fmt": "str"
+      }
+     ],
+     "text": "z = +2.8 against q99 = 3.34 (status deviant)"
+    },
+    {
+     "template": "{0} of {1} fields beyond the 95% envelope",
+     "values": [
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "scrutiny.fields_beyond_95"
+       },
+       "value": 2,
+       "fmt": "int"
+      },
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "scrutiny.n_fields"
+       },
+       "value": 3,
+       "fmt": "int"
+      }
+     ],
+     "text": "2 of 3 fields beyond the 95% envelope"
+    },
+    {
+     "template": "tested acquisition changes explain {0} of the deviation (limit {1})",
+     "values": [
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "scrutiny.acquisition_share"
+       },
+       "value": 0.237645,
+       "fmt": "pct"
+      },
+      {
+       "ref": {
+        "collection": "observations",
+        "id": "M2068:additive_d50_um",
+        "path": "scrutiny.acquisition_share_max"
+       },
+       "value": 0.5,
+       "fmt": "pct"
+      }
+     ],
+     "text": "tested acquisition changes explain 24% of the deviation (limit 50%)"
+    },
+    {
+     "template": "KPI robustness class: {0}",
+     "values": [
+      {
+       "ref": {
+        "collection": "dimensions",
+        "id": "additive_d50_um",
+        "path": "robustness.cls"
+       },
+       "value": "robust",
+       "fmt": "str"
+      }
+     ],
+     "text": "KPI robustness class: robust"
+    }
+   ],
+   "priority": 2,
+   "group": "evidence:M2068:additive_d50_um",
+   "proof_refs": [
+    {
+     "collection": "observations",
+     "id": "M2068:additive_d50_um",
+     "path": "reference_relation"
+    },
+    {
+     "collection": "observations",
+     "id": "M2068:additive_d50_um",
+     "path": "scrutiny"
+    },
+    {
+     "collection": "entities",
+     "id": "M2068",
+     "path": "leverage"
+    },
+    {
+     "collection": "dimensions",
+     "id": "additive_d50_um",
+     "path": "robustness"
+    }
+   ],
+   "focus": {
+    "collection": "observations",
+    "id": "M2068:additive_d50_um",
+    "path": "scrutiny"
+   },
+   "action_refs": [],
+   "role": "content",
+   "text": "Additive median particle size (ECD) in M2068 is above the selected reference-frame envelope and survives scrutiny.",
+   "fact": "1.24 vs selected reference 0.875 µm"
+  },
+  {
+   "id": "evidence.non_surviving",
+   "kind": "context",
+   "block": "surviving_evidence",
+   "scope": "Batch_3",
+   "status": "fails",
+   "label": "DID NOT SURVIVE",
+   "template": "Did not survive: {0} {1} ({2}), {3} {4} ({5}).",
+   "values": [
     {
      "ref": {
       "collection": "observations",
@@ -637,11 +803,6 @@
    "proof_refs": [
     {
      "collection": "observations",
-     "id": "M2068:additive_d50_um",
-     "path": "scrutiny"
-    },
-    {
-     "collection": "observations",
      "id": "M2088:porosity",
      "path": "scrutiny"
     },
@@ -656,11 +817,11 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "Did not survive: M2068 Additive D50 (inconsistent across fields), M2088 Porosity (acquisition could explain it), M2088 Pore size (inconsistent across fields).",
+   "text": "Did not survive: M2088 Porosity (acquisition could explain it), M2088 Pore size (inconsistent across fields).",
    "fact": null,
    "focus": {
     "collection": "observations",
-    "id": "M2068:additive_d50_um",
+    "id": "M2088:porosity",
     "path": "scrutiny"
    }
   },
@@ -671,7 +832,7 @@
    "scope": "M2060",
    "status": "consequential",
    "label": "SCALE",
-   "template": "Excess fine objects peak at the {0} µm detection floor ({1}× approved).",
+   "template": "Excess fine objects peak at the {0} µm detection floor ({1}× selected reference).",
    "values": [
     {
      "ref": {
@@ -718,7 +879,7 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Excess fine objects peak at the 0.36 µm detection floor (2.3× approved).",
+   "text": "Excess fine objects peak at the 0.36 µm detection floor (2.3× selected reference).",
    "fact": null
   },
   {
@@ -762,68 +923,6 @@
    "role": "content",
    "fact_template": null,
    "text": "Chemistry of the deviating high-Z phase is not measured; BSE alone cannot identify it.",
-   "fact": null
-  },
-  {
-   "id": "limit.spatial:M2060:additive_density",
-   "kind": "limit",
-   "block": "limits",
-   "scope": "M2060:additive_density",
-   "status": "consequential",
-   "label": "EXTENT",
-   "template": "Still outside the approved band at the {0} edge of the {1} µm captured section: extent not bounded.",
-   "values": [
-    {
-     "ref": {
-      "collection": "rims",
-      "id": "spatial:M2060:additive_density",
-      "path": "basis.open_edges.0"
-     },
-     "value": "start",
-     "fmt": "str"
-    },
-    {
-     "ref": {
-      "collection": "rims",
-      "id": "spatial:M2060:additive_density",
-      "path": "basis.captured_length_um"
-     },
-     "value": 698.404,
-     "fmt": "int"
-    }
-   ],
-   "priority": 2.2,
-   "group": "rim:spatial:M2060:additive_density",
-   "proof_refs": [
-    {
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density",
-     "path": "statement"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density",
-     "path": "basis"
-    },
-    {
-     "collection": "spatial_profiles",
-     "id": "M2060:additive_density",
-     "path": "runs"
-    }
-   ],
-   "focus": {
-    "collection": "spatial_profiles",
-    "id": "M2060:additive_density",
-    "path": "runs"
-   },
-   "action_refs": [
-    "extend:4"
-   ],
-   "fact_values": [],
-   "details": [],
-   "role": "content",
-   "fact_template": null,
-   "text": "Still outside the approved band at the start edge of the 698 µm captured section: extent not bounded.",
    "fact": null
   },
   {
@@ -893,7 +992,7 @@
    },
    "action_refs": [
     "repeat:1",
-    "sections:5",
+    "sections:4",
     "baseline:8"
    ],
    "fact_values": [],
@@ -1059,12 +1158,12 @@
    "scope": "Batch_3",
    "status": "change_modality",
    "label": "TESTED REGIME",
-   "template": "extent: expansion needed · scale: change modality · acquisition: partial.",
+   "template": "extent: no expansion justified at tested scales · scale: change modality · acquisition: partial.",
    "role": "pointer",
    "priority": 6,
    "group": "support:regime",
    "substates": {
-    "spatial": "expansion_needed",
+    "spatial": "no_expansion_justified",
     "scale": "change_modality",
     "acquisition": "partial"
    },
@@ -1072,11 +1171,6 @@
     {
      "collection": "rims",
      "id": "scale:M2060",
-     "path": "consequential"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density",
      "path": "consequential"
     },
     {
@@ -1111,15 +1205,14 @@
     }
    ],
    "points_to": [
-    "limit.scale:M2060",
-    "limit.spatial:M2060:additive_density"
+    "limit.scale:M2060"
    ],
    "values": [],
    "fact_values": [],
    "details": [],
    "action_refs": [],
    "fact_template": null,
-   "text": "extent: expansion needed · scale: change modality · acquisition: partial.",
+   "text": "extent: no expansion justified at tested scales · scale: change modality · acquisition: partial.",
    "fact": null,
    "focus": {
     "collection": "rims",
@@ -1143,7 +1236,7 @@
       "id": "repeat:1",
       "path": "title"
      },
-     "value": "Repeat M2060 under the approved acquisition settings",
+     "value": "Repeat M2060 under the reference-frame acquisition settings",
      "fmt": "str"
     }
    ],
@@ -1184,7 +1277,7 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Repeat M2060 under the approved acquisition settings",
+   "text": "Repeat M2060 under the reference-frame acquisition settings",
    "fact": null
   },
   {
@@ -1256,7 +1349,7 @@
       "id": "eds:3",
       "path": "title"
      },
-     "value": "Paired EDS: M2060 fines vs approved additive",
+     "value": "Paired EDS: M2060 fines vs selected-reference additive",
      "fmt": "str"
     }
    ],
@@ -1292,65 +1385,11 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Paired EDS: M2060 fines vs approved additive",
+   "text": "Paired EDS: M2060 fines vs selected-reference additive",
    "fact": null
   },
   {
-   "id": "action.extend:4",
-   "kind": "action",
-   "block": "acquisition_policy",
-   "scope": "M2060",
-   "status": "computed",
-   "label": "EXTEND",
-   "template": "{0}",
-   "values": [
-    {
-     "ref": {
-      "collection": "actions",
-      "id": "extend:4",
-      "path": "title"
-     },
-     "value": "Extend the M2060 mosaic beyond its start",
-     "fmt": "str"
-    }
-   ],
-   "step": "extent",
-   "priority": 14,
-   "group": "action:extend:4",
-   "action_refs": [
-    "extend:4"
-   ],
-   "proof_refs": [
-    {
-     "collection": "actions",
-     "id": "extend:4",
-     "path": "rationale"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density",
-     "path": "basis"
-    },
-    {
-     "collection": "spatial_profiles",
-     "id": "M2060:additive_density",
-     "path": "runs"
-    }
-   ],
-   "focus": {
-    "collection": "actions",
-    "id": "extend:4",
-    "path": "title"
-   },
-   "fact_values": [],
-   "details": [],
-   "role": "content",
-   "fact_template": null,
-   "text": "Extend the M2060 mosaic beyond its start",
-   "fact": null
-  },
-  {
-   "id": "action.sections:5",
+   "id": "action.sections:4",
    "kind": "action",
    "block": "acquisition_policy",
    "scope": "M2060",
@@ -1361,7 +1400,7 @@
     {
      "ref": {
       "collection": "actions",
-      "id": "sections:5",
+      "id": "sections:4",
       "path": "title"
      },
      "value": "Independent cross-sections from the lot (not adjacent tiles)",
@@ -1369,25 +1408,20 @@
     }
    ],
    "step": "independent sections",
-   "priority": 15,
-   "group": "action:sections:5",
+   "priority": 14,
+   "group": "action:sections:4",
    "action_refs": [
-    "sections:5"
+    "sections:4"
    ],
    "proof_refs": [
     {
      "collection": "actions",
-     "id": "sections:5",
+     "id": "sections:4",
      "path": "rationale"
     },
     {
      "collection": "rims",
      "id": "population:Batch_3",
-     "path": "basis"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
      "path": "basis"
     },
     {
@@ -1408,7 +1442,7 @@
    ],
    "focus": {
     "collection": "actions",
-    "id": "sections:5",
+    "id": "sections:4",
     "path": "title"
    },
    "fact_values": [],
@@ -1449,16 +1483,40 @@
     "into": "evidence.M2060:additive_density"
    },
    {
-    "candidate": "limit.spatial:M2088:porosity",
+    "candidate": "M2068:additive_d50_um:reference_relation",
+    "reason": "merged",
+    "into": "evidence.M2068:additive_d50_um"
+   },
+   {
+    "candidate": "M2068:additive_d50_um:scrutiny",
+    "reason": "merged",
+    "into": "evidence.M2068:additive_d50_um"
+   },
+   {
+    "candidate": "M2068:additive_d50_um:leverage",
+    "reason": "merged",
+    "into": "evidence.M2068:additive_d50_um"
+   },
+   {
+    "candidate": "M2068:additive_d50_um:robustness",
+    "reason": "merged",
+    "into": "evidence.M2068:additive_d50_um"
+   },
+   {
+    "candidate": "limit.composition:M2068",
     "reason": "not consequential (examiner only)"
    },
    {
-    "candidate": "limit.spatial-dimension:additive_density",
+    "candidate": "limit.spatial:M2088:porosity",
     "reason": "not consequential (examiner only)"
    },
    {
     "candidate": "limit.spatial-dimension:porosity",
     "reason": "not consequential (examiner only)"
+   },
+   {
+    "candidate": "action.eds:5",
+    "reason": "tier 2 (examiner only)"
    },
    {
     "candidate": "action.extend:6",

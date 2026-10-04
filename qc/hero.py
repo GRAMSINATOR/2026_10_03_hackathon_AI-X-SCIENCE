@@ -80,7 +80,7 @@ table.kv td:first-child{color:var(--mut);white-space:nowrap}
 .kbtn{cursor:pointer;font-size:11px;padding:2px 7px;border-radius:5px;border:1px solid var(--line);margin-left:4px;color:var(--ink2)}.kbtn.on{color:#fff;border-color:#fff}
 .tag{font-size:10px;color:var(--mut);border:1px solid var(--line);border-radius:4px;padding:1px 5px;margin-left:8px}
 </style></head><body>
-<div class="top"><div class="brand">EPISTEMIC ACQUISITION CONTROLLER · <b id="bname"></b> <span class="muted">vs approved <span id="rname"></span></span><span class="tag">V1 exploratory renderer</span></div>
+<div class="top"><div class="brand">EPISTEMIC ACQUISITION CONTROLLER · <b id="bname"></b> <span class="muted">reference frame · <span id="rname"></span></span><span class="tag">V1 exploratory renderer</span></div>
 <div class="verdict" id="verdict"></div></div>
 <div class="steps" id="steps"></div><div class="head" id="head"></div>
 <div class="main"><div class="panel"><div class="grid" id="grid"></div><div class="legend" id="legend"></div></div><div class="panel side" id="side"></div></div>
@@ -109,9 +109,9 @@ const flicker=o=>(ENT[o.entity].acquisition.outside_tested_range.length>0)||o.ac
 const pivotal=e=>!!(e.leverage&&e.leverage.flips);
 function head(){
  const s=F.summary, a=F.actions[0]||{}, cr=s.consequential_rims.length;
- const H=[[`${s.n_deviating} observation${s.n_deviating==1?'':'s'} outside the approved envelope.`,'Brightness = exceedance ratio |z|/q95 (calibrated for each micrograph\'s sampling). Arrow = direction.'],
+ const H=[[`${s.n_deviating} observation${s.n_deviating==1?'':'s'} outside the selected reference-frame envelope.`,'Brightness = exceedance ratio |z|/q95 (calibrated for each micrograph\'s sampling). Arrow = direction.'],
  [`${s.n_surviving} of ${s.n_deviating} survive scrutiny.`,'Solid = scrutiny outcome "survives". Hatched = "fails". Flicker = acquisition outside the tested range, or tested acquisition changes could explain the deviation.'],
- ['Each envelope = approved material spread + spatial sampling + baseline support.','Ring = larger reducible variance share (aqua spatial sampling, violet baseline support). Header: minimum detectable change.'],
+ ['Each envelope = reference-parent spread + spatial sampling + finite-reference support.','Ring = larger reducible variance share (aqua spatial sampling, violet reference support). Header: minimum detectable change.'],
  [`${cr} consequential rim${cr==1?'':'s'}`+(F.decision.pivotal.length?` — the verdict rests on ${F.decision.pivotal.join(', ')}.`:'.'),'⤢ spatial · ◎ scale · ◇ missing composition · ⚡ acquisition · ★ decision leverage. Strip: captured section; the band fades where nothing was observed.'],
  [`Next capture: ${a.title||'none required'}`,'Ranked by the controller (tier, then falsify → scale → identity → extent → prevalence). Select an action to light the observations it targets.']];
  $('head').innerHTML=`<div>${H[step][0]}</div><div class="sub">${H[step][1]}</div>`;
@@ -159,7 +159,7 @@ function rowHead(e){
 function grid(){
  const show=DIMS.filter(d=>d.acquired||step>=3), g=$('grid'); g.style.gridTemplateColumns=`150px repeat(${show.length},minmax(70px,1fr))`;
  g.innerHTML='<div></div>'+show.map(colHead).join('')+ROWS.map(e=>rowHead(e)+show.map(d=>pad(e,d)).join('')).join('');
- $('legend').innerHTML=`<span><i class="sw" style="background:var(--up)"></i>above approved</span><span><i class="sw" style="background:var(--down)"></i>below approved</span>`+
+ $('legend').innerHTML=`<span><i class="sw" style="background:var(--up)"></i>above reference</span><span><i class="sw" style="background:var(--down)"></i>below reference</span>`+
  (step>=1?`<span><i class="sw" style="background:repeating-linear-gradient(135deg,rgba(217,89,38,.5) 0 3px,transparent 3px 6px)"></i>fails scrutiny</span><span>flicker = acquisition-sensitive</span>`:'')+
  (step>=2?`<span><i class="sw" style="box-shadow:inset 0 0 0 3px var(--spatial)"></i>spatial sampling share larger</span><span><i class="sw" style="box-shadow:inset 0 0 0 3px var(--base)"></i>baseline support share larger</span>`:'')+
  (step>=3?`<span style="color:var(--spatial)">⤢ spatial</span><span style="color:var(--scale)">◎ scale</span><span style="color:var(--comp)">◇ composition</span><span>⚡ acquisition</span><span>∅ not measurable</span>`:'');
@@ -193,10 +193,10 @@ function drawer(){
  if(rr.status=='not_measurable'){el.innerHTML=`<b>${p} · ${d.short_label}</b><div class="rule">not measurable: ${e.validity.reasons.join('; ')}</div>`;return}
  const v=o.variance_shares, sc=o.scrutiny;
  el.innerHTML=`<b>${p} · ${d.label}</b><table class="kv"><tr><td>value</td><td>${fmt(o.value,d)} ${d.display.unit} (${rr.status})</td></tr>
- <tr><td>approved</td><td>${fmt(rr.approved_mean,d)} ± ${fmt(d.reference.sd,d)} ${d.display.unit}; 95% envelope here ${fmt(rr.envelope95[0],d)}–${fmt(rr.envelope95[1],d)}</td></tr>
+ <tr><td>selected reference</td><td>${fmt(rr.approved_mean,d)} ± ${fmt(d.reference.sd,d)} ${d.display.unit}; 95% envelope here ${fmt(rr.envelope95[0],d)}–${fmt(rr.envelope95[1],d)}</td></tr>
  <tr><td>z / thresholds</td><td>${rr.z.toFixed(2)} vs q95 ${rr.q95.toFixed(2)}, q99 ${rr.q99.toFixed(2)}</td></tr>
  <tr><td>variance shares</td><td><div class="bar"><div style="width:${100*v.approved_material}%;background:#898781"></div><div style="width:${100*v.spatial_sampling}%;background:var(--spatial)"></div><div style="width:${100*v.baseline_support}%;background:var(--base)"></div></div>
-   material ${(100*v.approved_material).toFixed(0)}% · spatial sampling ${(100*v.spatial_sampling).toFixed(0)}% · baseline support ${(100*v.baseline_support).toFixed(0)}%</td></tr>
+   reference-parent spread ${(100*v.approved_material).toFixed(0)}% · spatial sampling ${(100*v.spatial_sampling).toFixed(0)}% · finite-reference support ${(100*v.baseline_support).toFixed(0)}%</td></tr>
  <tr><td>fields</td><td>${Object.entries(o.per_field).map(([f,x])=>`${f.split('__')[1]} ${fmt(x,d)}`).join(' · ')} (${sc.fields_beyond_95}/${sc.n_fields} beyond 95%)</td></tr>
  <tr><td>scrutiny</td><td>${sc.outcome}${sc.failed.length?' — '+sc.failed.join(', '):''}${sc.conditional_on_untested_acquisition?' (conditional: untested acquisition)':''}</td></tr>
  <tr><td>acquisition</td><td>worst tested change (${d.robustness.worst_perturbation}) ${fmt(d.robustness.worst_shift,d)} ${d.display.unit}${sc.acquisition_share!=null?` = ${(100*sc.acquisition_share).toFixed(0)}% of the deviation`:''}</td></tr>
@@ -208,7 +208,7 @@ function strip(){
  const k=(stripK&&avail.includes(stripK))?stripK:(avail.find(x=>deviating(OBS[oid(e.id,x)]))||avail[0]); if(!k){svg.innerHTML='';return}
  const pr=PROF[oid(e.id,k)], d=DIM[k];
  $('striphead').innerHTML=`<b style="color:#fff">${e.id}</b> · captured ${pr.captured_length_um.toFixed(0)} µm · ${pr.window_um}-µm window profile of `+
-  avail.map(x=>`<span class="kbtn ${x==k?'on':''}" onclick="stripK='${x}';render()">${DIM[x].short_label}</span>`).join('')+` <span class="muted">— band = approved local windows (approximate)${pr.runs.length>1?' · run separation unknown':''}</span>`;
+  avail.map(x=>`<span class="kbtn ${x==k?'on':''}" onclick="stripK='${x}';render()">${DIM[x].short_label}</span>`).join('')+` <span class="muted">— band = selected-reference local windows (approximate)${pr.runs.length>1?' · run separation unknown':''}</span>`;
  const offs=[]; let acc=0; pr.runs.forEach(r=>{offs.push(acc); acc+=r.length_um+RUN_GAP_UM}); const totalX=Math.max(acc-RUN_GAP_UM,1);
  const L=70,R=W-70, sx=x=>L+(R-L)*x/totalX, b=pr.reference_band;
  const vals=[b.lo,b.hi]; pr.runs.forEach(r=>r.window_means.forEach(v=>vals.push(v)));

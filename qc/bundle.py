@@ -4,7 +4,7 @@
     QC_PUBLIC=1 QC_REF=public_bundle/reference.json QC_REPORTS=public_bundle/reports \
         QC_CACHE=public_bundle/cache/fields streamlit run app.py
 
-Contents: approved reference, per-batch result/field/report (numbers and text), the tile -> parent map, numerical
+Contents: selected and eligible cached reference frames, per-batch and per-frame result/field/report (numbers and text), the tile -> parent map, numerical
 field records (KPIs, per-strip KPIs, histogram anchors, window variances, acquisition fingerprints) and the verdict
 sensitivity summary. Excluded: raw TIFFs, thumbnails, segmentation labels, edge strips (*.npy), mosaics and any
 instrument page with embedded imagery. `check()` enforces this and fails the export otherwise.
@@ -65,6 +65,13 @@ def export(out, batches=None):
     os.makedirs(rep_out, exist_ok=True)
     os.makedirs(cache_out, exist_ok=True)
     shutil.copy(REF_PATH, os.path.join(out, 'reference.json'))
+    frame_index = os.path.join(REPORTS, 'reference_frames.json')
+    if os.path.exists(frame_index):
+        shutil.copy(frame_index, os.path.join(rep_out, 'reference_frames.json'))
+    frame_out = os.path.join(out, 'cache', 'references')
+    os.makedirs(frame_out, exist_ok=True)
+    for p in glob.glob(os.path.join(os.path.dirname(REF_PATH), 'references', '*.json')):
+        shutil.copy(p, frame_out)
     batches = batches or sorted(d for d in os.listdir(REPORTS) if os.path.exists(os.path.join(REPORTS, d, 'result.json')))
     for b in batches:
         os.makedirs(os.path.join(rep_out, b), exist_ok=True)
@@ -77,6 +84,20 @@ def export(out, batches=None):
             F = json.load(open(fpath, encoding='utf-8'))
             html = instrument.render(F, images=False, brief=brief.build(F))
             open(os.path.join(rep_out, b, 'instrument_public.html'), 'w', encoding='utf-8').write(html)
+        for variant in glob.glob(os.path.join(REPORTS, b, 'references', '*')):
+            if not os.path.isdir(variant):
+                continue
+            dst = os.path.join(rep_out, b, 'references', os.path.basename(variant))
+            os.makedirs(dst, exist_ok=True)
+            for f in BATCH_FILES:
+                src = os.path.join(variant, f)
+                if os.path.exists(src):
+                    shutil.copy(src, os.path.join(dst, f))
+            vf = os.path.join(variant, 'field.json')
+            if os.path.exists(vf) and os.path.exists(instrument.DIST):
+                F = json.load(open(vf, encoding='utf-8'))
+                html = instrument.render(F, images=False, brief=brief.build(F))
+                open(os.path.join(dst, 'instrument_public.html'), 'w', encoding='utf-8').write(html)
     provmap.export(rep_out)
     for p in glob.glob(os.path.join(CACHE, '*.json')):
         shutil.copy(p, cache_out)

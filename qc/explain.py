@@ -51,7 +51,7 @@ def acquisition_notes(m, ref, envelope='acq_envelope', label='baseline'):
     return [f"{d['label']} {d['value']:.3g} ({label} {d['lo']:.3g}–{d['hi']:.3g})" for d in acquisition_deviations(m, ref, envelope)]
 
 
-def micrograph_text(m, ref, links, against='approved'):
+def micrograph_text(m, ref, links, against='the selected reference frame'):
     sc = m['score']
     head = f"{m['parent']} ({m['n_tiles']} tile{'s' if m['n_tiles'] > 1 else ''}: {', '.join(m['fids'])})"
     bad = sorted([(k, s) for k, s in sc.items() if s['status'] in ('deviant', 'out')], key=lambda x: -abs(x[1]['t']))
@@ -70,8 +70,8 @@ def micrograph_text(m, ref, links, against='approved'):
         risks.append(RISK[('additive', 'finer')])
         fu, rf = m['kpi'].get('additive_fines_u'), ref['secondary'].get('additive_fines_u')
         if fu is not None and rf and np.isfinite(fu) and fu <= rf['min']:
-            interp.append(f"caveat: these fine objects sit at the dim end of the approved range (BSE brightness u = {fu:.2f} vs "
-                          f"approved {rf['min']:.2f}-{rf['max']:.2f}); part of the excess may be sub-surface particles or a "
+            interp.append(f"caveat: these fine objects sit at the dim end of the selected-reference range (BSE brightness u = {fu:.2f} vs "
+                          f"reference {rf['min']:.2f}-{rf['max']:.2f}); part of the excess may be sub-surface particles or a "
                           "lower-Z fine phase - EDS spot-check recommended before attributing it to the additive supplier")
     if st('additive_d50_um') and tt('additive_d50_um') > 0 or st('additive_density') and tt('additive_density') < 0:
         interp.append('coarser additive (fewer fine high-Z particles)' +
@@ -129,7 +129,7 @@ def actions(decision, mtexts, mgs):
     elif v == 'INVESTIGATE':
         out.append('Hold the lot pending the checks below; do not release to coating.')
     elif v == 'ACCEPT':
-        out.append('Release; append these micrographs to the trend log (they can extend the approved reference after sign-off).')
+        out.append('Release; append these micrographs to the trend log (they can extend a reference frame after human sign-off).')
     for t in mtexts:
         if any(i.startswith('caveat') for i in t['interpretation']):
             out.append(f"EDS spot-check of the fine BSE-bright objects in {t['parent']} (confirm they are the specified additive).")
@@ -164,7 +164,7 @@ def markdown_report(res, ref):
             sc = m['score'][k]
             cells.append('n/m' if sc.get('t') is None else f"{sc['value'] * v['scale']:.3g} ({sc['t']:+.1f})")
         L.append(f"| {m['parent']} | {', '.join(m['fids'])} | {m['status']} | " + ' | '.join(cells) + ' |')
-    L += ['', 'Cells: value (t vs approved). Approved means: ' + '; '.join(
+    L += ['', 'Cells: value (t vs selected reference). Reference means: ' + '; '.join(
         f"{v['short']} {ref['kpi'][k]['mean'] * v['scale']:.3g} {v['unit']}" for k, v in KPIS.items()), '']
     for t in res['explanations']:
         if t['status'] in ('deviant', 'out') or t['gate']:

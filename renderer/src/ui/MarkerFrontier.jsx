@@ -400,6 +400,10 @@ function MarkerSummary({ m, ctx }) {
         {decisionValue(ctx.doc, m, ctx.batch) && <tr><td>decision leverage</td><td>{decisionValue(ctx.doc, m, ctx.batch).text}</td></tr>}
         <tr><td>scientific definition</td><td>{m.scientific_definition || '—'}</td></tr>
         <tr><td>observation protocol</td><td>{m.measurement_definition || '—'}</td></tr>
+        {m.observation_family && <tr><td>observation family</td><td>{m.observation_family.replaceAll('_', ' ')}</td></tr>}
+        {m.support_model && <tr><td>support model</td><td>{m.support_model.replaceAll('_', ' ')}</td></tr>}
+        {m.uncertainty_adapter && <tr><td>uncertainty adapter</td><td>{m.uncertainty_adapter.replaceAll('_', ' ')}</td></tr>}
+        {m.reference_protocol && <tr><td>reference protocol</td><td>{m.reference_protocol.replaceAll('_', ' ')} · provisional</td></tr>}
         <tr><td>observability</td><td><b>{m.observability ? m.observability.label : cc === 'yes' ? 'CURRENT CAPTURE' : 'OPEN'}</b> · test: {testWord(t.status)}{t.note ? ` · ${t.note}` : ''}
           {m.capture_requirements && <p className="mf-muted">{m.capture_requirements}</p>}
           {t.requires_actions.length > 0 && <p className="mf-muted">controller action: {t.requires_actions.map(a => `${a.verb} (${a.batch}, tier ${a.tier})`).join(' · ')}</p>}

@@ -24,16 +24,16 @@ def test_batch3_survival_leverage_and_rims():
     f = load('Batch_3')
     assert f['decision']['verdict'] == 'REJECT' and abs(f['decision']['p_batch'] - 0.017) < 0.005
     assert f['summary']['deviating'] == ['M2060:additive_density', 'M2068:additive_d50_um', 'M2088:porosity', 'M2088:pore_size_um']
-    assert f['summary']['surviving'] == ['M2060:additive_density']
+    assert f['summary']['surviving'] == ['M2060:additive_density', 'M2068:additive_d50_um']
     assert f['decision']['pivotal'] == ['M2060']
     m = next(e for e in f['entities'] if e['id'] == 'M2060')
     assert m['leverage']['verdict_without'] == 'ACCEPT' and m['leverage']['cause'] == 'carries_decisive_evidence'
-    assert set(obs(f, 'M2060:additive_density')['rims']) == {'scale:M2060', 'spatial:M2060:additive_density'}
+    assert set(obs(f, 'M2060:additive_density')['rims']) == {'scale:M2060'}
     assert next(x for x in f['missing_dimensions'] if x['id'] == 'M2060:composition')['consequential']
     o = obs(f, 'M2088:porosity')
     assert o['scrutiny']['outcome'] == 'fails' and o['acquisition_explains_deviation']
     assert set(o['scrutiny']['failed']) == {'moderate_robustness_dimension', 'spatially_inconsistent', 'acquisition_could_explain'}
-    assert obs(f, 'M2068:additive_d50_um')['scrutiny']['failed'] == ['spatially_inconsistent']
+    assert obs(f, 'M2068:additive_d50_um')['scrutiny']['outcome'] == 'survives'
 
 
 def test_scale_rim_numbers():
@@ -47,11 +47,11 @@ def test_actions_ranked_justified_and_traceable():
         for a in load(b)['actions']:
             assert a['evidence'] and a['rationale'] and (a['triggered_by'] or a['trigger_facts'])
     A = load('Batch_3')['actions']
-    assert [a['verb'] for a in A] == ['REPEAT', 'ZOOM', 'EDS', 'EXTEND', 'SECTIONS', 'EXTEND', 'SPACE', 'BASELINE']
+    assert [a['verb'] for a in A] == ['REPEAT', 'ZOOM', 'EDS', 'SECTIONS', 'EDS', 'EXTEND', 'SPACE', 'BASELINE']
     assert A[0]['targets']['observations'] == ['M2060:additive_density']
     assert next(a for a in A if a['verb'] == 'EDS')['status'] == 'future'
-    ext = A[3]
-    assert ext['effect']['open_edges'] == ['start'] and ext['triggered_by'] == ['spatial:M2060:additive_density']
+    ext = next(a for a in A if a['verb'] == 'EXTEND')
+    assert ext['effect']['open_edges'] == ['end'] and ext['triggered_by'] == ['spatial:M2088:porosity']
     assert not {'REPEAT', 'ZOOM', 'EDS'} & {a['verb'] for a in load('Batch_2')['actions']}
 
 
@@ -63,11 +63,22 @@ def test_reference_linked_entities_are_not_independent():
     assert f3['decision']['reference_linked'] == ['M2080'] and f3['decision']['n_independent'] == 6
 
 
+def test_hackathon_polaron_test_is_an_extra_two_parent_batch():
+    f = load('Hackathon-Polaron-test')
+    assert f['context']['batch'] == 'Hackathon-Polaron-test'
+    assert [e['id'] for e in f['entities']] == ['M2048', 'M2088', 'M2316']
+    assert f['decision']['verdict'] == 'INVESTIGATE' and f['decision']['p_batch'] == 1
+    assert f['decision']['n_independent'] == 2 and f['decision']['reference_linked'] == ['M2316']
+    pop = next(r for r in f['rims'] if r['id'] == 'population:Hackathon-Polaron-test')
+    assert pop['consequential'] and f['summary']['consequential_rims'] == [pop['id']]
+    assert f['actions'][0]['verb'] == 'SECTIONS' and f['actions'][0]['tier'] == 1
+
+
 def test_spatial_classes():
     D = {d['id']: d for d in load('Batch_3')['dimensions']}
     assert D['additive_area_frac']['spatial_support']['cls'] == 'short-range'
     assert D['porosity']['spatial_support']['cls'] == 'fov-scale' and D['porosity']['spatial_support']['tile_excess_ci95'][0] > 1
-    assert D['additive_density']['spatial_support']['cls'] == 'long-range'
+    assert D['additive_density']['spatial_support']['cls'] == 'short-range'
     assert D['composition']['acquired'] is False
 
 

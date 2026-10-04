@@ -1,5 +1,5 @@
 """Governed decision brief (decision-brief/1): coherence with epistemic-field/1, determinism, governance, and the exact
-human-facing states for Batch 2 and Batch 3. Runs on the committed fixtures (no engine cache needed)."""
+human-facing states for the assessed batches. Runs on the committed fixtures (no engine cache needed)."""
 import copy
 import json
 import os
@@ -15,7 +15,7 @@ def field(b):
     return json.load(open(os.path.join(ROOT, 'fixtures', f'epistemic_field.{b}.json'), encoding='utf-8'))
 
 
-@pytest.fixture(params=['Batch_2', 'Batch_3'])
+@pytest.fixture(params=['Batch_2', 'Batch_3', 'Hackathon-Polaron-test'])
 def fb(request):
     F = field(request.param)
     return F, brief.build(F)
@@ -108,12 +108,14 @@ def test_batch3_hero_states():
     assert H['surviving_evidence']['state'] == 'M2060 · ADDITIVE DENSITY'
     ev = C['evidence.M2060:additive_density']
     assert ev['status'] == 'survives' and 'without M2060: ACCEPT' in ev['fact']
-    assert [C[i]['label'] for i in H['limits']['claims']] == ['SCALE', 'COMPOSITION', 'EXTENT', 'PREVALENCE']
+    assert [C[i]['label'] for i in H['limits']['claims']] == ['SCALE', 'COMPOSITION', 'PREVALENCE']
     assert H['acquisition_policy']['mode'] == 'verify_first' and H['acquisition_policy']['sequence'].startswith('Repeat M2060')
     assert C[H['acquisition_policy']['claims'][0]]['action_refs'] == ['repeat:1']
     # merged, not repeated: the scrutiny / leverage facts of M2060 appear once, inside the evidence claim
     merged = [s for s in B['governance']['suppressed'] if s['reason'] == 'merged']
-    assert {s['into'] for s in merged} == {'evidence.M2060:additive_density'} and len(merged) == 4
+    assert {s['into'] for s in merged} == {
+        'evidence.M2060:additive_density', 'evidence.M2068:additive_d50_um'
+    } and len(merged) == 8
 
 
 def test_batch2_hero_states_after_independence_correction():
@@ -141,6 +143,17 @@ def test_stop_is_recommended_when_nothing_justifies_more_acquisition():
     stop = claims(B)['action.stop']
     assert stop['status'] == 'no_expansion_justified' and 'of this kind' in stop['text']
     assert claims(B)['support.prevalence']['status'] == 'sufficient'
+
+
+def test_two_parent_batch_exposes_population_limit_and_resolving_capture():
+    F = field('Hackathon-Polaron-test')
+    B = brief.build(F)
+    H, C = B['hero'], claims(B)
+    assert F['decision']['verdict'] == 'INVESTIGATE' and F['decision']['n_independent'] == 2
+    assert [C[i]['label'] for i in H['limits']['claims']] == ['PREVALENCE']
+    assert H['acquisition_policy']['mode'] == 'expand_sampling'
+    assert C[H['acquisition_policy']['claims'][0]]['label'] == 'SECTIONS'
+    assert brief.check(B, F) == []
 
 
 def test_compose_seam_cannot_change_states():

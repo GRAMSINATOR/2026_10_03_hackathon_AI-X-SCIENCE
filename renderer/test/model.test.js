@@ -47,7 +47,7 @@ describe('five-stage projection', () => {
   it('SCRUTINY: failures take the hue of their cause; acquisition concern is matte; reference-linked is ghosted provenance', () => {
     const acq = vis(M3, 'M2088:porosity', 1), inc = vis(M3, 'M2068:additive_d50_um', 1), surv = vis(M3, 'M2060:additive_density', 1);
     expect(acq.category).toBe('acquisition'); expect(acq.hue).toBe(HUE.acquisition); expect(acq.finish).toBe('matte');
-    expect(inc.category).toBe('spatial_inconsistent'); expect(inc.hue).toBe(HUE.spatial);
+    expect(inc.category).toBe('survives'); expect(inc.hue).toBe(HUE.above); expect(inc.finish).toBe('gloss');
     expect(surv.category).toBe('survives'); expect(surv.finish).toBe('gloss'); expect(surv.hue).toBe(HUE.above);
     expect(surv.chroma).toBeCloseTo(vis(M3, 'M2060:additive_density', 0).chroma);
     const ref = vis(M3, 'M2080:porosity', 1); expect(ref.ghost).toBe(true); expect(ref.category).toBe('provenance');
@@ -73,14 +73,14 @@ describe('five-stage projection', () => {
     expect(vis(M3, 'M2060:composition', 0).ring).toBeNull();
   });
   it('NEXT CAPTURE: the field shows exactly the reach of the selected action', () => {
-    const ext = idx(M3, 'EXTEND', 'M2060'), eds = idx(M3, 'EDS');
+    const ext = idx(M3, 'EXTEND', 'M2088'), eds = idx(M3, 'EDS');
     const lit = M3.keys.filter(k => !keyVisual(M3, k, 4, { action: ext }).quiet).map(k => k.id);
-    expect(lit).toEqual(['M2060:additive_density']);
+    expect(lit).toEqual(['M2088:porosity']);
     expect(vis(M3, 'M2060:composition', 4, { action: eds }).ring).toBe(HUE.composition);
     expect(vis(M3, 'M2060:composition', 4, { action: ext }).ring).toBeNull();
   });
   it('interpretation lines are data-derived', () => {
-    expect(interpretation(M3, 1)).toContain('1 of 4');
+    expect(interpretation(M3, 1)).toContain('2 of 4');
     expect(interpretation(M2, 0)).toMatch(/No observation/);
   });
 });
@@ -127,7 +127,7 @@ describe('evidence stack', () => {
   });
   it('unconnected runs keep unknown separation', () => {
     const reg = registration(M3, 'M2088');
-    expect(reg.runs.length).toBe(2); expect(reg.separationKnown).toBe(false);
+    expect(reg.runs.length).toBe(1); expect(reg.separationKnown).toBe(true); expect(reg.totalUm).toBeGreaterThan(0);
   });
   it('detection layers exist only with segmentation assets; missing composition has no content', () => {
     const withA = stackLayers(M3, 'M2060', 3, { assets: A3 }).layers, noA = stackLayers(M3, 'M2060', 3, { assets: {} }).layers;
@@ -138,29 +138,29 @@ describe('evidence stack', () => {
     expect(miss.consequential).toBe(true);
   });
   it('stage gating: masks from SCRUTINY, extent from OUTER RIM, prospective only in NEXT CAPTURE', () => {
-    const vis = s => stackLayers(M3, 'M2060', s, { assets: A3, action: s === 4 ? idx(M3, 'EXTEND', 'M2060') : null }).layers.filter(l => l.visible).map(l => l.id);
+    const vis = s => stackLayers(M3, 'M2088', s, { assets: A3, action: s === 4 ? idx(M3, 'EXTEND', 'M2088') : null }).layers.filter(l => l.visible).map(l => l.id);
     expect(vis(0)).not.toContain('mask_highz'); expect(vis(1)).toContain('mask_highz');
     expect(vis(2)).not.toContain('extent'); expect(vis(3)).toContain('extent');
     expect(vis(3)).not.toContain('prospective'); expect(vis(4)).toContain('prospective');
   });
   it('prospective geometry only where the evidence defines a footprint', () => {
-    const reg = registration(M3, 'M2060');
-    const ext = prospective(M3, 'M2060', reg, idx(M3, 'EXTEND', 'M2060'));
-    expect(ext.regions).toHaveLength(1); expect(ext.regions[0].side).toBe('start');
-    expect(ext.regions[0].x0Um + ext.regions[0].widthUm).toBeCloseTo(0);           // abuts the open edge
-    expect(prospective(M3, 'M2060', reg, idx(M3, 'ZOOM'))).toBeNull();
-    expect(prospective(M3, 'M2060', reg, idx(M3, 'EDS'))).toBeNull();
-    expect(prospective(M3, 'M2060', reg, idx(M3, 'SECTIONS'))).toBeNull();
-    const note = stackLayers(M3, 'M2060', 4, { assets: A3, action: idx(M3, 'EDS') }).note;
-    expect(note).toMatch(/no spatial footprint/);
+    const reg = registration(M3, 'M2088');
+    const ext = prospective(M3, 'M2088', reg, idx(M3, 'EXTEND', 'M2088'));
+    expect(ext.regions).toHaveLength(1); expect(ext.regions[0].side).toBe('end');
+    expect(ext.regions[0].x0Um).toBeCloseTo(reg.totalUm);                         // abuts the open edge
+    expect(prospective(M3, 'M2088', reg, idx(M3, 'ZOOM'))).toBeNull();
+    expect(prospective(M3, 'M2088', reg, idx(M3, 'EDS'))).toBeNull();
+    expect(prospective(M3, 'M2088', reg, idx(M3, 'SECTIONS'))).toBeNull();
+    const note = stackLayers(M3, 'M2088', 4, { assets: A3, action: idx(M3, 'EDS') }).note;
+    expect(note).toBe('EDS does not act on M2088.');
   });
   it('field <-> stack linkage uses only real data relations', () => {
     expect(layerForKey(key(M3, 'M2060:additive_density'))).toBe('profile:additive_density');
     expect(layerForKey(key(M3, 'M2060:additive_d50_um'))).toBe('mask_highz');
     expect(layerForKey(key(M3, 'M2060:composition'))).toBe('missing:composition');
-    const { layers } = stackLayers(M3, 'M2060', 3, { assets: A3 });
+    const { layers } = stackLayers(M3, 'M2088', 3, { assets: A3 });
     for (const L of layers) for (const id of L.linkedKeys) expect(key(M3, id)).toBeTruthy();
-    expect(layers.find(l => l.id === 'extent').linkedKeys).toEqual(['M2060:additive_density']);
+    expect(layers.find(l => l.id === 'extent').linkedKeys).toEqual(['M2088:porosity']);
   });
   it('profile cells use the approved band and direction hues', () => {
     const L = stackLayers(M3, 'M2060', 2, { assets: A3 }).layers.find(l => l.id === 'profile:additive_density');
@@ -200,13 +200,13 @@ describe('explanation panel is linked to the keys', () => {
   });
   it('stage overview and selected action are explained from the contract', () => {
     expect(explainStage(M3, 3, null).sections.some(s => s.id === 'limits')).toBe(true);
-    const ext = explainAction(M3, idx(M3, 'EXTEND', 'M2060'));
-    expect(ext.hue).toBe(M3.actions[idx(M3, 'EXTEND', 'M2060')].reach.hue);
-    expect(ext.rows.find(r => r[0] === 'expected effect')[1]).toMatch(/698 µm.*start/);
+    const ext = explainAction(M3, idx(M3, 'EXTEND', 'M2088'));
+    expect(ext.hue).toBe(M3.actions[idx(M3, 'EXTEND', 'M2088')].reach.hue);
+    expect(ext.rows.find(r => r[0] === 'expected effect')[1]).toMatch(/698 µm.*end/);
   });
   it('compresses selected actions without changing their contract semantics', () => {
     const repeat = actionPresentation(M3, idx(M3, 'REPEAT', 'M2060'));
-    expect(repeat.listLabel).toBe('M2060 · approved acquisition settings');
+    expect(repeat.listLabel).toBe('M2060 · reference-frame acquisition settings');
     expect(repeat.why).toBe('Tests whether the decision-driving deviation in M2060 is acquisition-driven.');
     expect(repeat.resolves).toBe('Acquisition vs material change');
     expect(repeat).toMatchObject({ tier: 'T1', grounding: 'GROUNDED', cost: 'LOW COST' });
@@ -217,10 +217,10 @@ describe('explanation panel is linked to the keys', () => {
     expect(accept.resolves).toBe('Lot prevalence');
   });
   it('pads carry a stage-specific second line', () => {
-    expect(vis(M3, 'M2060:additive_density', 0).sub).toBe('z +6.7');
+    expect(vis(M3, 'M2060:additive_density', 0).sub).toBe('z +6.9');
     expect(vis(M3, 'M2088:porosity', 1).sub).toBe('acq. could explain');
     expect(vis(M3, 'M2060:additive_density', 2).sub).toMatch(/^spatial \d+%$/);
-    expect(vis(M3, 'M2060:additive_density', 3).sub).toBe('scale · spatial');
+    expect(vis(M3, 'M2060:additive_density', 3).sub).toBe('scale');
     expect(vis(M3, 'M1612:porosity', 3).sub).toBe('');
   });
   it('colour mixing is perceptual and exact at the ends', () => {
@@ -291,6 +291,6 @@ describe('decision brief click-through (proof refs drive navigation)', () => {
     expect(navTarget(M3, C['limit.scale:M2060'].focus)).toMatchObject({ stage: 3, key: 'M2060:additive_density' });
     const v = navTarget(M3, C['action.repeat:1'].focus);
     expect(v.stage).toBe(4); expect(M3.actions[v.action].verb).toBe('REPEAT'); expect(v.key).toBe('M2060:additive_density');
-    expect(navTarget(M3, C['limit.spatial:M2060:additive_density'].focus)).toMatchObject({ stage: 3, spatial: true });
+    expect(C['limit.spatial:M2060:additive_density']).toBeUndefined();
   });
 });

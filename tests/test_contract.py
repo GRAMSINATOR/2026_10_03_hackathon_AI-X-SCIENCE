@@ -59,7 +59,12 @@ def test_fixture_is_reproducible_from_the_engine(fixture):
     recs = [r for r in allr if r['batch'] == 'Batch_3']
     rebuilt = contract.normalise(field.build({k: v for k, v in res.items() if k != 'field'}, ref, recs, res['chains'], allr))
     rebuilt = json.loads(json.dumps(rebuilt))
-    expected = {k: v for k, v in fixture.items() if k != 'assets'}
+    # Joint reference sensitivity is attached by compare_references after the
+    # single-frame field is built; the local builder intentionally emits only
+    # its selected-frame placeholder.
+    for k in ('reference_frames', 'reference_sensitivity'):
+        rebuilt.pop(k, None)
+    expected = {k: v for k, v in fixture.items() if k not in ('assets', 'reference_frames', 'reference_sensitivity')}
     assert rebuilt == expected
 
 

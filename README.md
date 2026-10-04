@@ -270,6 +270,10 @@ The current controller is intentionally transparent and rule-based. It does **no
 
 > **Reference configuration note:** the demo build currently configures **Batch_1** as the reference. The challenge description available in this repository states that teams receive one baseline batch plus incoming batches, but the text we have does not itself prove that the numbered folder called `Batch_1` is the organiser-designated baseline. Treat the mapping as configuration and verify it against the official dataset instructions before making an external “approved Batch_1” claim. If another folder is designated as baseline, rebuild the reference against that folder.
 
+The reference is now an explicit scientific coordinate frame. Batch_1, Batch_2 and Batch_3 each satisfy the current parent/KPI/spatial-support eligibility rules and are cached independently. `Hackathon-Polaron-test` remains a valid target, but is disabled as a reference because it has only three parent micrographs, fewer than three additive-valid parents, inadequate robustness acquisitions and insufficient spatial support. The top-level controls keep **DATASET** and **REFERENCE FRAME** separate, and the field contract records the active frame, every candidate’s support, and the joint comparison across all eligible frames.
+
+Cross-reference comparison is exploratory rather than a membership classifier. It holds target measurements fixed, recomputes reference-relative envelopes and decisions, and reports invariant and frame-dependent findings together so switching cannot be used as significance shopping.
+
 With the current `Batch_1` reference configuration:
 
 | Batch | Current engine result | What the evidence actually says |
@@ -277,6 +281,7 @@ With the current `Batch_1` reference configuration:
 | **Batch_1** | configured reference | 5–6 usable reference micrographs depending on KPI; M2316 fails additive measurement validity because contrast-to-noise is too low |
 | **Batch_2** | ACCEPT, p = 1.0 | its **3 independent** incoming micrographs are within the current reference range; 3 additional images are reference-linked continuations and carry no independent weight; support is therefore thin |
 | **Batch_3** | REJECT, p = 0.017 | one robust surviving signal is concentrated in M2060; the verdict changes without it, so the result is decision-significant but highly leveraged |
+| **Hackathon-Polaron-test** | INVESTIGATE, p = 1.0 | all measured KPIs are in family, but only **2 independent** incoming micrographs remain after M2316 is recognized as a reference-linked continuation; one more independent cross-section is required to certify the batch |
 
 ### Batch 3: the surviving evidence
 
@@ -323,7 +328,7 @@ The deviating population is visible as BSE-bright / high-Z contrast, but chemist
 
 ### Extent
 
-The density remains outside the approved local band at the edge of the coherent captured section.
+The density remains outside the selected reference local band at the edge of the coherent captured section.
 
 **Interpretation:** the current capture does not bound the spatial extent of the signal.
 
@@ -473,6 +478,11 @@ click-through proof
 - acquisition actions;
 - provenance.
 
+Each production dimension also declares a marker-specific uncertainty adapter: bounded phase fractions use raw and
+p(1−p)-normalised local-window fluctuation, particle density uses equal-area number variance and Fano, and distributional
+markers retain parent-cluster protocols. Spatial profiles distinguish 25 µm context columns from the unsmoothed 100 µm
+local means compared with the descriptive parent-bootstrap reference envelope.
+
 The renderer does not decide whether a signal survives or which action is scientifically justified.
 
 ## Human brief
@@ -584,12 +594,14 @@ uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 
 # Put sponsor TIFFs under data/<Batch>/
 
-# Build the configured reference.
-# IMPORTANT: Batch_1 is the current demo configuration; verify the official baseline mapping.
-python -m qc reference data/Batch_1 --noise-from data/Batch_2 data/Batch_3
+# Build independent cached reference candidates and explicitly activate one.
+python -m qc references data/Batch_1 data/Batch_2 data/Batch_3 data/Hackathon-Polaron-test --activate Batch_1
 
-# Assess incoming batches
-python -m qc assess data/Batch_2 data/Batch_3
+# Evaluate each unchanged target against every eligible frame.
+python -m qc compare-references data/Batch_1 --active Batch_1
+python -m qc compare-references data/Batch_2 --active Batch_1
+python -m qc compare-references data/Batch_3 --active Batch_1
+python -m qc compare-references data/Hackathon-Polaron-test --active Batch_1
 
 # Build the Evidence Instrument
 (cd renderer && npm install && npm run build)
@@ -601,7 +613,7 @@ streamlit run app.py
 ### Unseen batch
 
 ```bash
-python -m qc assess data/<NewBatch>
+python -m qc compare-references data/<NewBatch> --active Batch_1
 ```
 
 The pipeline automatically:
@@ -610,7 +622,9 @@ The pipeline automatically:
 - reconstructs parent-micrograph linkage where possible;
 - extracts features;
 - applies validity gates;
-- evaluates the batch against the configured reference;
+- evaluates the target against each eligible, explicitly cached reference frame;
+- proves that intrinsic target quantities have the same digest across frames;
+- records reference-sensitive and reference-invariant findings without assigning batch membership;
 - builds `epistemic-field/1`;
 - derives the human brief;
 - emits acquisition actions.

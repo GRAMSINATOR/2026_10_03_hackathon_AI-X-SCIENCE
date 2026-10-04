@@ -64,6 +64,50 @@ def check(f):
     P = {p['id']: p for p in f['spatial_profiles']}
     M = {m['id']: m for m in f['missing_dimensions']}
     coll = dict(entities=E, dimensions=Dm, observations=O, rims=R, spatial_profiles=P, missing_dimensions=M)
+    frames = f.get('reference_frames', [])
+    selected = [x for x in frames if x.get('selected')]
+    if len(selected) != 1 or selected[0].get('id') != f['context'].get('reference'):
+        bad.append('exactly one serialized reference frame must be selected and match context.reference')
+    unavailable = [x for x in frames if not x.get('eligible') and not x.get('unavailable_reasons')]
+    if unavailable:
+        bad.append('unavailable reference frames require explicit reasons')
+    rf = f['context'].get('reference_frame', {})
+    if rf.get('id') != f['context'].get('reference') or rf.get('selection') != 'explicit':
+        bad.append('active reference identity is not explicit or does not match context.reference')
+    sens = f.get('reference_sensitivity', {})
+    if sens.get('complete'):
+        if set(sens.get('frames_evaluated', [])) != set(sens.get('eligible_frames', [])):
+            bad.append('complete reference sensitivity did not evaluate every eligible frame')
+        if not sens.get('intrinsic_unchanged') or len(set(sens.get('measurement_digest_by_frame', {}).values())) != 1:
+            bad.append('reference switching altered intrinsic target measurements')
+    if sens.get('invariant_findings') and not sens.get('complete'):
+        bad.append('reference-invariant findings require a complete cross-frame evaluation')
+    classified = {x.get('id'): x.get('classification') for x in sens.get('findings', [])}
+    if any(classified.get(x) != 'reference_invariant' for x in sens.get('invariant_findings', [])):
+        bad.append('invariant finding lacks cross-frame agreement')
+    if any(classified.get(x) != 'reference_sensitive' for x in sens.get('frame_dependent_findings', [])):
+        bad.append('frame-dependent finding lacks a changed cross-frame state')
+    adapter_fields = {'observation_family', 'support_model', 'uncertainty_adapter', 'reference_protocol'}
+    for d in Dm.values():
+        if not d['acquired']:
+            continue
+        if set(d.get('uncertainty_model', {})) != adapter_fields:
+            bad.append(f"dimension {d['id']}: incomplete uncertainty adapter")
+        sp = d.get('spatial_support')
+        if not sp:
+            continue
+        if sp.get('observation_model') != d.get('uncertainty_model'):
+            bad.append(f"dimension {d['id']}: spatial observation model differs from uncertainty adapter")
+        rows = sp.get('scale_dependent_heterogeneity', [])
+        for row in rows:
+            if abs(row.get('window_area_um2', 0) - row.get('window_um', 0) ** 2) > 1e-6:
+                bad.append(f"dimension {d['id']}: spatial window area does not match its side length")
+            if min(row.get('n_windows', 0), row.get('n_fields', 0), row.get('n_parents', 0)) <= 0:
+                bad.append(f"dimension {d['id']}: spatial support counts must be positive")
+            if d['id'] == 'additive_density' and any(row.get(x) is None for x in ('mean_count', 'number_variance', 'fano')):
+                bad.append('dimension additive_density: count-process descriptor missing')
+            if d['id'] in ('additive_area_frac', 'porosity') and row.get('normalized_fluctuation') is None:
+                bad.append(f"dimension {d['id']}: phase-fraction normalisation missing")
     for o in f['observations']:
         if o['entity'] not in E or o['dimension'] not in Dm or not Dm[o['dimension']]['acquired']:
             bad.append(f"observation {o['id']}: dangling entity/dimension")
@@ -96,6 +140,9 @@ def check(f):
         if rr['envelope95'] and not (rr['envelope95'][0] <= rr['approved_mean'] <= rr['envelope95'][1]):
             bad.append(f"{o['id']}: approved mean outside its own envelope")
     for e in f['entities']:
+        sd = e.get('size_distribution')
+        if sd is not None and set(sd.get('uncertainty_model', {})) != adapter_fields:
+            bad.append(f"entity {e['id']}: particle-size distribution uncertainty adapter missing")
         for d in Dm.values():
             if d['acquired'] and f"{e['id']}:{d['id']}" not in O:
                 bad.append(f"missing observation {e['id']}:{d['id']}")
@@ -133,6 +180,18 @@ def check(f):
     for p in f['spatial_profiles']:
         if p['entity'] not in E or p['dimension'] not in Dm:
             bad.append(f"profile {p['id']} dangling")
+        support, band = p.get('comparison_support', {}), p.get('reference_band', {})
+        if not support.get('matched') or support.get('observed_window_um') != p['window_um'] or \
+                support.get('reference_window_um') != p['window_um']:
+            bad.append(f"profile {p['id']}: observed and reference support differ")
+        if band.get('kind') != 'parent_cluster_predictive_envelope' or band.get('statistic') != 'local_window_mean':
+            bad.append(f"profile {p['id']}: reference band semantics missing")
+        excursion = p.get('whole_profile_excursion', {})
+        if not excursion.get('support_matched') or not excursion.get('window_count_matched') or \
+                excursion.get('n_reference_parents') != band.get('n_parents'):
+            bad.append(f"profile {p['id']}: whole-profile diagnostic support mismatch")
+        if excursion.get('calibrated') is not False or band.get('calibrated') is not False:
+            bad.append(f"profile {p['id']}: descriptive diagnostics must not claim calibration")
         for run in p['runs']:
             if run['fields'] and run['fields'][0]['x0_um'] != 0:
                 bad.append(f"profile {p['id']}: run frame must start at 0 (run separation is unknown)")

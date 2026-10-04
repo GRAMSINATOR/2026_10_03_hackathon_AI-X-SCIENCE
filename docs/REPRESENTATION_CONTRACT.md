@@ -34,14 +34,21 @@ reciprocal evidence references between them.
 
 ```
 EpistemicField
-├─ context              batch · reference · statistical_unit = parent_micrograph · model statement
+├─ context              batch · reference_frame {id, explicit selection, support} · role · parent-micrograph unit · model
+├─ quantity_scope       explicit intrinsic target paths vs reference-relative paths
+├─ reference_frames[]   eligible/unavailable candidates · reasons · parent/KPI/spatial/acquisition support · selected
+├─ reference_sensitivity all eligible frames evaluated together · intrinsic digest · per-frame verdict/support/means/spreads/
+│                       spatial regimes · invariant and frame-dependent findings · why ranges · exploration guardrail
 ├─ decision             verdict · p_batch · tests (severity, count, Bonferroni) · null calibration · n_independent ·
 │                       reference_linked[] · pivotal[] · thresholds · reasons (prose)
 ├─ dimensions[]         what can be (or could have been) measured
 │   ├─ kind=kpi         unit (canonical) + display {unit, factor} · modalities · cross_checks ·
+│   │                   uncertainty_model {observation_family, support_model, uncertainty_adapter,
+│   │                   reference_protocol} ·
 │   │                   robustness {cls, worst_perturbation, worst_shift, worst_shift_over_tile_sd} ·
 │   │                   reference {mean, sd, sd_between, sd_tile, var_mean, n, mdc95_3tiles, tile_range} ·
-│   │                   spatial_support {cls, window_variance_slope, tile_excess (+CI), range_um, variogram} | null
+│   │                   spatial_support {cls, scale_dependent_heterogeneity[], scale_model_sensitivity,
+│   │                   window_variance aggregation audit, tile_excess (+CI), range_um, variogram} | null
 │   └─ kind=missing     acquired=false · would_require[]                      (composition)
 ├─ entities[]           the statistical units (parent micrographs)
 │                       fields[] · independence {reference_linked, also_in_batches} · geometry ·
@@ -57,7 +64,8 @@ EpistemicField
 │                       failed[codes], conditional_on_untested_acquisition} · acquisition_explains_deviation · rims[]
 ├─ missing_dimensions[] entity × missing dimension: consequential · basis {dependent_observations, …}
 ├─ spatial_profiles[]   entity × spatial KPI: runs[] (own 0-based frame each; run_separation = "unknown") ·
-│                       column/window series · open_at_start/end · reference_band (approximate)
+│                       25-µm context columns · unsmoothed 100-µm local means · open_at_start/end ·
+│                       parent-cluster reference_band · comparison_support · whole_profile_excursion
 ├─ rims[]               where support fades: {type, scope ∈ batch|entity|observation|dimension, target,
 │                       consequential, basis (structured), statement (prose)}
 ├─ actions[]            ranked NEXT CAPTURE: verb · tier · addresses · status · cost · targets {observations,
@@ -95,14 +103,16 @@ boundaries, typed and scoped) → actions (each pointing back through `triggered
 | base64 thumbnails inside the field | renderer transport | `provenance.fields` + optional `assets` |
 | `fines_brightness_u` | the name collided with presentation vocabulary | `fines_bse_intensity_u` (normalised BSE intensity, a physical signal) |
 
-No scientific rule, threshold or claim changed. Verdicts, survivals, rims and action rankings are identical to the
-pre-contract prototype (verified by test and by rendering the fixture).
+The marker-aware spatial descriptors do not enter the batch verdict. The configured QC verdicts and scrutiny rules are
+unchanged. The support-matched local envelope still grounds open-edge acquisition actions, so a more explicit envelope
+can legitimately change which captured edge is reported as open.
 
 ## 3. Still coupled (honest list)
 
-* **Analysis-resolution parameters**: 25 µm columns and 100 µm windows for profiles and the approximate local
-  `reference_band`. These are analysis choices, not UI. But the band was originally introduced for the strip, and it now also
-  grounds the open-edge test (EXTEND). It is flagged `approximate`.
+* **Analysis-resolution parameters**: 25 µm context columns and unsmoothed 100 µm moving local means are analysis
+  choices. Only the 100 µm statistic is compared with the 100 µm parent-bootstrap envelope. The envelope is descriptive,
+  not coverage-calibrated, and exposes its 5–6-parent support, bootstrap endpoint sensitivity and the former flattened
+  mean ± 1.96 window-SD population-spread audit.
 * **Action ranking** (tier + verb order) is a policy encoded in `qc/field.py`. It is semantic (decision priority), but a
   renderer that shows "rank 1" inherits our policy.
 * **Prose annotations** are English and partially redundant with structured fields. Renderers may ignore them, but they

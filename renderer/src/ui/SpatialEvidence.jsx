@@ -106,7 +106,10 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
           <label key={k}><input type="checkbox" checked={!!overlays[k]} onChange={e => setOverlays({ ...overlays, [k]: e.target.checked })} />
             <i style={{ background: `rgb(${o.color.join(',')})` }} />{o.label}</label>))}</div>}
         {!imagery && <span className="sp-withheld">micrograph imagery withheld · public mode shows derived numbers only</span>}
-        <span className="sp-key"><i className="hatch" />not captured <i style={{ background: HUE.population, opacity: 0.6 }} />{M.meta.role === 'reference' ? 'reference local band (visual aid)' : 'approved local band (visual aid)'}
+        <span className="sp-key"><i className="hatch" />not captured
+          <i style={{ background: MUT }} />25 µm columns · context
+          <i style={{ background: HUE.above }} />100 µm local means · compared
+          <i style={{ background: HUE.population, opacity: 0.6 }} />parent-bootstrap envelope
           <i style={{ background: HUE.spatial }} />open edge <em>· {imagery ? 'native scale, ' : ''}scroll ⇆</em></span>
       </div>
       <div className="sp-view">
@@ -119,7 +122,7 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
           <text x={4} y={compY + 13} className="sp-tick">chemistry</text>
         </svg>
         <div className="sp-scroll" ref={scroller} tabIndex={0} aria-label="registered strip, scroll horizontally">
-          <svg width={W} height={H} role="img" aria-label={`registered spatial evidence for ${entity}: ${col.label}`}>
+          <svg width={W} height={H} role="img" aria-label={`registered spatial evidence for ${entity}: raw 25 micrometre columns and unsmoothed 100 micrometre local means for ${col.label}, compared with a descriptive ${b.n_parents}-parent bootstrap envelope`}>
             <defs>
               <linearGradient id="openL" x1="1" x2="0"><stop offset="0" stopColor={HUE.spatial} stopOpacity="0.4" /><stop offset="1" stopColor={HUE.spatial} stopOpacity="0" /></linearGradient>
               <linearGradient id="openR" x1="0" x2="1"><stop offset="0" stopColor={HUE.spatial} stopOpacity="0.4" /><stop offset="1" stopColor={HUE.spatial} stopOpacity="0" /></linearGradient>
@@ -168,7 +171,8 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
                 <rect x={sx(r.offsetUm)} y={sy(b.hi)} width={r.lengthUm * pxPerUm} height={sy(b.lo) - sy(b.hi)} fill={HUE.population} opacity={emphBand ? 0.26 : 0.13} />
                 <line x1={sx(r.offsetUm)} x2={sx(r.offsetUm + r.lengthUm)} y1={sy(b.hi)} y2={sy(b.hi)} stroke={HUE.population} strokeOpacity={0.75} strokeDasharray="3 3" />
                 <line x1={sx(r.offsetUm)} x2={sx(r.offsetUm + r.lengthUm)} y1={sy(b.lo)} y2={sy(b.lo)} stroke={HUE.population} strokeOpacity={0.75} strokeDasharray="3 3" />
-                <text x={sx(r.offsetUm) + 6} y={sy(b.lo) - sy(b.hi) > 18 ? sy(b.hi) + 13 : sy(b.hi) - 5} className="sp-note" fill="#5a3fb0">{M.meta.role === 'reference' ? 'reference local band (100-µm windows; includes this micrograph)' : 'approved local band (100-µm windows)'}</text>
+                <text x={sx(r.offsetUm) + 6} y={sy(b.lo) - sy(b.hi) > 18 ? sy(b.hi) + 13 : sy(b.hi) - 5} className="sp-note" fill="#5a3fb0">
+                  {`${b.label || 'PARENT-BOOTSTRAP ENVELOPE'} · 100 µm means · ${b.n_parents} parents · descriptive`}</text>
               </g>))}
             {prof.runs.map((r, i) => r.column_centres_um.map((x, j) => (
               <circle key={`${i}-c${j}`} cx={sx(reg.runs[i].offsetUm + x)} cy={sy(r.column_values[j])} r={2.3} fill={MUT} opacity={0.55} />)))}
@@ -176,7 +180,7 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
             {showOpen && prof.runs.map((r, i) => (
               <g key={'o' + i}>
                 {r.open_at_start && <><rect x={sx(reg.runs[i].offsetUm) - padL * pxPerUm * 0.8} y={chartY} width={padL * pxPerUm * 0.8} height={CHART_H} fill="url(#openL)" />
-                  <text x={sx(reg.runs[i].offsetUm) + 8} y={chartY + 14} className="sp-note" fill={OPEN_TEXT}>◀ open edge: still outside the band here, extent not bounded</text></>}
+                  <text x={sx(reg.runs[i].offsetUm) + 8} y={chartY + 14} className="sp-note" fill={OPEN_TEXT}>◀ open edge: local mean still outside the envelope; extent not bounded</text></>}
                 {r.open_at_end && <><rect x={sx(reg.runs[i].offsetUm + r.length_um)} y={chartY} width={padR * pxPerUm * 0.8} height={CHART_H} fill="url(#openR)" />
                   <text x={sx(reg.runs[i].offsetUm + r.length_um) - 8} y={chartY + 14} textAnchor="end" className="sp-note" fill={OPEN_TEXT}>open edge ▶</text></>}
               </g>))}

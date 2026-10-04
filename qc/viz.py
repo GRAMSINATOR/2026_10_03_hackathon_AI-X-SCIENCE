@@ -103,7 +103,7 @@ def state_map(ref, res, kx='additive_density', ky='additive_d50_um', m_band=3):
     hx, hy = qz(Rx, m_band)[0] * den(Rx, m_band), qz(Ry, m_band)[0] * den(Ry, m_band)
     fig.add_shape(type='rect', x0=(Rx['mean'] - hx) * sx, x1=(Rx['mean'] + hx) * sx, y0=(Ry['mean'] - hy) * sy,
                   y1=(Ry['mean'] + hy) * sy, fillcolor='rgba(42,120,214,0.10)', line=dict(color='rgba(42,120,214,0.6)', width=1, dash='dot'))
-    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', name=f'approved 95% envelope ({m_band}-tile micrograph)',
+    fig.add_trace(go.Scatter(x=[None], y=[None], mode='markers', name=f'selected-reference 95% envelope ({m_band}-tile micrograph)',
                              marker=dict(symbol='square', size=12, color='rgba(42,120,214,0.18)', line=dict(color='rgba(42,120,214,0.6)', width=1))))
     groups = [('baseline', ref['micrographs'], ref['name'])]
     if res['batch'] != ref['name']:
@@ -163,7 +163,7 @@ def deviation_heatmap(res):
     fig = go.Figure(go.Heatmap(z=z, x=[KPIS[k]['short'] for k in keys], y=[f"{m['parent']} ({m['n_tiles']}t)" for m in mgs],
                                text=txt, texttemplate='%{text}', hovertext=hov, hoverinfo='text', zmin=-8, zmax=8, xgap=2, ygap=2,
                                colorscale=[[0, '#2a78d6'], [0.5, '#f0efec'], [1, '#e34948']],
-                               colorbar=dict(title='t vs approved', tickvals=[-8, -4, 0, 4, 8])))
+                               colorbar=dict(title='t vs reference', tickvals=[-8, -4, 0, 4, 8])))
     fig.update_layout(template='plotly_white', height=90 + 46 * len(mgs), margin=dict(l=10, r=10, t=10, b=10),
                       plot_bgcolor=SURFACE, paper_bgcolor=SURFACE, font=dict(color=INK2))
     fig.update_xaxes(side='top')

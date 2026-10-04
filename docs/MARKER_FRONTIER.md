@@ -70,6 +70,7 @@ Research bundles may provide:
 
 * `name`, `marker_kind`, `representation`, `observable`, `scientific_question`;
 * `scientific_definition`, `measurement_definition`, `why_relevant`;
+* provisional `observation_family`, `support_model`, `uncertainty_adapter` and `reference_protocol`;
 * `current_capture_compatible`, modalities, capability dependencies and capture requirements;
 * existing-data test plan, implementation burden, confounds, failure modes and overlap;
 * blindspot and decision references.
@@ -149,18 +150,29 @@ phrasing such as `INVESTIGATING`, `TESTABLE` and `BUILDING PAYLOAD`.
 
 ## Seeded Polaron opportunities
 
-The committed seed is intentionally sparse and contains no claimed literature support.
+The committed seed contains a small, explicit set of primary method papers. A paper supports candidate plausibility;
+it does not assert implementation readiness, robustness or decision value.
 
 * **Open-edge deviation phenotype** — qualitative categorical state already represented by registered profiles;
   distinguishes a bounded feature from a deviation that remains open at a captured edge.
 * **Spatial correlation length** — quantitative scalar based on the implemented variogram support; reports supported
   range or a lower bound without extrapolating past capture.
+* **Scale-dependent phase-fraction heterogeneity** — implemented raw and p(1−p)-normalised fluctuation curves with
+  parent/support audits; still non-decision-driving.
+* **Scale-dependent particle count overdispersion** — implemented equal-area mean count, number variance and Fano curves;
+  Poisson is only a comparator.
+* **Pair correlation, nearest-neighbour spacing, boundary morphology, full chord distributions, lineal-path probability
+  and 2-D Minkowski morphology** — candidate protocols with provisional uncertainty adapters and explicit confounds.
 * **Sub-floor fines size distribution** — quantitative distribution requiring the existing higher-magnification
   capture action.
 * **High-Z phase elemental identity** and **phase-conditioned fines distribution** — require composition-sensitive
   data and pool under the EDS attractor.
 * **3-D pore connectivity** — requires volumetric observation and remains exploratory.
-* Pseudotime and multiscale heterogeneity keep their negative project results and remain set aside.
+* Pseudotime and the earlier, less auditable multiscale exponent keep their negative project results and remain set aside.
+
+Orientation, lacunarity and persistent homology remain deferred. The current data have not established a directional
+question for orientation; lacunarity overlaps the new scale curves; persistent homology would add novelty before basic
+topology and segmentation sensitivity have been validated.
 
 `fixtures/frontier/example.qte77.json` contains clearly marked synthetic evidence for ingestion and contradiction
 tests. It changes display counts, never scientific state.

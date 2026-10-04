@@ -2,13 +2,13 @@
  "schema_version": "decision-brief/1",
  "source": {
   "schema_version": "epistemic-field/1",
-  "batch": "Batch_2",
+  "batch": "Hackathon-Polaron-test",
   "reference": "Batch_1"
  },
  "hero": {
   "decision": {
    "title": "DECISION",
-   "state": "ACCEPT",
+   "state": "INVESTIGATE",
    "claims": [
     "decision.verdict"
    ],
@@ -16,8 +16,8 @@
   },
   "data_support": {
    "title": "DATA SUPPORT",
-   "state": "SUFFICIENT FOR QC",
-   "qualifier": "AT THE MINIMUM · NOT FOR PREVALENCE",
+   "state": "PARTIAL FOR QC",
+   "qualifier": "NOT FOR PREVALENCE",
    "claims": [
     "support.qc",
     "support.attribution",
@@ -36,7 +36,7 @@
    "title": "LIMITS",
    "state": "PREVALENCE",
    "claims": [
-    "limit.population:Batch_2"
+    "limit.population:Hackathon-Polaron-test"
    ]
   },
   "acquisition_policy": {
@@ -61,10 +61,10 @@
    "id": "decision.verdict",
    "kind": "decision",
    "block": "decision",
-   "scope": "Batch_2",
-   "status": "ACCEPT",
-   "label": "ACCEPT",
-   "template": "{0} stays inside the selected reference-frame envelope.",
+   "scope": "Hackathon-Polaron-test",
+   "status": "INVESTIGATE",
+   "label": "INVESTIGATE",
+   "template": "{0}: the rule cannot settle this batch; investigate.",
    "values": [
     {
      "ref": {
@@ -72,7 +72,7 @@
       "id": "batch",
       "path": "batch"
      },
-     "value": "Batch_2",
+     "value": "Hackathon-Polaron-test",
      "fmt": "str"
     }
    ],
@@ -107,7 +107,7 @@
         "id": "batch",
         "path": "tests.severity_p"
        },
-       "value": 0.74831,
+       "value": 0.94772,
        "fmt": "p"
       },
       {
@@ -129,7 +129,7 @@
        "fmt": "str"
       }
      ],
-     "text": "severity test p = 0.748 · count test p = 1.000 (bonferroni_2)"
+     "text": "severity test p = 0.948 · count test p = 1.000 (bonferroni_2)"
     }
    ],
    "priority": 0,
@@ -163,14 +163,14 @@
    },
    "action_refs": [],
    "role": "content",
-   "text": "Batch_2 stays inside the selected reference-frame envelope.",
+   "text": "Hackathon-Polaron-test: the rule cannot settle this batch; investigate.",
    "fact": "batch p = 1.000 against α = 0.05"
   },
   {
    "id": "decision.scope",
    "kind": "scope",
    "block": "decision",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "dataset_scope",
    "label": "SCOPE",
    "template": "Decision for this target and selected reference frame only: {0} ({1}–{2} micrographs); {3}.",
@@ -187,7 +187,7 @@
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.n_reference_min"
      },
      "value": 5,
@@ -196,7 +196,7 @@
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.n_reference_max"
      },
      "value": 6,
@@ -227,7 +227,7 @@
     },
     {
      "collection": "rims",
-     "id": "population:Batch_2",
+     "id": "population:Hackathon-Polaron-test",
      "path": "basis"
     }
    ],
@@ -248,7 +248,7 @@
    "id": "evidence.none",
    "kind": "evidence_summary",
    "block": "surviving_evidence",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "none",
    "label": "NONE",
    "template": "{0} of {1} independent micrographs leave the 95% envelope.",
@@ -268,7 +268,7 @@
       "id": "batch",
       "path": "n_independent"
      },
-     "value": 3,
+     "value": 2,
      "fmt": "int"
     }
    ],
@@ -291,7 +291,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "0 of 3 independent micrographs leave the 95% envelope.",
+   "text": "0 of 2 independent micrographs leave the 95% envelope.",
    "fact": null,
    "focus": {
     "collection": "decision",
@@ -300,10 +300,10 @@
    }
   },
   {
-   "id": "limit.population:Batch_2",
+   "id": "limit.population:Hackathon-Polaron-test",
    "kind": "limit",
    "block": "limits",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "consequential",
    "label": "PREVALENCE",
    "template": "Out-of-family prevalence {0} of {1} independent micrographs (95% CI {2}–{3}).",
@@ -311,7 +311,7 @@
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.prevalence.out_of_family"
      },
      "value": 0,
@@ -320,16 +320,16 @@
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.prevalence.n"
      },
-     "value": 3,
+     "value": 2,
      "fmt": "int"
     },
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.prevalence.ci95.0"
      },
      "value": 0.0,
@@ -338,30 +338,30 @@
     {
      "ref": {
       "collection": "rims",
-      "id": "population:Batch_2",
+      "id": "population:Hackathon-Polaron-test",
       "path": "basis.prevalence.ci95.1"
      },
-     "value": 0.707598,
+     "value": 0.841886,
      "fmt": "pct"
     }
    ],
    "priority": 2.5,
-   "group": "rim:population:Batch_2",
+   "group": "rim:population:Hackathon-Polaron-test",
    "proof_refs": [
     {
      "collection": "rims",
-     "id": "population:Batch_2",
+     "id": "population:Hackathon-Polaron-test",
      "path": "statement"
     },
     {
      "collection": "rims",
-     "id": "population:Batch_2",
+     "id": "population:Hackathon-Polaron-test",
      "path": "basis"
     }
    ],
    "focus": {
     "collection": "rims",
-    "id": "population:Batch_2",
+    "id": "population:Hackathon-Polaron-test",
     "path": "basis"
    },
    "action_refs": [
@@ -372,17 +372,17 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Out-of-family prevalence 0 of 3 independent micrographs (95% CI 0%–71%).",
+   "text": "Out-of-family prevalence 0 of 2 independent micrographs (95% CI 0%–84%).",
    "fact": null
   },
   {
    "id": "support.qc",
    "kind": "support",
    "block": "data_support",
-   "scope": "Batch_2",
-   "status": "at_minimum",
+   "scope": "Hackathon-Polaron-test",
+   "status": "partial",
    "label": "QC DECISION",
-   "template": "{0} independent incoming micrographs, the rule's minimum: without any one of them the decision becomes {1}.",
+   "template": "{0} independent incoming micrographs; {1} outside the 95% envelope.",
    "values": [
     {
      "ref": {
@@ -390,17 +390,17 @@
       "id": "batch",
       "path": "n_independent"
      },
-     "value": 3,
+     "value": 2,
      "fmt": "int"
     },
     {
      "ref": {
-      "collection": "entities",
-      "id": "M2048",
-      "path": "leverage.verdict_without"
+      "collection": "decision",
+      "id": "batch",
+      "path": "d95"
      },
-     "value": "INVESTIGATE",
-     "fmt": "str"
+     "value": 0,
+     "fmt": "int"
     }
    ],
    "priority": 1,
@@ -425,26 +425,11 @@
      "collection": "decision",
      "id": "batch",
      "path": "reference_linked"
-    },
-    {
-     "collection": "entities",
-     "id": "M2048",
-     "path": "leverage"
-    },
-    {
-     "collection": "entities",
-     "id": "M2068",
-     "path": "leverage"
-    },
-    {
-     "collection": "entities",
-     "id": "M2272",
-     "path": "leverage"
     }
    ],
    "focus": {
     "collection": "rims",
-    "id": "population:Batch_2",
+    "id": "population:Hackathon-Polaron-test",
     "path": "basis"
    },
    "fact_values": [],
@@ -452,15 +437,15 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "3 independent incoming micrographs, the rule's minimum: without any one of them the decision becomes INVESTIGATE.",
+   "text": "2 independent incoming micrographs; 0 outside the 95% envelope.",
    "fact": null,
-   "state_label": "SUFFICIENT AT MINIMUM"
+   "state_label": "PARTIAL"
   },
   {
    "id": "support.attribution",
    "kind": "support",
    "block": "data_support",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "not_applicable",
    "label": "ATTRIBUTION",
    "template": "No surviving deviation to attribute.",
@@ -493,7 +478,7 @@
    "id": "support.prevalence",
    "kind": "support",
    "block": "data_support",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "expansion_needed",
    "label": "LOT PREVALENCE",
    "template": "Too few independent sections to estimate lot prevalence usefully; see Limits.",
@@ -501,12 +486,12 @@
    "priority": 5,
    "group": "support:prevalence",
    "points_to": [
-    "limit.population:Batch_2"
+    "limit.population:Hackathon-Polaron-test"
    ],
    "proof_refs": [
     {
      "collection": "rims",
-     "id": "population:Batch_2",
+     "id": "population:Hackathon-Polaron-test",
      "path": "consequential"
     }
    ],
@@ -519,7 +504,7 @@
    "fact": null,
    "focus": {
     "collection": "rims",
-    "id": "population:Batch_2",
+    "id": "population:Hackathon-Polaron-test",
     "path": "consequential"
    },
    "state_label": "EXPANSION NEEDED"
@@ -528,7 +513,7 @@
    "id": "support.regime",
    "kind": "support",
    "block": "data_support",
-   "scope": "Batch_2",
+   "scope": "Hackathon-Polaron-test",
    "status": "no_expansion_justified",
    "label": "TESTED REGIME",
    "template": "extent: no expansion justified at tested scales · scale: no expansion justified at tested scales · acquisition: sufficient.",
@@ -548,12 +533,7 @@
     },
     {
      "collection": "entities",
-     "id": "M2068",
-     "path": "acquisition"
-    },
-    {
-     "collection": "entities",
-     "id": "M2272",
+     "id": "M2088",
      "path": "acquisition"
     }
    ],
@@ -576,7 +556,7 @@
    "id": "action.sections:1",
    "kind": "action",
    "block": "acquisition_policy",
-   "scope": "M2048,M2068,M2272",
+   "scope": "Hackathon-Polaron-test",
    "status": "computed",
    "label": "SECTIONS",
    "template": "{0}",
@@ -605,7 +585,7 @@
     },
     {
      "collection": "rims",
-     "id": "population:Batch_2",
+     "id": "population:Hackathon-Polaron-test",
      "path": "basis"
     },
     {
@@ -617,21 +597,6 @@
      "collection": "decision",
      "id": "batch",
      "path": "pivotal"
-    },
-    {
-     "collection": "entities",
-     "id": "M2048",
-     "path": "leverage"
-    },
-    {
-     "collection": "entities",
-     "id": "M2068",
-     "path": "leverage"
-    },
-    {
-     "collection": "entities",
-     "id": "M2272",
-     "path": "leverage"
     }
    ],
    "focus": {
@@ -656,6 +621,14 @@
    "states come from explicit engine flags; the wording template is chosen by the state"
   ],
   "suppressed": [
+   {
+    "candidate": "limit.acquisition:M2316",
+    "reason": "not consequential (examiner only)"
+   },
+   {
+    "candidate": "limit.validity:M2316",
+    "reason": "not consequential (examiner only)"
+   },
    {
     "candidate": "limit.spatial-dimension:porosity",
     "reason": "not consequential (examiner only)"

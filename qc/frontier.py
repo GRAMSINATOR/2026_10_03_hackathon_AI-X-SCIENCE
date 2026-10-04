@@ -231,6 +231,16 @@ def blindspot_index(fields):
                             label=f"{TYPE_LABEL.get(d['family'], d['family'].upper())} · {m['entity']} (not acquired)",
                             actions=[dict(id=a['id'], verb=a['verb'], tier=a['tier'], status=a['status'], cost=a['cost'], title=a['title']) for a in acts
                                      if m['dimension'] in a['targets']['dimensions'] and m['entity'] in a['targets']['entities']]))
+        sensitivity = F.get('reference_sensitivity') or {}
+        dependent = sensitivity.get('frame_dependent_findings') or []
+        if sensitivity.get('complete') and dependent:
+            out.append(dict(key=f'{b}/reference_sensitivity/cross_reference', batch=b,
+                            collection='reference_sensitivity', id='cross_reference', type='reference_sensitivity',
+                            scope='batch', target=b, consequential=False,
+                            statement=(f'Interpretation of {len(dependent)} observations changes across '
+                                       f"{len(sensitivity.get('frames_evaluated', []))} eligible reference frames; "
+                                       'the reference populations encode different structural regimes.'),
+                            label=f'REFERENCE SENSITIVITY · {b}', actions=[]))
     return out
 
 
@@ -407,6 +417,7 @@ def _opportunity_order(marker):
     burden = {'low': 0, 'medium': 1, 'high': 2, None: 3}
     tested = {'passed': 0, 'inconclusive': 1, 'not_run': 2, 'requires_acquisition': 3, 'not_observable': 4, 'failed': 5}
     return (marker['status'] in TERMINAL, marker['fixture'], 0 if marker['closes_consequential'] else 1,
+            0 if marker.get('reference_sensitivity', {}).get('matched_dimensions') else 1,
             obs[marker['observability']['cls']], tested.get(marker['existing_data_test']['status'], 6),
             -len(marker['evidence']), burden.get(marker.get('implementation_burden'), 3), marker['id'])
 
@@ -575,7 +586,8 @@ def build(fields, bundles):
         marker_kind = m.get('marker_kind') or ('qualitative' if representation in QUALITATIVE_REPRESENTATIONS else 'quantitative')
         marker = dict(
             {k: m.get(k) for k in ('id', 'name', 'family', 'proposition', 'scientific_definition', 'measurement_definition', 'why_relevant',
-                                   'decision_relevance', 'capture_requirements', 'current_capture_compatible', 'implementation_burden')},
+                                   'decision_relevance', 'capture_requirements', 'current_capture_compatible', 'implementation_burden',
+                                   'observation_family', 'support_model', 'uncertainty_adapter', 'reference_protocol')},
             marker_kind=marker_kind, representation=representation, observable=m.get('observable') or m['proposition'],
             scientific_question=m.get('scientific_question'),
             required_modalities=m.get('required_modalities', []), required_capabilities=m.get('required_capabilities', []),
@@ -596,6 +608,27 @@ def build(fields, bundles):
         marker['investigation_state'] = INVESTIGATION_STATE[status]
         marker['ranking_factors'] = _marker_factors(marker)
         markers.append(marker)
+    # A marker already linked to a dimension whose interpretation changes across
+    # frames gains an explicit opportunity factor.  This uses the existing
+    # decision/blindspot links; it does not infer a defect or manufacture a link.
+    sensitive_by_batch = {F['context']['batch']: set((F.get('reference_sensitivity') or {}).get('sensitive_dimensions', []))
+                          for F in fields}
+    for marker in markers:
+        matched = set()
+        for ref in marker['decision_refs']:
+            if ref.get('collection') == 'dimensions' and ref.get('id') in sensitive_by_batch.get(ref.get('batch'), set()):
+                matched.add(ref['id'])
+        for ref in marker['blindspot_refs']:
+            target = ref.get('target', '')
+            dim = target.split(':', 1)[1] if ':' in target else ref.get('id', '').split(':')[-1]
+            if dim in sensitive_by_batch.get(ref.get('batch'), set()):
+                matched.add(dim)
+        marker['reference_sensitivity'] = dict(
+            matched_dimensions=sorted(matched),
+            role=('can investigate why reference populations differ on linked dimensions' if matched else
+                  'no existing link to a reference-sensitive dimension'))
+        if matched:
+            marker['ranking_factors'].append('linked to a reference-sensitive dimension')
     MK = {m['id']: m for m in markers}
 
     # ---- capabilities (demand accumulates across marker cases)
@@ -724,6 +757,12 @@ def build(fields, bundles):
             question='What additional useful ways of perceiving the current dataset should be investigated?',
             local_loop='NEXT CAPTURE resolves the current decision; this map searches for better representations and future observability.',
             current_frontier=current_frontier, candidate_markers=candidate_markers,
+            reference_sensitivity=[dict(batch=F['context']['batch'],
+                                        conclusion=(F.get('reference_sensitivity') or {}).get('conclusion'),
+                                        stable_dimensions=(F.get('reference_sensitivity') or {}).get('stable_dimensions', []),
+                                        sensitive_dimensions=(F.get('reference_sensitivity') or {}).get('sensitive_dimensions', []),
+                                        frame_dependent_findings=(F.get('reference_sensitivity') or {}).get('frame_dependent_findings', []))
+                                   for F in fields if (F.get('reference_sensitivity') or {}).get('complete')],
             tooling_attractors=[c['id'] for c in attractors], roadmap=roadmap,
             ranking_policy=['decision-consequential inquiry first', 'then current-data testability',
                             'then existing evidence and implementation burden', 'stable id breaks remaining ties']),
@@ -830,6 +869,9 @@ def check(doc, fields=None, bundles=None, root=ROOT):
             bad.append(f"{m['id']}: marker kind is not quantitative, qualitative or hybrid")
         if not m.get('representation') or not m.get('observable'):
             bad.append(f"{m['id']}: marker protocol lacks a representation or observable")
+        adapter_keys = ('observation_family', 'support_model', 'uncertainty_adapter', 'reference_protocol')
+        if any(m.get(x) for x in adapter_keys) and not all(m.get(x) for x in adapter_keys):
+            bad.append(f"{m['id']}: provisional uncertainty adapter metadata is incomplete")
         for vid in m.get('vortex_refs', []):
             if vid not in V:
                 bad.append(f"{m['id']}: inquiry vortex {vid} does not resolve")
@@ -947,7 +989,8 @@ def write(doc, path):
     return path
 
 
-FIXTURE_FIELDS = [os.path.join(ROOT, 'fixtures', f'epistemic_field.{b}.json') for b in ('Batch_2', 'Batch_3')]
+FIXTURE_FIELDS = [os.path.join(ROOT, 'fixtures', f'epistemic_field.{b}.json')
+                  for b in ('Batch_2', 'Batch_3', 'Hackathon-Polaron-test')]
 EXAMPLE_BUNDLE = os.path.join(ROOT, 'fixtures', 'frontier', 'example.qte77.json')
 
 

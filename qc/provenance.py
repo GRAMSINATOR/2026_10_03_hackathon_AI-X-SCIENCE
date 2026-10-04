@@ -24,18 +24,21 @@ def parent_id(rec):
     return f"M{rec['H']}" + ('' if rec.get('xres_sig') else '?')
 
 
-def build(records, primary_batch='Batch_1'):
+def build(records, primary_batch=None):
     """records: field records (any batches). Returns dict with parent of each key, chains and adjacency scores.
-    Parents sharing a height get letter suffixes; signatures seen in `primary_batch` (the reference) keep the plain name."""
+    Parents sharing a height get letter suffixes. IDs are assigned from stable source metadata, never from the
+    selected reference frame; `primary_batch` is retained only for call-site compatibility."""
     groups = {}
     for r in records:
         groups.setdefault((r['H'], r.get('xres_sig')), []).append(r)
-    # disambiguate parents that share a height but differ in XResolution
+    # Disambiguate parents that share a height but differ in XResolution.  The old ordering privileged whichever
+    # batch was the active reference, which meant the same target could acquire different entity IDs when the frame
+    # changed.  Source batch + signature ordering is reference-invariant and preserves the existing IDs for this data.
     by_h = {}
     for (h, sig), rs in groups.items():
-        by_h.setdefault(h, []).append((0 if any(r['batch'] == primary_batch for r in rs) else 1, min(r['batch'] for r in rs), str(sig)))
+        by_h.setdefault(h, []).append((min(r['batch'] for r in rs), str(sig)))
     for h in by_h:
-        by_h[h] = [x[2] for x in sorted(by_h[h])]
+        by_h[h] = [x[1] for x in sorted(by_h[h])]
     parent_of, chains, links = {}, {}, []
     for (h, sig), rs in groups.items():
         i = by_h[h].index(str(sig))

@@ -8,6 +8,7 @@ import { installGrain } from './ui/grain.js';
 import brandLogo from './assets/brand-logo.png';   // company mark (branding/), the only image the renderer ships
 import SpatialEvidence from './ui/SpatialEvidence.jsx';
 import MarkerFrontier from './ui/MarkerFrontier.jsx';   // recursive-research layer (marker-frontier/1); loads its own payload
+import ReferenceComparison from './ui/ReferenceComparison.jsx';
 import { buildModel, interpretation, STAGES, formatValue, SPATIAL_LAYER_DIMS, MASK_OF_DIMENSION } from './model/adapter.js';
 import { navTarget } from './model/brief.js';
 import { loadPayload } from './data.js';
@@ -81,13 +82,15 @@ function Main({ payload }) {
   return (
     <div className="app">
       <header className="bar">
-        <div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{M.meta.batch}</b><span className="muted">{M.meta.role === 'reference' ? 'configured reference population · self-audit' : `vs approved ${M.meta.reference}`}</span></div>
+        <div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{M.meta.batch}</b><span className="muted">reference frame · {M.meta.reference}{M.meta.role === 'reference' ? ' · leave-one-parent-out self-audit' : ''}</span></div>
         <StatusReadout brief={brief} onTrace={onTrace} traced={trace && trace.id} />
         <span className="bar-note">every statement traces to its proof below</span>
         <img className="brand-logo" src={brandLogo} alt="Parallax" />
       </header>
 
       {brief && <Hero brief={brief} onTrace={onTrace} traced={trace && trace.id} />}
+
+      <ReferenceComparison field={M.F} />
 
       <section className="deck examiner" ref={examRef} aria-label="Examiner Control Matrix">
         <div className="ex-head">
@@ -112,8 +115,8 @@ function Main({ payload }) {
         <div className="auditbody">
           <section><h4>Engine decision record</h4><ul>{M.meta.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
             <p className="muted">severity p = {fmt(M.F.decision.tests.severity_p)} · count p = {fmt(M.F.decision.tests.count_p)} · {M.F.decision.tests.combination} ·
-              P(any of {M.F.decision.n_independent} outside 99% | approved) = {fmt(M.F.decision.null_calibration.p_any_outside_99)}</p></section>
-          <section><h4>Reference (approved micrographs)</h4><table><tbody>{M.columns.filter(c => c.acquired).map(c => { const r = M.DIM[c.id].reference; return (
+              P(any of {M.F.decision.n_independent} outside 99% | reference frame) = {fmt(M.F.decision.null_calibration.p_any_outside_99)}</p></section>
+          <section><h4>Reference frame</h4><table><tbody>{M.columns.filter(c => c.acquired).map(c => { const r = M.DIM[c.id].reference; return (
             <tr key={c.id}><td>{c.short}</td><td>{formatValue(r.mean, c)} ± {formatValue(r.sd, c)} {c.unit} · n {r.n_micrographs} · MDC ±{formatValue(r.mdc95_3tiles, c)}</td></tr>); })}</tbody></table></section>
           <section><h4>All rims (incl. non-consequential)</h4><ul>{M.F.rims.map(r => <li key={r.id}>{r.type} · {r.target}{r.consequential ? ' · consequential' : ''} — {r.statement}</li>)}</ul></section>
           {brief && <section><h4>Brief governance (what the hero leaves out, and why)</h4><ul>{brief.governance.suppressed.map((s, i) =>

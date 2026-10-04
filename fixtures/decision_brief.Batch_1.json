@@ -41,7 +41,6 @@
    "claims": [
     "limit.validity:M2316",
     "limit.scale:Batch_1",
-    "limit.spatial-dimension:additive_density",
     "limit.spatial-dimension:porosity"
    ]
   },
@@ -49,13 +48,12 @@
    "title": "NEXT ACQUISITION",
    "state": "RE-IMAGE FIRST",
    "mode": "reimage_first",
-   "sequence": "Re-image M2316 → resolve sub-floor fines → space fields → longer capture → +5 reference micrographs",
+   "sequence": "Re-image M2316 → resolve sub-floor fines → space fields → +5 reference micrographs",
    "claims": [
     "action.reimage:1",
     "action.zoom:2",
     "action.space:3",
-    "action.extend:4",
-    "action.baseline:5"
+    "action.baseline:4"
    ],
    "later": []
   }
@@ -146,7 +144,7 @@
       "id": "batch",
       "path": "model"
      },
-     "value": "two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian",
+     "value": "two-level random-effects (reference population + tile sampling + reference support), simulation-calibrated; not Bayesian",
      "fmt": "str"
     }
    ],
@@ -169,7 +167,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "Self-audit under this dataset only: leave-one-parent-micrograph-out; two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian.",
+   "text": "Self-audit under this dataset only: leave-one-parent-micrograph-out; two-level random-effects (reference population + tile sampling + reference support), simulation-calibrated; not Bayesian.",
    "fact": null,
    "focus": {
     "collection": "decision",
@@ -210,7 +208,7 @@
       "id": "population:Batch_1",
       "path": "basis.max_baseline_share"
      },
-     "value": 0.341564,
+     "value": 0.359683,
      "fmt": "pct"
     },
     {
@@ -252,7 +250,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "5–6 reference micrographs per KPI; estimating the reference is 34% of a 3-field envelope for Additive density.",
+   "text": "5–6 reference micrographs per KPI; estimating the reference is 36% of a 3-field envelope for Additive density.",
    "fact": null,
    "state_label": "LIMITED"
   },
@@ -303,15 +301,9 @@
    "priority": 4,
    "group": "support:tile sampling",
    "points_to": [
-    "limit.spatial-dimension:additive_density",
     "limit.spatial-dimension:porosity"
    ],
    "proof_refs": [
-    {
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
-     "path": "consequential"
-    },
     {
      "collection": "rims",
      "id": "spatial-dimension:porosity",
@@ -327,7 +319,7 @@
    "fact": null,
    "focus": {
     "collection": "rims",
-    "id": "spatial-dimension:additive_density",
+    "id": "spatial-dimension:porosity",
     "path": "consequential"
    },
    "state_label": "ASSUMPTION CHALLENGED"
@@ -403,7 +395,7 @@
       "id": "batch",
       "path": "self_audit.p_chance_any_95"
      },
-     "value": 0.48077,
+     "value": 0.47864,
      "fmt": "f2"
     }
    ],
@@ -439,8 +431,35 @@
    "scope": "Batch_1",
    "status": "fails",
    "label": "DID NOT SURVIVE",
-   "template": "Departed but did not survive: {0} {1} ({2}).",
+   "template": "Departed but did not survive: {0} {1} ({2}), {3} {4} ({5}).",
    "values": [
+    {
+     "ref": {
+      "collection": "observations",
+      "id": "M2148:porosity",
+      "path": "entity"
+     },
+     "value": "M2148",
+     "fmt": "str"
+    },
+    {
+     "ref": {
+      "collection": "dimensions",
+      "id": "porosity",
+      "path": "short_label"
+     },
+     "value": "Porosity",
+     "fmt": "str"
+    },
+    {
+     "ref": {
+      "collection": "observations",
+      "id": "M2148:porosity",
+      "path": "scrutiny.failed.1"
+     },
+     "value": "acquisition_could_explain",
+     "fmt": "failure"
+    },
     {
      "ref": {
       "collection": "observations",
@@ -474,6 +493,11 @@
    "proof_refs": [
     {
      "collection": "observations",
+     "id": "M2148:porosity",
+     "path": "scrutiny"
+    },
+    {
+     "collection": "observations",
      "id": "M2148:solid_chord_x_um",
      "path": "scrutiny"
     }
@@ -483,11 +507,11 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "Departed but did not survive: M2148 Solid chord (x) (acquisition could explain it).",
+   "text": "Departed but did not survive: M2148 Porosity (acquisition could explain it), M2148 Solid chord (x) (acquisition could explain it).",
    "fact": null,
    "focus": {
     "collection": "observations",
-    "id": "M2148:solid_chord_x_um",
+    "id": "M2148:porosity",
     "path": "scrutiny"
    }
   },
@@ -524,7 +548,7 @@
       "id": "M2080",
       "path": "reference_influence.additive_d50_um.shift_over_mdc"
      },
-     "value": 0.213595,
+     "value": 0.216554,
      "fmt": "f2"
     }
    ],
@@ -547,7 +571,7 @@
    "action_refs": [],
    "role": "content",
    "fact_template": null,
-   "text": "Largest single influence: leaving out M2080 moves the Additive D50 reference mean by 0.21 of its minimum detectable change.",
+   "text": "Largest single influence: leaving out M2080 moves the Additive D50 reference mean by 0.22 of its minimum detectable change.",
    "fact": null,
    "focus": {
     "collection": "entities",
@@ -679,81 +703,6 @@
    "fact": null
   },
   {
-   "id": "limit.spatial-dimension:additive_density",
-   "kind": "limit",
-   "block": "limits",
-   "scope": "additive_density",
-   "status": "consequential",
-   "label": "TILE SAMPLING",
-   "template": "{0}: adjacent-tile variance {1}× the short-range prediction (95% CI {2}–{3}); adjacent tiles are not independent samples.",
-   "values": [
-    {
-     "ref": {
-      "collection": "dimensions",
-      "id": "additive_density",
-      "path": "short_label"
-     },
-     "value": "Additive density",
-     "fmt": "str"
-    },
-    {
-     "ref": {
-      "collection": "rims",
-      "id": "spatial-dimension:additive_density",
-      "path": "basis.tile_excess"
-     },
-     "value": 1.8795,
-     "fmt": "f1"
-    },
-    {
-     "ref": {
-      "collection": "rims",
-      "id": "spatial-dimension:additive_density",
-      "path": "basis.tile_excess_ci95.0"
-     },
-     "value": 1.05831,
-     "fmt": "f1"
-    },
-    {
-     "ref": {
-      "collection": "rims",
-      "id": "spatial-dimension:additive_density",
-      "path": "basis.tile_excess_ci95.1"
-     },
-     "value": 4.22406,
-     "fmt": "f1"
-    }
-   ],
-   "priority": 2.2,
-   "group": "rim:spatial-dimension:additive_density",
-   "proof_refs": [
-    {
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
-     "path": "statement"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
-     "path": "basis"
-    }
-   ],
-   "focus": {
-    "collection": "dimensions",
-    "id": "additive_density",
-    "path": "spatial_support"
-   },
-   "action_refs": [
-    "extend:4"
-   ],
-   "fact_values": [],
-   "details": [],
-   "role": "content",
-   "fact_template": null,
-   "text": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1–4.2); adjacent tiles are not independent samples.",
-   "fact": null
-  },
-  {
    "id": "limit.spatial-dimension:porosity",
    "kind": "limit",
    "block": "limits",
@@ -777,7 +726,7 @@
       "id": "spatial-dimension:porosity",
       "path": "basis.tile_excess"
      },
-     "value": 3.57602,
+     "value": 19.516,
      "fmt": "f1"
     },
     {
@@ -786,7 +735,7 @@
       "id": "spatial-dimension:porosity",
       "path": "basis.tile_excess_ci95.0"
      },
-     "value": 2.04173,
+     "value": 3.88464,
      "fmt": "f1"
     },
     {
@@ -795,7 +744,7 @@
       "id": "spatial-dimension:porosity",
       "path": "basis.tile_excess_ci95.1"
      },
-     "value": 7.82047,
+     "value": 19872.3,
      "fmt": "f1"
     }
    ],
@@ -825,7 +774,7 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0–7.8); adjacent tiles are not independent samples.",
+   "text": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9–19872.3); adjacent tiles are not independent samples.",
    "fact": null
   },
   {
@@ -843,7 +792,7 @@
       "id": "reimage:1",
       "path": "title"
      },
-     "value": "Re-image reference M2316 at the approved BSE settings",
+     "value": "Re-image reference M2316 at the reference-frame BSE settings",
      "fmt": "str"
     }
    ],
@@ -879,7 +828,7 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Re-image reference M2316 at the approved BSE settings",
+   "text": "Re-image reference M2316 at the reference-frame BSE settings",
    "fact": null
   },
   {
@@ -897,7 +846,7 @@
       "id": "zoom:2",
       "path": "title"
      },
-     "value": "Higher-magnification BSE on reference micrographs: resolve the approved fines below the floor",
+     "value": "Higher-magnification BSE on reference micrographs: resolve reference fines below the floor",
      "fmt": "str"
     }
    ],
@@ -933,7 +882,7 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Higher-magnification BSE on reference micrographs: resolve the approved fines below the floor",
+   "text": "Higher-magnification BSE on reference micrographs: resolve reference fines below the floor",
    "fact": null
   },
   {
@@ -951,7 +900,7 @@
       "id": "space:3",
       "path": "title"
      },
-     "value": "Porosity: space reference fields ≥ 175 µm apart instead of adjacent tiles",
+     "value": "Porosity: space reference fields ≥ 75 µm apart instead of adjacent tiles",
      "fmt": "str"
     }
    ],
@@ -987,65 +936,11 @@
    "details": [],
    "role": "content",
    "fact_template": null,
-   "text": "Porosity: space reference fields ≥ 175 µm apart instead of adjacent tiles",
+   "text": "Porosity: space reference fields ≥ 75 µm apart instead of adjacent tiles",
    "fact": null
   },
   {
-   "id": "action.extend:4",
-   "kind": "action",
-   "block": "acquisition_policy",
-   "scope": "Batch_1",
-   "status": "computed",
-   "label": "EXTEND",
-   "template": "{0}",
-   "values": [
-    {
-     "ref": {
-      "collection": "actions",
-      "id": "extend:4",
-      "path": "title"
-     },
-     "value": "Additive density: one longer coherent reference capture (> 400 µm)",
-     "fmt": "str"
-    }
-   ],
-   "step": "longer capture",
-   "priority": 14,
-   "group": "action:extend:4",
-   "action_refs": [
-    "extend:4"
-   ],
-   "proof_refs": [
-    {
-     "collection": "actions",
-     "id": "extend:4",
-     "path": "rationale"
-    },
-    {
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
-     "path": "basis"
-    },
-    {
-     "collection": "dimensions",
-     "id": "additive_density",
-     "path": "spatial_support"
-    }
-   ],
-   "focus": {
-    "collection": "actions",
-    "id": "extend:4",
-    "path": "title"
-   },
-   "fact_values": [],
-   "details": [],
-   "role": "content",
-   "fact_template": null,
-   "text": "Additive density: one longer coherent reference capture (> 400 µm)",
-   "fact": null
-  },
-  {
-   "id": "action.baseline:5",
+   "id": "action.baseline:4",
    "kind": "action",
    "block": "acquisition_policy",
    "scope": "Batch_1",
@@ -1056,7 +951,7 @@
     {
      "ref": {
       "collection": "actions",
-      "id": "baseline:5",
+      "id": "baseline:4",
       "path": "title"
      },
      "value": "Add independent reference micrographs (+5)",
@@ -1064,15 +959,15 @@
     }
    ],
    "step": "+5 reference micrographs",
-   "priority": 15,
-   "group": "action:baseline:5",
+   "priority": 14,
+   "group": "action:baseline:4",
    "action_refs": [
-    "baseline:5"
+    "baseline:4"
    ],
    "proof_refs": [
     {
      "collection": "actions",
-     "id": "baseline:5",
+     "id": "baseline:4",
      "path": "rationale"
     },
     {
@@ -1103,7 +998,7 @@
    ],
    "focus": {
     "collection": "actions",
-    "id": "baseline:5",
+    "id": "baseline:4",
     "path": "title"
    },
    "fact_values": [],

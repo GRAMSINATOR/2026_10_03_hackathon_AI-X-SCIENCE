@@ -1,0 +1,154 @@
+{
+  "semantics": {
+    "raw_columns": "25-um full-height columns, context only",
+    "compared_trace": "unsmoothed 100-um moving local means",
+    "reference": "descriptive parent-cluster bootstrap quantile envelope",
+    "decision_driving": false
+  },
+  "verdicts": {
+    "Batch_2": "ACCEPT",
+    "Batch_3": "REJECT"
+  },
+  "bands": {
+    "additive_area_frac": {
+      "kind": "parent_cluster_predictive_envelope",
+      "statistic": "local_window_mean",
+      "window_um": 100.0,
+      "n_windows": 15,
+      "n_fields": 5,
+      "n_parents": 5,
+      "calibrated": false,
+      "small_parent_support": true
+    },
+    "additive_density": {
+      "kind": "parent_cluster_predictive_envelope",
+      "statistic": "local_window_mean",
+      "window_um": 100.0,
+      "n_windows": 15,
+      "n_fields": 5,
+      "n_parents": 5,
+      "calibrated": false,
+      "small_parent_support": true
+    },
+    "porosity": {
+      "kind": "parent_cluster_predictive_envelope",
+      "statistic": "local_window_mean",
+      "window_um": 100.0,
+      "n_windows": 21,
+      "n_fields": 7,
+      "n_parents": 6,
+      "calibrated": false,
+      "small_parent_support": true
+    }
+  },
+  "beta_sensitivity": {
+    "additive_area_frac": {
+      "operational_unweighted_beta": -0.7842305850247818,
+      "support_weighted_beta": -0.6677753192572932,
+      "parent_equal_beta": -0.7783088741579268,
+      "parent_bootstrap": {
+        "n_parents": 12,
+        "n_bootstrap": 2000,
+        "median": -0.779391970861878,
+        "interval95": [
+          -0.8382388523496517,
+          -0.7284002354325302
+        ]
+      },
+      "material_difference": true,
+      "note": "beta describes scale-dependent heterogeneity over the observed support; it is not a universal physical constant"
+    },
+    "additive_density": {
+      "operational_unweighted_beta": -0.9006593122440579,
+      "support_weighted_beta": -0.8552731726824827,
+      "parent_equal_beta": -0.898639028797036,
+      "parent_bootstrap": {
+        "n_parents": 12,
+        "n_bootstrap": 2000,
+        "median": -0.9004737136530816,
+        "interval95": [
+          -0.9631218185600305,
+          -0.8445936145816623
+        ]
+      },
+      "material_difference": false,
+      "note": "beta describes scale-dependent heterogeneity over the observed support; it is not a universal physical constant"
+    },
+    "porosity": {
+      "operational_unweighted_beta": -0.8558898975776322,
+      "support_weighted_beta": -0.8048912885857165,
+      "parent_equal_beta": -0.8560936248793063,
+      "parent_bootstrap": {
+        "n_parents": 13,
+        "n_bootstrap": 2000,
+        "median": -0.8589330238997901,
+        "interval95": [
+          -0.9264256881385936,
+          -0.7935348638084092
+        ]
+      },
+      "material_difference": false,
+      "note": "beta describes scale-dependent heterogeneity over the observed support; it is not a universal physical constant"
+    }
+  },
+  "extreme_profiles": [
+    {
+      "profile": "M2060:additive_density",
+      "column_um": 25.0,
+      "compared_window_um": 100.0,
+      "n_reference_parents": 5,
+      "envelope": [
+        12.4998,
+        24.7678
+      ],
+      "old_population_spread": [
+        12.1891,
+        26.5783
+      ],
+      "whole_profile": {
+        "kind": "maximum_absolute_standardized_excursion",
+        "max_standardized_excursion": 6.90848,
+        "approved_parent_maximum": 1.94118,
+        "ratio_to_approved_parent_maximum": 3.55891,
+        "exceeds_approved_parent_maximum": true,
+        "n_profile_windows": 21,
+        "window_count_matched": true,
+        "n_reference_parents": 5,
+        "calibrated": false,
+        "support_matched": true,
+        "note": "descriptive parent-cluster screen matched to the captured window count; it does not enter the QC verdict"
+      }
+    },
+    {
+      "profile": "M2088:porosity",
+      "column_um": 25.0,
+      "compared_window_um": 100.0,
+      "n_reference_parents": 6,
+      "envelope": [
+        0.0449507,
+        0.0907566
+      ],
+      "old_population_spread": [
+        0.041237,
+        0.0962479
+      ],
+      "whole_profile": {
+        "kind": "maximum_absolute_standardized_excursion",
+        "max_standardized_excursion": 4.10409,
+        "approved_parent_maximum": 1.76261,
+        "ratio_to_approved_parent_maximum": 2.32842,
+        "exceeds_approved_parent_maximum": true,
+        "n_profile_windows": 12,
+        "window_count_matched": true,
+        "n_reference_parents": 6,
+        "calibrated": false,
+        "support_matched": true,
+        "note": "descriptive parent-cluster screen matched to the captured window count; it does not enter the QC verdict"
+      }
+    }
+  ],
+  "figures": [
+    "spatial_upgrade_current_candidate.png",
+    "spatial_extreme_profiles.png"
+  ]
+}

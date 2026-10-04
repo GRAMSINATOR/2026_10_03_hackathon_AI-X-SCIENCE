@@ -61,16 +61,17 @@ export function stackLayers(M, entity, stage, { action = null, assets = {} } = {
   for (const d of SPATIAL_LAYER_DIMS) {
     const p = M.PROF[oid(entity, d)]; if (!p) continue;
     const c = M.columns.find(x => x.id === d);
-    layers.push({ id: `profile:${d}`, kind: 'profile', dimension: d, label: `${c.short} · 100-µm windows`, status: 'approximate', available: true,
-      description: `${c.label}: 25-µm columns (full field height) coloured by the surrounding 100-µm window mean vs the approved local band ` +
-                   `(${fmtBand(p.reference_band, c)}). Visual aid; the decision uses the micrograph mean.`,
+    layers.push({ id: `profile:${d}`, kind: 'profile', dimension: d, label: `${c.short} · 100-µm local means`, status: 'descriptive', available: true,
+      description: `${c.label}: gray points are raw 25-µm full-height columns; the connected profile is the unsmoothed 100-µm local mean. ` +
+                   `It is compared with the ${p.reference_band.n_parents}-parent bootstrap envelope (${fmtBand(p.reference_band, c)}). ` +
+                   `The envelope is descriptive and not coverage-calibrated; the QC decision uses the micrograph mean.`,
       cells: profileCells(p, reg.runs), linkedKeys: [oid(entity, d)], deviating: dev(d) });
   }
   const spatialRims = M.F.rims.filter(r => r.type === 'spatial' && r.scope === 'observation' && r.target.startsWith(entity + ':'));
   const openDims = spatialRims.filter(r => r.basis.open_edges && r.basis.open_edges.length).map(r => r.target.split(':')[1]);
   const extentProfile = openDims.length ? M.PROF[oid(entity, openDims[0])] : null;
   layers.push({ id: 'extent', kind: 'extent', label: 'Observed extent', status: 'measured', available: true,
-    description: extentProfile ? `Capture ends while ${M.columns.find(x => x.id === openDims[0]).short.toLowerCase()} is still outside the approved band: ` +
+    description: extentProfile ? `Capture ends while the 100-µm ${M.columns.find(x => x.id === openDims[0]).short.toLowerCase()} local mean is still outside the reference envelope: ` +
       `open at ${spatialRims.find(r => r.target.endsWith(openDims[0])).basis.open_edges.join(' and ')}.` : 'Captured extent; no deviation reaches its edges.',
     runs: reg.runs.map((r, i) => ({ offsetUm: r.offsetUm, lengthUm: r.lengthUm,
       openStart: !!(extentProfile && extentProfile.runs[i].open_at_start), openEnd: !!(extentProfile && extentProfile.runs[i].open_at_end) })),
@@ -118,7 +119,7 @@ export function prospective(M, entity, reg, actionIndex) {
   if (A.verb === 'REPEAT') {
     return { id: 'prospective', kind: 'prospective', action: A.id, label: 'Prospective capture · same region', status: 'prospective', available: true,
       regions: reg.runs.map(r => ({ x0Um: r.offsetUm, widthUm: r.lengthUm, side: 'same' })),
-      description: `${A.title}: re-image the same footprint under approved settings.`, linkedKeys: A.reach.keys };
+      description: `${A.title}: re-image the same footprint under the reference-frame settings.`, linkedKeys: A.reach.keys };
   }
   return null;   // ZOOM, EDS, SECTIONS, SPACE, BASELINE: no footprint defined by the evidence
 }

@@ -75,10 +75,24 @@ def render_instrument(path, mtime, images, research=()):
 
 
 if not os.path.exists(REF_PATH):
-    st.error('No approved reference found (QC_REF). ' + ('This derived bundle is incomplete.' if PUBLIC else
-             'Run:  python -m qc reference data/Batch_1 --noise-from data/Batch_2 data/Batch_3'))
+    st.error('No active reference frame found (QC_REF). ' + ('This derived bundle is incomplete.' if PUBLIC else
+             'Run:  python -m qc references data/Batch_1 data/Batch_2 data/Batch_3 --activate Batch_1'))
     st.stop()
-ref = load_json(REF_PATH, os.path.getmtime(REF_PATH))
+active_ref = load_json(REF_PATH, os.path.getmtime(REF_PATH))
+frame_index_path = next((p for p in (os.path.join(REPORTS, 'reference_frames.json'),
+                                     os.path.join(os.path.dirname(REF_PATH), 'references', 'index.json'))
+                         if os.path.exists(p)), None)
+if frame_index_path:
+    frame_index = load_json(frame_index_path, os.path.getmtime(frame_index_path))
+else:
+    frame_index = {'frames': [dict(id=active_ref['name'], label=active_ref['name'], eligible=True,
+                                   unavailable_reasons=[], support_quality='unknown',
+                                   support=dict(n_parent_micrographs=len(active_ref.get('micrographs', []))),
+                                   artifact=REF_PATH)]}
+eligible_frames = [x for x in frame_index['frames'] if x.get('eligible')]
+if not eligible_frames:
+    st.error('No scientifically eligible reference frame is available.')
+    st.stop()
 
 # ---------------- discreet control row (top left): batch, run, reference; dev-only controls behind a popover
 # presentation mode by default; dev mode (QC_DEV=1 or ?dev=1) adds the renderer switch and the legacy colour key
@@ -90,30 +104,51 @@ batches = sorted(reported | raw)
 if not batches:
     st.error('No assessed batches found (QC_REPORTS).')
     st.stop()
-default = next((i for i, b in reversed(list(enumerate(batches))) if b != ref['name']), 0)
-bar = st.columns([0.8, 0.62, 5.1, 0.4] if DEV else [0.8, 0.62, 5.5], vertical_alignment='center')
-batch = bar[0].selectbox('Batch', batches, index=default, label_visibility='collapsed')
-res_path = os.path.join(REPORTS, batch, 'result.json')
+default = next((i for i, b in reversed(list(enumerate(batches))) if b != active_ref['name']), 0)
+bar = st.columns([1.15, 1.15, 0.62, 4.4, 0.4] if DEV else [1.15, 1.15, 0.62, 4.8], vertical_alignment='bottom')
+batch = bar[0].selectbox('DATASET', batches, index=default)
+frame_ids = [x['id'] for x in eligible_frames]
+frame_default = frame_ids.index(active_ref['name']) if active_ref['name'] in frame_ids else 0
+reference = bar[1].selectbox('REFERENCE FRAME', frame_ids, index=frame_default)
+frame_entry = next(x for x in eligible_frames if x['id'] == reference)
+artifact = frame_entry.get('artifact') or os.path.join(os.path.dirname(REF_PATH), 'references', reference + '.json')
+if not os.path.exists(artifact):
+    artifact = next((p for p in (os.path.join(os.path.dirname(REF_PATH), 'cache', 'references', reference + '.json'),
+                                 os.path.join(os.path.dirname(REF_PATH), 'references', reference + '.json'))
+                     if os.path.exists(p)), artifact)
+ref = load_json(artifact, os.path.getmtime(artifact))
+variant_dir = os.path.join(REPORTS, batch, 'references', reference)
+top_dir = os.path.join(REPORTS, batch)
+report_dir = variant_dir if os.path.exists(os.path.join(variant_dir, 'result.json')) else top_dir
+res_path = os.path.join(report_dir, 'result.json') if reference == active_ref['name'] or report_dir == variant_dir else os.path.join(variant_dir, 'result.json')
 can_run = have_data and batch in raw
-bar[2].caption(f"approved reference {ref['name']} · {len(ref['micrographs'])} micrographs · {ref['px_nm']:.1f} nm/px"
+support = frame_entry.get('support', {})
+bar[3].caption(f"reference frame {ref['name']} · {support.get('n_parent_micrographs', len(ref.get('micrographs', [])))} parent micrographs"
+               f" · {frame_entry.get('support_quality', 'unknown')} support · {ref['px_nm']:.1f} nm/px"
                + (' · public mode, derived results only' + ('' if IMAGES else ', no imagery') if PUBLIC else ''))
+unavailable_frames = [x for x in frame_index['frames'] if not x.get('eligible')]
+if unavailable_frames:
+    with bar[3].popover(f'{len(unavailable_frames)} unavailable frame' + ('s' if len(unavailable_frames) != 1 else '')):
+        for item in unavailable_frames:
+            st.markdown(f"**{item['label']}** — " + '; '.join(item.get('unavailable_reasons', ['support not established'])))
 renderer = 'instrument'
 if DEV:
-    with bar[3].popover('dev'):
+    with bar[4].popover('dev'):
         # primary renderer (contract epistemic-field/1 -> renderer); legacy kept for parity checks
         renderer = st.radio('Renderer', ['instrument', 'legacy'] if IMAGES else ['instrument'], horizontal=True,
                             help='instrument = React Three Fiber Evidence Instrument; legacy = V1 exploratory HTML renderer '
                                  '(embeds imagery, so it is unavailable without imagery)')
         st.markdown('**Colour key (legacy)**  \n'
-                    f"<span class='chip' style='border-color:{viz.ROLE['baseline']}'>■ approved baseline</span>"
+                    f"<span class='chip' style='border-color:{viz.ROLE['baseline']}'>■ reference frame</span>"
                     f"<span class='chip' style='border-color:{viz.ROLE['batch']}'>■ this batch</span>"
                     f"<span class='chip' style='border-color:{viz.ROLE['other']}'>■ other batches</span>", unsafe_allow_html=True)
         st.markdown('Overlays: <span style="color:#2a78d6">■ pores</span> · <span style="color:#eb6834">■ high-Z additive</span>',
                     unsafe_allow_html=True)
 # the pipeline runs only on an explicit click, never on page load
-if can_run and bar[1].button('Run / refresh', type='tertiary', icon=':material/refresh:', help=f'Segment and measure {batch} again'):
+if can_run and bar[2].button('Run / refresh', type='tertiary', icon=':material/refresh:', help=f'Measure {batch} against all eligible frames'):
     with st.spinner(f'Segmenting and measuring {batch} …'):
-        out = subprocess.run([sys.executable, '-m', 'qc', 'assess', os.path.join(DATA, batch)], capture_output=True, text=True)
+        out = subprocess.run([sys.executable, '-m', 'qc', 'compare-references', os.path.join(DATA, batch),
+                              '--active', reference], capture_output=True, text=True)
     if out.returncode != 0:
         st.error(out.stderr[-2000:])
         st.stop()
@@ -124,8 +159,8 @@ if not os.path.exists(res_path):
     st.stop()
 res = load_json(res_path, os.path.getmtime(res_path))
 d = res['decision']
-field_path = os.path.join(REPORTS, batch, 'field.json')
-hero_path = os.path.join(REPORTS, batch, 'evidence_field.html')
+field_path = os.path.join(report_dir, 'field.json')
+hero_path = os.path.join(report_dir, 'evidence_field.html')
 view = None
 IS_REF = d['verdict'] == 'REFERENCE'   # the reference renders through the same instrument, in its self-audit role
 if renderer == 'instrument' and os.path.exists(field_path) and os.path.exists(instrument.DIST):
@@ -149,19 +184,19 @@ else:
 c1, c2, c3, c4 = proof.columns(4)
 c1.metric('Reference micrographs' if IS_REF else 'Independent micrographs', d.get('n_independent', d['n_micrographs']),
           help='Fields are tiles of parent micrographs; the micrograph is the statistical unit.' + ('' if IS_REF else
-               ' Micrographs continuous with approved baseline sections are not counted.'))
+               ' Micrographs continuous with selected-reference sections are not counted.'))
 c2.metric('Fields (tiles)', res['n_fields'])
 c3.metric('Outside their leave-one-out 99% envelope' if IS_REF else 'Micrographs outside 99% envelope', d['d99'], help='on robust KPIs (additive phase)')
 c4.metric('Batch p-value', f"{d['p_batch']:.3f}" if not IS_REF else '— (reference role)',
-          help='Probability that a batch drawn from the approved population would look at least this deviant '
-               '(parametric bootstrap with small-baseline uncertainty).')
+          help='Probability that a batch drawn from the selected reference population would look at least this deviant '
+               '(parametric bootstrap with finite-reference uncertainty).')
 
 tabs = proof.tabs(['Why: evidence', 'Material-state map', 'Provenance', 'Field explorer', 'Method & uncertainty'])
 
 # ---------------- evidence
 with tabs[0]:
     st.subheader('KPI deviation by micrograph')
-    st.caption('Cell = KPI value with status icon; colour = t versus the approved envelope (blue below, red above). '
+    st.caption('Cell = KPI value with status icon; colour = t versus the selected reference-frame envelope (blue below, red above). '
                '✓ in family · ! outside 95% · ✕ outside 99% · ? not measurable (validity gate). Hover for details.')
     st.plotly_chart(viz.deviation_heatmap(res), width='stretch')
     flagged = [t for t in res['explanations'] if t['status'] in ('deviant', 'out') or t['gate']]
@@ -208,7 +243,7 @@ with tabs[1]:
     if gated:
         st.caption(f"Not plotted (validity gate failed for these KPIs): {', '.join(sorted(set(gated)))}")
     st.caption('Large dots = micrograph means; small dots = individual tiles (spatial sampling spread). The dotted box is the '
-               'approved 95% prediction envelope for a 3-tile micrograph (between-micrograph + tile-sampling + baseline-'
+               'selected-reference 95% prediction envelope for a 3-tile micrograph (between-parent + tile-sampling + reference-'
                'estimation uncertainty). Pseudotime/trajectory structure was tested and is not supported by the data, so '
                'none is drawn.')
 
@@ -260,25 +295,25 @@ with tabs[3]:
         lo, hi = R['pi95_m1']
         v = rec['kpi'].get(k)
         rows.append({'KPI': meta['label'], 'value': None if v is None else round(v * meta['scale'], 3), 'unit': meta['unit'],
-                     'approved 95% (single field)': f"{lo * meta['scale']:.3g} – {hi * meta['scale']:.3g}",
+                     'reference 95% (single field)': f"{lo * meta['scale']:.3g} – {hi * meta['scale']:.3g}",
                      'robustness': meta['cls']})
     for k, meta in SECONDARY.items():
         v = rec['kpi'].get(k)
         if v is not None:
             rows.append({'KPI': meta['label'], 'value': round(v * meta['scale'], 3), 'unit': meta['unit'],
-                         'approved 95% (single field)': '', 'robustness': 'advisory'})
+                         'reference 95% (single field)': '', 'robustness': 'advisory'})
     st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
     st.caption('Acquisition fingerprint: ' + ', '.join(f"{k} {v:.3g}" for k, v in rec['acq'].items() if isinstance(v, (int, float))))
 
 # ---------------- method
 with tabs[4]:
-    st.subheader('Approved reference (micrograph-level)')
+    st.subheader('Selected reference frame (parent-micrograph level)')
     rows = []
     for k, meta in KPIS.items():
         R = ref['kpi'][k]
         rb = ref.get('robustness', {}).get(k, {})
         s = meta['scale']
-        rows.append({'KPI': meta['label'], 'robustness class': meta['cls'], 'approved mean': round(R['mean'] * s, 4),
+        rows.append({'KPI': meta['label'], 'robustness class': meta['cls'], 'reference mean': round(R['mean'] * s, 4),
                      'between-micrograph SD': round(R['sd_between'] * s, 4), 'tile-sampling SD': round(R['sd_within_tile'] * s, 4),
                      'n micrographs': R['n'], 'min. detectable change (95%, 3 tiles)': round(R['mdc95'] * s, 4),
                      'worst acquisition effect': f"{rb.get('worst', '')}: {rb.get('max_abs', 0) * s:.3g}" if rb else '',
@@ -286,9 +321,9 @@ with tabs[4]:
     st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
     st.markdown("""
 **Decision rule (fixed before seeing the unseen batch).** Unit = parent micrograph. For each KPI the micrograph mean is
-compared with the approved micrographs via a prediction interval with two variance levels (between-micrograph
+compared with the selected reference micrographs via a prediction interval with two variance levels (between-parent
 material spread from the baseline; tile-sampling noise pooled from replicate tiles). Envelope thresholds are calibrated
-by simulation so their coverage is real. The batch p-value is the probability that an approved-population batch of the
+by simulation so their coverage is real. The batch p-value is the probability that a reference-population batch of the
 same size looks at least as deviant, combining two simulated tests (Bonferroni): *severity* (the most extreme micrograph,
 |z| relative to its 99% threshold) and *count* (micrographs outside 95%), re-estimating the small baseline in every draw.
 **REJECT**: p < 0.05 and ≥1 tile-consistent out-of-envelope micrograph. **INVESTIGATE**: p < 0.20, any micrograph outside
@@ -310,5 +345,5 @@ non-infiltrated pores), process origin of cracks (may be sample preparation), an
                                    for v, r in S.items()]), width='stretch', hide_index=True)
     st.subheader('Baseline self-audit (leave-one-micrograph-out)')
     st.dataframe(pd.DataFrame(ref['self_audit']), width='stretch', hide_index=True)
-    st.caption(f"False-alarm calibration for this batch size: P(any micrograph outside 99% | approved) = {d['null'].get('p_any99', 0):.2f}, "
+    st.caption(f"False-alarm calibration for this batch size: P(any micrograph outside 99% | selected reference) = {d['null'].get('p_any99', 0):.2f}, "
                f"P(any outside 95%) = {d['null'].get('p_any95', 0):.2f} — why a single excursion only triggers INVESTIGATE.")

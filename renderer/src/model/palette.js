@@ -50,15 +50,15 @@ export const CHROMA = { background: 0, pastel: 0.2, clear: 0.45, rich: 0.72, sal
 
 export const CATEGORY = {
   in_family: { label: 'In family', hue: MATERIAL.ivory },
-  above: { label: 'Above the approved envelope', hue: HUE.above },
-  below: { label: 'Below the approved envelope', hue: HUE.below },
+  above: { label: 'Above the reference-frame envelope', hue: HUE.above },
+  below: { label: 'Below the reference-frame envelope', hue: HUE.below },
   survives: { label: 'Survives scrutiny', hue: null },                       // keeps the deviation hue
   acquisition: { label: 'Acquisition / method sensitivity', hue: HUE.acquisition },
   spatial_inconsistent: { label: 'Spatially inconsistent across fields', hue: HUE.spatial },
   provenance: { label: 'Reference-linked (not independent)', hue: HUE.provenance },
   spatial_sampling: { label: 'Envelope dominated by spatial sampling', hue: HUE.spatial },
   baseline_support: { label: 'Envelope dominated by baseline support', hue: HUE.population },
-  material_spread: { label: 'Envelope dominated by approved material spread', hue: HUE.material },
+  material_spread: { label: 'Envelope dominated by reference-population spread', hue: HUE.material },
   rim_spatial: { label: 'Spatial limit', hue: HUE.spatial },
   rim_scale: { label: 'Resolution (scale) limit', hue: HUE.scale },
   rim_composition: { label: 'Composition unresolved', hue: HUE.composition },

@@ -4,21 +4,34 @@ import { CATEGORY, HUE, MATERIAL, RIM_HUE, mix } from './palette.js';
 import { formatValue, keyVisual, categoryInfo, STAGES, isReference } from './adapter.js';
 
 const pct = x => `${Math.round(100 * x)}%`;
+const spatialRows = D => {
+  const s = D.spatial_support, u = D.uncertainty_model;
+  if (!s) return [];
+  const h = s.scale_dependent_heterogeneity || [], last = h[h.length - 1], ms = s.scale_model_sensitivity;
+  const rows = [['observation / uncertainty', `${u.observation_family.replaceAll('_', ' ')} · ${u.uncertainty_adapter.replaceAll('_', ' ')}`]];
+  if (last && u.observation_family === 'spatial_count_process')
+    rows.push(['scale descriptor', `${last.window_um} µm windows: Fano ${last.fano.toFixed(2)} (${last.n_parents} parents; Poisson is only a comparator)`]);
+  else if (last && last.normalized_fluctuation)
+    rows.push(['scale descriptor', `${last.window_um} µm windows: variance / p(1−p) ${last.normalized_fluctuation.parent_equal.toPrecision(3)} (${last.n_parents} parents)`]);
+  if (ms && ms.parent_bootstrap?.median != null && ms.parent_bootstrap?.interval95?.length === 2)
+    rows.push(['variance-slope audit', `current ${ms.operational_unweighted_beta.toFixed(2)} · support-weighted ${ms.support_weighted_beta.toFixed(2)} · parent bootstrap ${ms.parent_bootstrap.median.toFixed(2)} [${ms.parent_bootstrap.interval95.map(x => x.toFixed(2)).join(', ')}]`]);
+  return rows;
+};
 const FAIL_TEXT = {
   acquisition_could_explain: ['the worst tested acquisition change could explain ≥ 50% of the deviation', HUE.acquisition],
   spatially_inconsistent: ['not consistent across the micrograph’s fields', HUE.spatial],
   moderate_robustness_dimension: ['KPI is acquisition-sensitive (moderate robustness class)', HUE.acquisition],
 };
 const STAGE_MEANING = {
-  above: 'Measured above the approved population envelope.', below: 'Measured below the approved population envelope.',
-  in_family: 'Inside the approved envelope for this micrograph’s sampling.',
+  above: 'Measured above the selected reference-frame envelope.', below: 'Measured below the selected reference-frame envelope.',
+  in_family: 'Inside the selected reference-frame envelope for this micrograph’s sampling.',
   survives: 'The deviation survives scrutiny: robust KPI, consistent across fields, not explained by tested acquisition changes.',
   acquisition: 'Reliability is limited by acquisition: tested acquisition changes could produce this, or the KPI is acquisition-sensitive.',
   spatial_inconsistent: 'The apparent deviation is not consistent across the fields of this micrograph.',
-  provenance: 'This micrograph continues an approved baseline section: shown, but it carries no independent weight.',
+  provenance: 'This micrograph continues a reference-frame section: shown, but it carries no independent weight.',
   spatial_sampling: 'This envelope is mostly spatial sampling: more fields of this micrograph would narrow it.',
-  baseline_support: 'This envelope is mostly baseline-estimation uncertainty: more approved micrographs would narrow it.',
-  material_spread: 'This envelope is mostly genuine approved material spread: more sampling would not narrow it much.',
+  baseline_support: 'This envelope is mostly reference-estimation uncertainty: more independent reference parents would narrow it.',
+  material_spread: 'This envelope is mostly variation among reference parents: more target sampling would not narrow it much.',
   rim_spatial: 'Spatial support fades here: the evidence reaches the edge of what was captured, or varies on larger scales.',
   rim_scale: 'Resolution limit: the deviating population piles up at the detection floor of the current pixel size.',
   rim_composition: 'Composition unresolved: the deviation is in a phase whose chemistry was never measured.',
@@ -28,9 +41,9 @@ const STAGE_MEANING = {
   not_measurable: 'Not measurable: the validity gate failed for this KPI family.', not_acquired: 'This dimension was never acquired.',
 };
 
-// in a self-audit, an observation is compared with the other reference micrographs, never with an approved population
-const REF_WORDS = [['the approved population envelope', 'the envelope of the other reference micrographs'], ['approved envelope', 'leave-one-out envelope'],
-                   ['approved micrographs', 'reference micrographs'], ['approved material', 'reference material'], ['approved baseline', 'reference']];
+// in a self-audit, an observation is compared with the other reference micrographs
+const REF_WORDS = [['the selected reference-frame envelope', 'the envelope of the other reference micrographs'], ['reference-frame envelope', 'leave-one-out envelope'],
+                   ['reference micrographs', 'other reference micrographs'], ['reference material', 'other reference material'], ['reference frame', 'other reference parents']];
 export const inFrame = (M, t) => (t && isReference(M) ? REF_WORDS.reduce((s, [a, b]) => s.split(a).join(b), t) : t);
 
 export function explainKey(M, keyId, stage, sel = {}) {
@@ -44,7 +57,7 @@ export function explainKey(M, keyId, stage, sel = {}) {
       ['consequential', m.consequential ? 'yes' : 'no'],
       ...(m.basis.dependent_observations.length ? [['depends on it', m.basis.dependent_observations.join(', ')]] : []),
       ...(m.basis.fines_bse_intensity_u != null ? [['fine-object BSE intensity', `u = ${m.basis.fines_bse_intensity_u.toFixed(2)}` +
-        (m.basis.approved_fines_bse_intensity_range ? ` (approved ${m.basis.approved_fines_bse_intensity_range.map(x => x.toFixed(2)).join('–')})` : '')]] : [])] });
+        (m.basis.approved_fines_bse_intensity_range ? ` (selected reference ${m.basis.approved_fines_bse_intensity_range.map(x => x.toFixed(2)).join('–')})` : '')]] : [])] });
     pushActions(M, k, sections);
     return { title: `${k.entity} · ${c.label}`, subtitle: STAGES[stage], sections };
   }
@@ -58,15 +71,15 @@ export function explainKey(M, keyId, stage, sel = {}) {
     ['value', `${f(o.value)} ${c.unit}  (${rr.status})`],
     ...(rr.frame === 'leave_one_out'
       ? [['other reference micrographs', `${f(rr.approved_mean)} ${c.unit} (leave-one-out frame of ${rr.frame_n})`]]
-      : [['approved', `${f(rr.approved_mean)} ± ${f(M.DIM[c.id].reference.sd)} ${c.unit}`]]),
+      : [['selected reference', `${f(rr.approved_mean)} ± ${f(M.DIM[c.id].reference.sd)} ${c.unit}`]]),
     ['95% envelope here', `${f(rr.envelope95[0])} – ${f(rr.envelope95[1])} ${c.unit}`],
     ['z vs thresholds', `${rr.z >= 0 ? '+' : ''}${rr.z.toFixed(2)}  (q95 ${rr.q95.toFixed(2)}, q99 ${rr.q99.toFixed(2)})`],
     ['fields', Object.entries(o.per_field).map(([id, x]) => `${id.split('__')[1]} ${f(x)}`).join(' · ')],
-    ...(rr.beyond_reference_support ? [['reference support', rr.frame === 'leave_one_out' ? 'outside every other reference field' : 'outside every approved field (extrapolation)']] : [])] });
+    ...(rr.beyond_reference_support ? [['reference support', rr.frame === 'leave_one_out' ? 'outside every other reference field' : 'outside every selected-reference field (extrapolation)']] : [])] });
   const sc = o.scrutiny;
   if (sc.outcome !== 'not_applicable' || row.refLinked || row.untestedAcq) {
     const notes = [];
-    if (row.refLinked) notes.push({ text: 'reference-linked: physical continuation of an approved section', hue: HUE.provenance });
+    if (row.refLinked) notes.push({ text: 'reference-linked: physical continuation of a selected-reference section', hue: HUE.provenance });
     sc.failed.forEach(code => notes.push({ text: FAIL_TEXT[code][0], hue: FAIL_TEXT[code][1] }));
     if (sc.outcome === 'survives') notes.push({ text: 'robust KPI, consistent across fields, tested acquisition changes explain ' +
       `${pct(sc.acquisition_share || 0)}` + (sc.conditional_on_untested_acquisition ? ' (conditional: untested acquisition)' : ''), hue: dirHue });
@@ -77,19 +90,19 @@ export function explainKey(M, keyId, stage, sel = {}) {
   }
   const vs = o.variance_shares, D = M.DIM[c.id];
   sections.push({ id: 'envelope', title: 'Envelope composition', hue: null,
-    bar: [{ label: 'approved material', share: vs.approved_material, hue: HUE.material }, { label: 'spatial sampling', share: vs.spatial_sampling, hue: HUE.spatial },
+    bar: [{ label: 'reference-parent spread', share: vs.approved_material, hue: HUE.material }, { label: 'spatial sampling', share: vs.spatial_sampling, hue: HUE.spatial },
           { label: 'baseline support', share: vs.baseline_support, hue: HUE.population }],
-    rows: [['minimum detectable change', `±${f(D.reference.mdc95_3tiles)} ${c.unit} (3 fields, ${D.reference.n_micrographs} approved micrographs)`],
+    rows: [['minimum detectable change', `±${f(D.reference.mdc95_3tiles)} ${c.unit} (3 fields, ${D.reference.n_micrographs} reference parents)`],
            ...(D.spatial_support ? [['spatial structure', D.spatial_support.cls === 'short-range' ? 'short-range (any extra area helps)'
              : D.spatial_support.cls === 'fov-scale' ? `≈${Math.round(D.spatial_support.range_um)} µm: comparable to the field width`
-             : `> ${Math.round(D.spatial_support.range_um)} µm: larger than the coherent capture`]] : [])] });
+             : `> ${Math.round(D.spatial_support.range_um)} µm: larger than the coherent capture`], ...spatialRows(D)] : [])] });
   const rims = [...o.rims.map(r => M.RIM[r]), ...M.F.rims.filter(r => (r.scope === 'entity' && r.target === k.entity && r.type !== 'scale') ||
                 (r.scope === 'dimension' && r.target === c.id))].filter((r, i, a) => r && a.indexOf(r) === i);
   if (rims.length) sections.push({ id: 'limits', title: 'Limits (outer rim)', hue: null,
     notes: rims.map(r => ({ text: `${r.type}${r.consequential ? ' · consequential' : ''} — ${r.statement}`, hue: RIM_HUE[r.type] || HUE.acquisition })) });
   const acq = e.acquisition;
   sections.push({ id: 'acquisition', title: 'Acquisition', hue: acq.outside_tested_range.length || o.acquisition_explains_deviation ? HUE.acquisition : null,
-    rows: [['vs approved micrographs', acq.differs_from_approved.length ? `${acq.differs_from_approved.length} metrics differ (${acq.differs_from_approved.slice(0, 3).map(d => d.label).join(', ')})` : 'within approved range'],
+    rows: [['vs selected reference', acq.differs_from_approved.length ? `${acq.differs_from_approved.length} metrics differ (${acq.differs_from_approved.slice(0, 3).map(d => d.label).join(', ')})` : 'within reference range'],
            ['vs tested range', acq.outside_tested_range.length ? `outside: ${acq.outside_tested_range.map(d => d.label).join(', ')}` : 'within the range whose effects were tested']] });
   if (isReference(M)) {   // a self-audit has no decision to lever; show how far this parent moves the reference instead
     const top = Object.entries(e.reference_influence || {}).filter(([, v]) => v.shift_over_mdc != null)
@@ -132,7 +145,7 @@ export function explainStage(M, stage, action) {
   if (stage <= 2) {   // nearest to (or beyond) the envelope, in the current stage's key colours
     const top = M.keys.filter(k => k.kind === 'observation' && k.obs.reference_relation.exceedance_ratio != null)
       .sort((a, b) => b.obs.reference_relation.exceedance_ratio - a.obs.reference_relation.exceedance_ratio).slice(0, 6);
-    sections.push({ id: 'nearest', title: 'Nearest the approved envelope', hue: null,
+    sections.push({ id: 'nearest', title: 'Nearest the reference-frame envelope', hue: null,
       notes: top.map(k => { const v = keyVisual(M, k, stage, {}), c = M.columns.find(x => x.id === k.dimension), rr = k.obs.reference_relation;
         return { text: `${k.entity} · ${c.short}: ${k.valueText} ${c.unit} · z ${rr.z >= 0 ? '+' : '−'}${Math.abs(rr.z).toFixed(1)} · ${(rr.exceedance_ratio).toFixed(2)}× q95 · ${rr.status}` +
           (k.obs.scrutiny && k.obs.scrutiny.outcome !== 'not_applicable' ? ` · ${k.obs.scrutiny.outcome.replace('_', ' ')}` : ''),
@@ -150,7 +163,7 @@ function effectText(M, e) {
   if (e.kind === 'prevalence_ci_width') return `prevalence 95% CI width ${pct(e.current)} → ` +
     e.projected.map(p => `${pct(p.ci_width)} (+${p.added_sections})`).join(', ') + ` sections, if ${e.assumption}`;
   if (e.kind === 'field_spacing') return `fields ≥ ${Math.round(e.min_spacing_um)} µm apart sample independent structure (${e.basis})`;
-  if (e.kind === 'minimum_detectable_change') return `MDC (3 fields), +5 approved micrographs: ` + e.projected.map(p => {
+  if (e.kind === 'minimum_detectable_change') return `MDC (3 fields), +5 reference parents: ` + e.projected.map(p => {
     const c = M.columns.find(x => x.id === p.dimension); return c ? `${c.short} ±${formatValue(p.mdc95_now, c)} → ±${formatValue(p.mdc95_with_plus5, c)}` : null; }).filter(Boolean).join(' · ');
   return null;
 }
@@ -169,14 +182,14 @@ const targetName = A => A.targets.entities.join(', ');
 
 function listLabel(M, A) {
   const target = targetName(A), dim = A.targets.dimensions[0] && M.columns.find(c => c.id === A.targets.dimensions[0]);
-  if (A.verb === 'REPEAT') return `${target} · approved acquisition settings`;
-  if (A.verb === 'ZOOM') return `${target || 'Approved'} fines · higher magnification`;
-  if (A.verb === 'EDS') return `${target} fines vs approved additive`;
+  if (A.verb === 'REPEAT') return `${target} · reference-frame acquisition settings`;
+  if (A.verb === 'ZOOM') return `${target || 'Reference'} fines · higher magnification`;
+  if (A.verb === 'EDS') return `${target} fines vs reference additive`;
   if (A.verb === 'EXTEND') return target ? `${target} mosaic · beyond captured edge` : `${dim ? dim.short : 'Reference'} · longer coherent capture`;
   if (A.verb === 'SECTIONS') return 'Independent lot cross-sections';
   if (A.verb === 'SPACE') return `${dim ? dim.short : target} · independent field spacing`;
-  if (A.verb === 'BASELINE') return 'Approved reference · +5 independent micrographs';
-  if (A.verb === 'REIMAGE') return `${target} · approved BSE settings`;
+  if (A.verb === 'BASELINE') return 'Reference frame · +5 independent parents';
+  if (A.verb === 'REIMAGE') return `${target} · reference-frame BSE settings`;
   return A.title;
 }
 
@@ -185,12 +198,12 @@ function whyText(M, A) {
   const pivotal = A.targets.entities.some(id => M.ENT[id] && M.ENT[id].leverage && M.ENT[id].leverage.flips);
   if (A.addresses === 'acquisition') return `Tests whether the ${pivotal ? 'decision-driving ' : ''}deviation in ${target} is acquisition-driven.`;
   if (A.addresses === 'scale') return `Resolves the fines truncated by the current pixel size${target ? ` in ${target}` : ''}.`;
-  if (A.addresses === 'composition') return `Tests whether ${target ? `${target} fines` : 'the fines'} match the approved additive.`;
+  if (A.addresses === 'composition') return `Tests whether ${target ? `${target} fines` : 'the fines'} match the selected-reference additive.`;
   if (A.addresses === 'spatial_extent') return `Bounds how far the observed deviation extends beyond the captured edge${target ? ` in ${target}` : ''}.`;
   if (A.addresses === 'spatial_sampling') return 'Spaces fields beyond the measured correlation range.';
   if (A.addresses === 'validity') return 'Restores measurements blocked by the current image quality.';
   if (A.addresses === 'population' && A.verb === 'SECTIONS') return 'Measures how widely the result extends across the lot.';
-  if (A.addresses === 'population' && A.verb === 'BASELINE') return 'Narrows uncertainty in the approved baseline envelopes.';
+  if (A.addresses === 'population' && A.verb === 'BASELINE') return 'Narrows uncertainty in the selected reference-frame envelopes.';
   return A.rationale.split(/(?<=[.!?])\s/)[0];
 }
 

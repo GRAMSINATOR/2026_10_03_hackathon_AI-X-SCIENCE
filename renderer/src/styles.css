@@ -58,6 +58,25 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
 .status:hover .st-win, .status.traced .st-win { background: var(--grain) padding-box, linear-gradient(#eef0eb, #eef0eb) padding-box, var(--bevel-in) border-box; }
 .status.traced .st-win { outline: 2px solid var(--hue); outline-offset: 2px; }
 
+/* compact cross-frame comparison: a readout, not a second navigation system */
+.refcmp { margin: 0 0 18px; padding: 11px 14px 13px; border-radius: 10px; background: var(--grain), var(--face); box-shadow: var(--cut); }
+.refcmp.quiet { display: flex; gap: 12px; color: var(--mut); }
+.refcmp-head { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin-bottom: 8px; }
+.refcmp-head div { display: flex; align-items: baseline; gap: 12px; }
+.refcmp-head b, .refcmp.quiet b { font: 720 9.5px/1 Inter, sans-serif; letter-spacing: .16em; color: var(--ink2); }
+.refcmp-head strong { font-size: 13px; text-transform: uppercase; }
+.refcmp-head span { color: var(--mut); font-size: 11px; }
+.refcmp-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .42fr); gap: 14px; }
+.refcmp table { width: 100%; border-collapse: collapse; font-size: 11px; font-variant-numeric: tabular-nums; }
+.refcmp th, .refcmp td { padding: 5px 8px; text-align: left; border-top: 1px solid var(--rule); }
+.refcmp th { color: var(--ink2); font-weight: 700; } .refcmp th:first-child, .refcmp td:first-child { padding-left: 0; }
+.refcmp small { display: block; color: var(--mut); font-size: 9.5px; font-weight: 520; }
+.refcmp tr.sensitive td:first-child { color: var(--warn); font-weight: 680; }
+.refcmp-note { padding: 7px 10px; border-radius: 5px; background: rgba(255,255,255,.32); box-shadow: var(--seam); }
+.refcmp-note p { margin: 2px 0 5px; color: var(--ink2); font-size: 10.5px; }
+.refcmp-note b { color: var(--ink); }
+@media (max-width: 1050px) { .refcmp-grid { grid-template-columns: 1fr; } }
+
 /* ---------------- human readout assembly: one molded panel, four readout windows cut into it */
 .readout { position: relative; margin: 0 0 18px; padding: 12px; border-radius: 20px; border: 6px solid transparent;
   background: var(--grain) padding-box, var(--plateau) padding-box, var(--bevel-out) border-box; box-shadow: var(--raised-l); }

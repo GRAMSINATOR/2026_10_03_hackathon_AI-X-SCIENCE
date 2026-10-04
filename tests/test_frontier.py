@@ -184,7 +184,9 @@ def test_seeded_states_follow_the_current_field(seed):
     assert M['marker:fines_subfloor_size']['existing_data_test']['status'] == 'requires_acquisition'
     assert [a['verb'] for a in M['marker:fines_subfloor_size']['existing_data_test']['requires_actions']] == ['ZOOM']
     assert C['capability:tomography_3d']['status'] == 'WATCHING'
-    assert not doc['context']['literature_present']
+    assert doc['context']['literature_present']
+    assert M['marker:count_overdispersion_curve']['status'] == 'BUILDING'
+    assert M['marker:phase_fraction_heterogeneity_curve']['status'] == 'BUILDING'
     for cid in ('marker:fines_subfloor_size', 'capability:eds'):
         assert (M.get(cid) or C.get(cid))['counts']['papers'] == 0
 
@@ -192,10 +194,11 @@ def test_seeded_states_follow_the_current_field(seed):
 def test_open_blindspots_pull_research(seed):
     doc = frontier.build(*seed)
     assert 'Batch_3/rims/population:Batch_3' in doc['open_blindspots']
-    assert 'Batch_3/rims/spatial:M2060:additive_density' not in doc['open_blindspots']
+    assert 'Batch_3/reference_sensitivity/cross_reference' not in doc['open_blindspots']
     assert 'Batch_3/rims/composition:M2060' not in doc['open_blindspots']
     B = {b['key']: b for b in doc['blindspots']}
-    assert [a['verb'] for a in B['Batch_3/rims/spatial:M2060:additive_density']['actions']] == ['EXTEND']
+    assert B['Batch_3/reference_sensitivity/cross_reference']['actions'] == []
+    assert 'marker:count_overdispersion_curve' in B['Batch_3/reference_sensitivity/cross_reference']['addressed_by']
 
 
 # ---------------------------------------------------------------- opportunity topology
@@ -203,7 +206,7 @@ def test_current_frontier_is_deterministic_categorical_attention(seed):
     doc = frontier.build(*seed)
     M = by_id(doc, 'markers')
     assert doc['opportunity_map']['current_frontier'] == [
-        'marker:open_edge_persistence', 'marker:fines_subfloor_size', 'marker:high_z_composition'
+        'marker:fines_subfloor_size', 'marker:high_z_composition', 'marker:phase_conditioned_fines_distribution'
     ]
     assert [M[mid]['opportunity_rank'] for mid in doc['opportunity_map']['current_frontier']] == [1, 2, 3]
     assert doc['opportunity_map']['ranking_policy']
@@ -215,7 +218,12 @@ def test_current_frontier_is_deterministic_categorical_attention(seed):
 def test_candidate_classes_separate_capture_from_observability(seed):
     doc = frontier.build(*seed)
     groups = doc['opportunity_map']['candidate_markers']
-    assert groups['computable_now'] == ['marker:open_edge_persistence', 'marker:spatial_correlation_length']
+    assert groups['computable_now'][:4] == [
+        'marker:open_edge_persistence', 'marker:phase_fraction_heterogeneity_curve',
+        'marker:spatial_correlation_length', 'marker:count_overdispersion_curve',
+    ]
+    assert {'marker:high_z_pair_correlation', 'marker:high_z_nearest_neighbour', 'marker:phase_boundary_morphology',
+            'marker:phase_chord_distribution', 'marker:phase_lineal_path', 'marker:minkowski_phase_morphology'} <= set(groups['computable_now'])
     assert groups['needs_targeted_capture'] == ['marker:fines_subfloor_size']
     assert 'marker:phase_conditioned_fines_distribution' in groups['requires_new_observability']
     assert groups['set_aside'] == ['marker:latent_progression', 'marker:multiscale_heterogeneity']

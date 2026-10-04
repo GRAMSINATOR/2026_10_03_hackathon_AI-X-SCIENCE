@@ -1,9 +1,9 @@
-"""Micrograph-level aggregation, the approved-baseline reference model, and the ACCEPT/INVESTIGATE/REJECT decision.
+"""Micrograph-level aggregation, the selected-reference model, and the ACCEPT/INVESTIGATE/REJECT decision.
 
 Statistical unit = parent micrograph (tiles of one micrograph are spatially contiguous pseudo-replicates).
 Per KPI, a new micrograph is compared with the baseline micrographs through a t-based prediction interval,
 which honestly reflects how few independent baseline micrographs exist. The batch-level p-value is calibrated by
-simulating batches drawn from the approved population (including the uncertainty of the small baseline).
+simulating batches drawn from the selected reference population (including finite-reference uncertainty).
 """
 import numpy as np
 from scipy import stats
@@ -311,8 +311,8 @@ def _core(mgs, ref, R=100_000):
     reasons = []
     if p < ALPHA_REJECT and consistent_out:
         verdict = 'REJECT'
-        reasons.append(f'{d99} of {len(valid)} independent micrographs fall outside the approved 99% envelope on a robust KPI '
-                       f'(tile-consistent: {", ".join(consistent_out)}); an approved batch would look this deviant with p = {p:.3f}.')
+        reasons.append(f'{d99} of {len(valid)} independent micrographs fall outside the selected reference-frame 99% envelope on a robust KPI '
+                       f'(tile-consistent: {", ".join(consistent_out)}); a batch drawn from this reference frame would look this deviant with p = {p:.3f}.')
     else:
         verdict = 'ACCEPT'
         if p < ALPHA_INVESTIGATE or d99 >= 1:
@@ -329,10 +329,10 @@ def _core(mgs, ref, R=100_000):
         verdict = 'INVESTIGATE' if verdict == 'ACCEPT' else verdict
         reasons.append(f'only {len(indep)} independent micrograph(s): too few to certify the batch.')
     if linked:
-        reasons.append(f'{len(linked)} micrograph(s) ({", ".join(linked)}) are physical continuations of approved baseline '
+        reasons.append(f'{len(linked)} micrograph(s) ({", ".join(linked)}) are physical continuations of selected-reference '
                        'cross-sections: shown, but excluded from the batch test (not independent of the reference).')
     if verdict == 'ACCEPT':
-        reasons.append(f'all {len(indep)} independent micrographs inside the approved envelope on every measurable KPI '
+        reasons.append(f'all {len(indep)} independent micrographs inside the selected reference-frame envelope on every measurable KPI '
                        f'(batch p = {p:.3f}).')
     return dict(verdict=verdict, p_batch=p, d99=d99, d95=d95, severity=sev, n_micrographs=len(mgs), n_independent=len(indep),
                 n_valid_additive=len(valid), ref_linked=linked, reasons=reasons, null=null, consistent_out=consistent_out,

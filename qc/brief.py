@@ -152,8 +152,8 @@ def build(F):
         return _reference(F, add, acts_for, claims, suppressed, OBS, ENT, RIMS, ACTS, pop)
 
     # ---- DECISION
-    tmpl = {'REJECT': '{0} crosses the QC rejection rule.', 'ACCEPT': '{0} stays inside the approved envelope.',
-            'INVESTIGATE': '{0}: the rule cannot settle this batch; investigate.', 'REFERENCE': '{0} is the approved reference.'}[verdict]
+    tmpl = {'REJECT': '{0} crosses the QC rejection rule.', 'ACCEPT': '{0} stays inside the selected reference-frame envelope.',
+            'INVESTIGATE': '{0}: the rule cannot settle this batch; investigate.', 'REFERENCE': '{0} is the selected reference frame.'}[verdict]
     add(id='decision.verdict', kind='decision', block='decision', scope=C['batch'], status=verdict, label=verdict,
         template=tmpl, values=[_val(F, batch, 'str')],
         fact_template='batch p = {0} against α = {1}', fact_values=[_val(F, ref('decision', path='p_batch'), 'p'),
@@ -165,7 +165,7 @@ def build(F):
         proof_refs=[ref('decision', path='verdict'), ref('decision', path='p_batch'), ref('decision', path='tests'), ref('decision', path='reasons')],
         focus=ref('decision', path='p_batch'))
     scope_vals = [_val(F, ref('context', path='reference'), 'str')]
-    scope_t = 'Decision under this dataset only: approved reference {0}'
+    scope_t = 'Decision for this target and selected reference frame only: {0}'
     if pop:
         scope_vals += [_val(F, ref('rims', pop['id'], 'basis.n_reference_min'), 'int'), _val(F, ref('rims', pop['id'], 'basis.n_reference_max'), 'int')]
         scope_t += ' ({1}–{2} micrographs)'
@@ -190,7 +190,7 @@ def build(F):
             continue
         O = lambda p: ref('observations', oid, p)
         lev = e.get('leverage') or {}
-        fact_t, fact_v = '{0} vs approved {1} {2}', [_val(F, O('value'), 'kpi:' + d['id']), _val(F, O('reference_relation.approved_mean'), 'kpi:' + d['id']),
+        fact_t, fact_v = '{0} vs selected reference {1} {2}', [_val(F, O('value'), 'kpi:' + d['id']), _val(F, O('reference_relation.approved_mean'), 'kpi:' + d['id']),
                                                      _val(F, ref('dimensions', d['id'], 'unit'), 'str')]
         if lev.get('flips'):
             fact_t += ' · without {3}: {4} (p = {5})'
@@ -200,7 +200,7 @@ def build(F):
         ev_ids.append(add(
             id=f'evidence.{oid}', kind='surviving_evidence', block='surviving_evidence', scope=oid, status='survives',
             label=f"{o['entity']} · {d['short_label']}".upper(),
-            template='{0} in {1} is ' + direction + ' the approved envelope and survives scrutiny.',
+            template='{0} in {1} is ' + direction + ' the selected reference-frame envelope and survives scrutiny.',
             values=[_val(F, ref('dimensions', d['id'], 'label'), 'str'), _val(F, O('entity'), 'str')],
             fact_template=fact_t, fact_values=fact_v,
             details=[dict(template='z = {0} against q99 = {1} (status {2})', values=[_val(F, O('reference_relation.z'), 'z'),
@@ -244,13 +244,13 @@ def build(F):
         R = lambda p: ref('rims', r['id'], p)
         t, v, prf = None, [], [R('statement'), R('basis')]
         if r['type'] == 'scale':
-            t, v = 'Excess fine objects peak at the {0} µm detection floor ({1}× approved).', [_val(F, R('basis.detection_floor_um'), 'g'), _val(F, R('basis.peak_ratio_at_floor'), 'f1')]
+            t, v = 'Excess fine objects peak at the {0} µm detection floor ({1}× selected reference).', [_val(F, R('basis.detection_floor_um'), 'g'), _val(F, R('basis.peak_ratio_at_floor'), 'f1')]
         elif r['type'] == 'composition':
             t = 'Chemistry of the deviating high-Z phase is not measured; BSE alone cannot identify it.'
             md = f"{r['target']}:{r['basis']['missing_dimension']}"
             prf.append(ref('missing_dimensions', md, 'basis'))
         elif r['type'] == 'spatial' and r['scope'] == 'observation':
-            t, v = 'Still outside the approved band at the {0} edge of the {1} µm captured section: extent not bounded.', [_val(F, R('basis.open_edges.0'), 'str'), _val(F, R('basis.captured_length_um'), 'int')]
+            t, v = 'Still outside the selected reference band at the {0} edge of the {1} µm captured section: extent not bounded.', [_val(F, R('basis.open_edges.0'), 'str'), _val(F, R('basis.captured_length_um'), 'int')]
             prf.append(ref('spatial_profiles', r['target'], 'runs'))
         elif r['type'] == 'population':
             P = 'basis.prevalence.'
@@ -265,6 +265,10 @@ def build(F):
                            group=f"rim:{r['id']}", proof_refs=prf, focus=focus, action_refs=acts_for(r['id'])))
     for r in cons[MAX_LIMITS:]:
         suppressed.append(dict(candidate=f"limit.{r['id']}", reason='limits cap', cap=MAX_LIMITS))
+    if not lim_ids:
+        lim_ids.append(add(id='limit.none', kind='context', block='limits', scope=C['batch'], status='none', label='NONE',
+                           template='No consequential limit is attached to this evaluation.', priority=3,
+                           group='limits:none', proof_refs=[ref('summary', path='consequential_rims')]))
 
     # ---- DATA SUPPORT (sufficiency per question; attribution / prevalence / regime point to Limits, no numbers)
     piv = D['pivotal']
@@ -334,7 +338,7 @@ def build(F):
     for a in ACTS:
         if a['tier'] != 1 or a not in t1:
             suppressed.append(dict(candidate=f"action.{a['id']}", reason=f"tier {a['tier']} (examiner only)" if a['tier'] != 1 else 'steps cap'))
-    mode = MODE_OF_ADDRESS.get(t1[0]['addresses'], 'expand_sampling') if t1 else ('expand_sampling' if ACTS else 'stop')
+    mode = MODE_OF_ADDRESS.get(t1[0]['addresses'], 'expand_sampling') if t1 else 'stop'
     pol = []
     for a in t1:
         A = lambda p: ref('actions', a['id'], p)
@@ -523,6 +527,10 @@ def _reference(F, add, acts_for, claims, suppressed, OBS, ENT, RIMS, ACTS, pop):
         lims.append(add(id=f"limit.{r['id']}", kind='limit', block='limits', scope=r['target'], status='consequential', label=label,
                         template=t, values=v, priority=2 + (REF_LIMIT_ORDER.index(r['type']) if r['type'] in REF_LIMIT_ORDER else 9) / 10,
                         group=f"rim:{r['id']}", proof_refs=prf, focus=focus, action_refs=acts_for(r['id'])))
+    if not lims:
+        lims.append(add(id='limit.none', kind='context', block='limits', scope=C['batch'], status='none', label='NONE',
+                        template='No consequential open limit remains in this self-audit.', priority=3,
+                        group='limits:none', proof_refs=[ref('summary', path='consequential_rims')]))
     labels = list(dict.fromkeys(c['label'] for c in claims if c['id'] in lims))
 
     # ---- NEXT ACQUISITION: tier-1 reference actions in rank order; STOP when nothing justifies more of the same

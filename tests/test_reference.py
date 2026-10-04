@@ -100,9 +100,9 @@ def test_incoming_batches_still_use_the_full_reference():
 
 def test_incoming_scientific_results_unchanged():
     assert (F2['decision']['verdict'], F3['decision']['verdict']) == ('ACCEPT', 'REJECT')
-    assert F3['summary']['surviving'] == ['M2060:additive_density'] and F3['decision']['pivotal'] == ['M2060']
+    assert F3['summary']['surviving'] == ['M2060:additive_density', 'M2068:additive_d50_um'] and F3['decision']['pivotal'] == ['M2060']
     assert F2['decision']['n_independent'] == 3 and F2['decision']['reference_linked'] == ['M2080', 'M2148', 'M2156']
-    assert abs(F3['decision']['p_batch'] - 0.01666) < 1e-9
+    assert abs(F3['decision']['p_batch'] - 0.01692) < 1e-9
 
 
 def test_reference_validity_failure_surfaces_and_produces_an_action():

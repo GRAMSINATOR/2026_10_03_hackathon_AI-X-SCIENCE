@@ -35,11 +35,21 @@ def main():
     a = sub.add_parser('reference')
     a.add_argument('baseline')
     a.add_argument('--noise-from', nargs='*', default=[])
+    rf = sub.add_parser('references', help='build and cache explicit candidate reference frames')
+    rf.add_argument('batches', nargs='+')
+    rf.add_argument('--activate', default=None)
+    rf.add_argument('--workers', type=int, default=None)
     c = sub.add_parser('fixture')
     c.add_argument('report_dir')
     c.add_argument('--out', default='fixtures')
     b = sub.add_parser('assess')
     b.add_argument('batches', nargs='+')
+    b.add_argument('--reference', default=None, help='cached frame name or reference artifact path')
+    cr = sub.add_parser('compare-references', help='evaluate one unchanged target across eligible reference frames')
+    cr.add_argument('batch')
+    cr.add_argument('--references', nargs='*', default=None)
+    cr.add_argument('--active', default=None)
+    cr.add_argument('--workers', type=int, default=None)
     for p in (a, b):
         p.add_argument('--workers', type=int, default=None)
     pv = sub.add_parser('provenance', help='export the tile -> parent micrograph map (derived numbers only)')
@@ -48,6 +58,18 @@ def main():
     bu.add_argument('out')
     bu.add_argument('--batches', nargs='*', default=None)
     args = ap.parse_args()
+    if args.cmd == 'references':
+        doc = pipeline.build_reference_frames(args.batches, args.workers, args.activate)
+        for f in doc['frames']:
+            print(f"{f['id']}: {'ELIGIBLE' if f['eligible'] else 'UNAVAILABLE'} · {f['support_quality']} · "
+                  f"{f['support']['n_parent_micrographs']} parents"
+                  + ('' if f['eligible'] else ' · ' + '; '.join(f['unavailable_reasons'])))
+        return
+    if args.cmd == 'compare-references':
+        s = pipeline.compare_references(args.batch, args.references, args.workers, args.active)
+        print(f"{os.path.basename(os.path.normpath(args.batch))}: {s['conclusion']} across {', '.join(s['frames_evaluated'])}; "
+              f"{len(s['frame_dependent_findings'])} frame-dependent findings")
+        return
     if args.cmd == 'provenance':
         from . import provmap
         doc = provmap.export(args.out)
@@ -76,7 +98,7 @@ def main():
             print(f"  self-audit {s['parent']}: {s['status']} (max|t| {s['max_t']:.2f}) {'; '.join(s['gate_reasons'])}")
     else:
         for bd in args.batches:
-            show(pipeline.assess(bd, args.workers))
+            show(pipeline.assess(bd, args.workers, ref=args.reference))
 
 
 if __name__ == '__main__':

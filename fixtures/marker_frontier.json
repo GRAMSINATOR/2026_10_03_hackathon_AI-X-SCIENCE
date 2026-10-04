@@ -11,6 +11,11 @@
     "batch": "Batch_3",
     "reference": "Batch_1",
     "verdict": "REJECT"
+   },
+   {
+    "batch": "Hackathon-Polaron-test",
+    "reference": "Batch_1",
+    "verdict": "INVESTIGATE"
    }
   ],
   "bundles": [
@@ -19,17 +24,17 @@
     "kind": "controller_seed",
     "produced_by": "controller agent (Claude) from epistemic-field/1 blindspots, docs/RESEARCH_LOG.md and docs/CLAIMS.md",
     "produced_at": "2026-10-04",
-    "notes": "No literature. Every evidence item is an engine fact (a reference into epistemic-field/1) or a project research-log record. Literature is the research agent's lane (qte77): papers attach to these cases by id.",
+    "notes": "Controller seed plus a small set of primary method papers. Literature links establish candidate plausibility only; they do not promote a marker into the QC decision path.",
     "n": {
-     "markers": 8,
+     "markers": 16,
      "capabilities": 2,
-     "papers": 0,
-     "records": 11,
+     "papers": 4,
+     "records": 13,
      "reviews": 2
     }
    }
   ],
-  "literature_present": false,
+  "literature_present": true,
   "fixture_present": false,
   "research_agent_present": false
  },
@@ -89,7 +94,7 @@
    "scope": "batch",
    "target": "Batch_2",
    "consequential": true,
-   "statement": "approved reference = 5-6 micrographs; 3 independent incoming micrographs; verdict rests on M2048, M2068, M2272; out-of-family prevalence 0/3 (95% CI 0-71%)",
+   "statement": "selected reference frame = 5-6 parent micrographs; 3 independent target micrographs; verdict rests on M2048, M2068, M2272; out-of-family prevalence 0/3 (95% CI 0-71%)",
    "label": "PREVALENCE · Batch_2",
    "actions": [
     {
@@ -106,30 +111,7 @@
      "tier": 3,
      "status": "computed",
      "cost": "high",
-     "title": "Expand the approved reference (+5 independent micrographs)"
-    }
-   ],
-   "addressed_by": []
-  },
-  {
-   "key": "Batch_2/rims/spatial-dimension:additive_density",
-   "batch": "Batch_2",
-   "collection": "rims",
-   "id": "spatial-dimension:additive_density",
-   "type": "spatial",
-   "scope": "dimension",
-   "target": "additive_density",
-   "consequential": false,
-   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
-   "label": "EXTENT · additive_density",
-   "actions": [
-    {
-     "id": "sections:1",
-     "verb": "SECTIONS",
-     "tier": 1,
-     "status": "computed",
-     "cost": "medium",
-     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
     }
    ],
    "addressed_by": []
@@ -143,7 +125,7 @@
    "scope": "dimension",
    "target": "porosity",
    "consequential": false,
-   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
    "label": "EXTENT · porosity",
    "actions": [
     {
@@ -158,6 +140,20 @@
    "addressed_by": []
   },
   {
+   "key": "Batch_2/reference_sensitivity/cross_reference",
+   "batch": "Batch_2",
+   "collection": "reference_sensitivity",
+   "id": "cross_reference",
+   "type": "reference_sensitivity",
+   "scope": "batch",
+   "target": "Batch_2",
+   "consequential": false,
+   "statement": "Interpretation of 2 observations changes across 3 eligible reference frames; the reference populations encode different structural regimes.",
+   "label": "REFERENCE SENSITIVITY · Batch_2",
+   "actions": [],
+   "addressed_by": []
+  },
+  {
    "key": "Batch_3/rims/population:Batch_3",
    "batch": "Batch_3",
    "collection": "rims",
@@ -166,7 +162,7 @@
    "scope": "batch",
    "target": "Batch_3",
    "consequential": true,
-   "statement": "approved reference = 5-6 micrographs; 6 independent incoming micrographs; verdict rests on M2060; out-of-family prevalence 1/6 (95% CI 0-64%)",
+   "statement": "selected reference frame = 5-6 parent micrographs; 6 independent target micrographs; verdict rests on M2060; out-of-family prevalence 1/6 (95% CI 0-64%)",
    "label": "PREVALENCE · Batch_3",
    "actions": [
     {
@@ -175,10 +171,10 @@
      "tier": 1,
      "status": "grounded",
      "cost": "low",
-     "title": "Repeat M2060 under the approved acquisition settings"
+     "title": "Repeat M2060 under the reference-frame acquisition settings"
     },
     {
-     "id": "sections:5",
+     "id": "sections:4",
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
@@ -191,7 +187,7 @@
      "tier": 3,
      "status": "computed",
      "cost": "high",
-     "title": "Expand the approved reference (+5 independent micrographs)"
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
     }
    ],
    "addressed_by": []
@@ -222,31 +218,6 @@
    ]
   },
   {
-   "key": "Batch_3/rims/spatial:M2060:additive_density",
-   "batch": "Batch_3",
-   "collection": "rims",
-   "id": "spatial:M2060:additive_density",
-   "type": "spatial",
-   "scope": "observation",
-   "target": "M2060:additive_density",
-   "consequential": true,
-   "statement": "deviation still outside the approved local band at the start of the 698 µm captured section",
-   "label": "EXTENT · M2060 · Additive density",
-   "actions": [
-    {
-     "id": "extend:4",
-     "verb": "EXTEND",
-     "tier": 1,
-     "status": "computed",
-     "cost": "low",
-     "title": "Extend the M2060 mosaic beyond its start"
-    }
-   ],
-   "addressed_by": [
-    "marker:open_edge_persistence"
-   ]
-  },
-  {
    "key": "Batch_3/rims/composition:M2060",
    "batch": "Batch_3",
    "collection": "rims",
@@ -264,7 +235,7 @@
      "tier": 1,
      "status": "future",
      "cost": "medium",
-     "title": "Paired EDS: M2060 fines vs approved additive"
+     "title": "Paired EDS: M2060 fines vs selected-reference additive"
     }
    ],
    "addressed_by": [
@@ -272,6 +243,29 @@
     "marker:high_z_composition",
     "marker:phase_conditioned_fines_distribution"
    ]
+  },
+  {
+   "key": "Batch_3/rims/composition:M2068",
+   "batch": "Batch_3",
+   "collection": "rims",
+   "id": "composition:M2068",
+   "type": "composition",
+   "scope": "entity",
+   "target": "M2068",
+   "consequential": false,
+   "statement": "the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot separate a finer additive from a different lower-Z phase.",
+   "label": "COMPOSITION · M2068",
+   "actions": [
+    {
+     "id": "eds:5",
+     "verb": "EDS",
+     "tier": 2,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2068 fines vs selected-reference additive"
+    }
+   ],
+   "addressed_by": []
   },
   {
    "key": "Batch_3/rims/spatial:M2088:porosity",
@@ -282,7 +276,7 @@
    "scope": "observation",
    "target": "M2088:porosity",
    "consequential": false,
-   "statement": "deviation still outside the approved local band at the end of the 524 µm captured section",
+   "statement": "deviation still outside the selected reference local band at the end of the 698 µm captured section",
    "label": "EXTENT · M2088 · Porosity",
    "actions": [
     {
@@ -299,36 +293,11 @@
      "tier": 2,
      "status": "computed",
      "cost": "medium",
-     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
+     "title": "Porosity: fields spaced ≥ 75 µm instead of adjacent tiles"
     }
    ],
    "addressed_by": [
     "marker:open_edge_persistence"
-   ]
-  },
-  {
-   "key": "Batch_3/rims/spatial-dimension:additive_density",
-   "batch": "Batch_3",
-   "collection": "rims",
-   "id": "spatial-dimension:additive_density",
-   "type": "spatial",
-   "scope": "dimension",
-   "target": "additive_density",
-   "consequential": false,
-   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
-   "label": "EXTENT · additive_density",
-   "actions": [
-    {
-     "id": "sections:5",
-     "verb": "SECTIONS",
-     "tier": 1,
-     "status": "computed",
-     "cost": "medium",
-     "title": "Independent cross-sections from the lot (not adjacent tiles)"
-    }
-   ],
-   "addressed_by": [
-    "marker:spatial_correlation_length"
    ]
   },
   {
@@ -340,11 +309,11 @@
    "scope": "dimension",
    "target": "porosity",
    "consequential": false,
-   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
    "label": "EXTENT · porosity",
    "actions": [
     {
-     "id": "sections:5",
+     "id": "sections:4",
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
@@ -357,10 +326,11 @@
      "tier": 2,
      "status": "computed",
      "cost": "medium",
-     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
+     "title": "Porosity: fields spaced ≥ 75 µm instead of adjacent tiles"
     }
    ],
    "addressed_by": [
+    "marker:phase_fraction_heterogeneity_curve",
     "marker:spatial_correlation_length"
    ]
   },
@@ -387,13 +357,139 @@
      "tier": 1,
      "status": "future",
      "cost": "medium",
-     "title": "Paired EDS: M2060 fines vs approved additive"
+     "title": "Paired EDS: M2060 fines vs selected-reference additive"
     }
    ],
    "addressed_by": [
     "capability:eds",
     "marker:high_z_composition"
    ]
+  },
+  {
+   "key": "Batch_3/missing_dimensions/M2068:composition",
+   "batch": "Batch_3",
+   "collection": "missing_dimensions",
+   "id": "M2068:composition",
+   "type": "composition",
+   "scope": "entity",
+   "target": "M2068",
+   "consequential": true,
+   "not_acquired": true,
+   "would_require": [
+    "EDS",
+    "spectroscopy"
+   ],
+   "statement": "Composition of the high-Z phase: not acquired; consequential for M2068",
+   "label": "COMPOSITION · M2068 (not acquired)",
+   "actions": [
+    {
+     "id": "eds:5",
+     "verb": "EDS",
+     "tier": 2,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2068 fines vs selected-reference additive"
+    }
+   ],
+   "addressed_by": []
+  },
+  {
+   "key": "Batch_3/reference_sensitivity/cross_reference",
+   "batch": "Batch_3",
+   "collection": "reference_sensitivity",
+   "id": "cross_reference",
+   "type": "reference_sensitivity",
+   "scope": "batch",
+   "target": "Batch_3",
+   "consequential": false,
+   "statement": "Interpretation of 5 observations changes across 3 eligible reference frames; the reference populations encode different structural regimes.",
+   "label": "REFERENCE SENSITIVITY · Batch_3",
+   "actions": [],
+   "addressed_by": [
+    "marker:count_overdispersion_curve"
+   ]
+  },
+  {
+   "key": "Hackathon-Polaron-test/rims/population:Hackathon-Polaron-test",
+   "batch": "Hackathon-Polaron-test",
+   "collection": "rims",
+   "id": "population:Hackathon-Polaron-test",
+   "type": "population",
+   "scope": "batch",
+   "target": "Hackathon-Polaron-test",
+   "consequential": true,
+   "statement": "selected reference frame = 5-6 parent micrographs; 2 independent target micrographs; out-of-family prevalence 0/2 (95% CI 0-84%)",
+   "label": "PREVALENCE · Hackathon-Polaron-test",
+   "actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    },
+    {
+     "id": "baseline:2",
+     "verb": "BASELINE",
+     "tier": 3,
+     "status": "computed",
+     "cost": "high",
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
+    }
+   ],
+   "addressed_by": []
+  },
+  {
+   "key": "Hackathon-Polaron-test/rims/acquisition:M2316",
+   "batch": "Hackathon-Polaron-test",
+   "collection": "rims",
+   "id": "acquisition:M2316",
+   "type": "acquisition",
+   "scope": "entity",
+   "target": "M2316",
+   "consequential": false,
+   "statement": "acquired outside the tested acquisition range; sensitivity bounds do not apply.",
+   "label": "ACQUISITION · M2316",
+   "actions": [],
+   "addressed_by": []
+  },
+  {
+   "key": "Hackathon-Polaron-test/rims/validity:M2316",
+   "batch": "Hackathon-Polaron-test",
+   "collection": "rims",
+   "id": "validity:M2316",
+   "type": "validity",
+   "scope": "entity",
+   "target": "M2316",
+   "consequential": false,
+   "statement": "additive-vs-matrix contrast-to-noise 3.1 < 4.0: high-Z phase cannot be segmented reliably (different additive chemistry or beam/detector settings)",
+   "label": "VALIDITY · M2316",
+   "actions": [],
+   "addressed_by": []
+  },
+  {
+   "key": "Hackathon-Polaron-test/rims/spatial-dimension:porosity",
+   "batch": "Hackathon-Polaron-test",
+   "collection": "rims",
+   "id": "spatial-dimension:porosity",
+   "type": "spatial",
+   "scope": "dimension",
+   "target": "porosity",
+   "consequential": false,
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
+   "label": "EXTENT · porosity",
+   "actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    }
+   ],
+   "addressed_by": []
   }
  ],
  "vortices": [
@@ -401,7 +497,7 @@
    "id": "vortex:Batch_2/rims/population:Batch_2",
    "label": "PREVALENCE · Batch_2",
    "kind": "sampling_uncertainty",
-   "statement": "approved reference = 5-6 micrographs; 3 independent incoming micrographs; verdict rests on M2048, M2068, M2272; out-of-family prevalence 0/3 (95% CI 0-71%)",
+   "statement": "selected reference frame = 5-6 parent micrographs; 3 independent target micrographs; verdict rests on M2048, M2068, M2272; out-of-family prevalence 0/3 (95% CI 0-71%)",
    "source": "epistemic-field/1",
    "instantiated": true,
    "attention": "decision_consequential",
@@ -430,36 +526,7 @@
      "tier": 3,
      "status": "computed",
      "cost": "high",
-     "title": "Expand the approved reference (+5 independent micrographs)"
-    }
-   ]
-  },
-  {
-   "id": "vortex:Batch_2/rims/spatial-dimension:additive_density",
-   "label": "EXTENT · additive_density",
-   "kind": "unresolved_spatial_structure",
-   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
-   "source": "epistemic-field/1",
-   "instantiated": true,
-   "attention": "structured_limit",
-   "consequential": false,
-   "evidence_refs": [
-    {
-     "batch": "Batch_2",
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density"
-    }
-   ],
-   "marker_refs": [],
-   "capability_refs": [],
-   "current_actions": [
-    {
-     "id": "sections:1",
-     "verb": "SECTIONS",
-     "tier": 1,
-     "status": "computed",
-     "cost": "medium",
-     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
     }
    ]
   },
@@ -467,7 +534,7 @@
    "id": "vortex:Batch_2/rims/spatial-dimension:porosity",
    "label": "EXTENT · porosity",
    "kind": "unresolved_spatial_structure",
-   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
    "source": "epistemic-field/1",
    "instantiated": true,
    "attention": "structured_limit",
@@ -493,10 +560,30 @@
    ]
   },
   {
+   "id": "vortex:Batch_2/reference_sensitivity/cross_reference",
+   "label": "REFERENCE SENSITIVITY · Batch_2",
+   "kind": "structured_uncertainty",
+   "statement": "Interpretation of 2 observations changes across 3 eligible reference frames; the reference populations encode different structural regimes.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_2",
+     "collection": "reference_sensitivity",
+     "id": "cross_reference"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
    "id": "vortex:Batch_3/rims/population:Batch_3",
    "label": "PREVALENCE · Batch_3",
    "kind": "sampling_uncertainty",
-   "statement": "approved reference = 5-6 micrographs; 6 independent incoming micrographs; verdict rests on M2060; out-of-family prevalence 1/6 (95% CI 0-64%)",
+   "statement": "selected reference frame = 5-6 parent micrographs; 6 independent target micrographs; verdict rests on M2060; out-of-family prevalence 1/6 (95% CI 0-64%)",
    "source": "epistemic-field/1",
    "instantiated": true,
    "attention": "decision_consequential",
@@ -517,10 +604,10 @@
      "tier": 1,
      "status": "grounded",
      "cost": "low",
-     "title": "Repeat M2060 under the approved acquisition settings"
+     "title": "Repeat M2060 under the reference-frame acquisition settings"
     },
     {
-     "id": "sections:5",
+     "id": "sections:4",
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
@@ -533,7 +620,7 @@
      "tier": 3,
      "status": "computed",
      "cost": "high",
-     "title": "Expand the approved reference (+5 independent micrographs)"
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
     }
    ]
   },
@@ -569,37 +656,6 @@
    ]
   },
   {
-   "id": "vortex:Batch_3/rims/spatial:M2060:additive_density",
-   "label": "EXTENT · M2060 · Additive density",
-   "kind": "unresolved_spatial_structure",
-   "statement": "deviation still outside the approved local band at the start of the 698 µm captured section",
-   "source": "epistemic-field/1",
-   "instantiated": true,
-   "attention": "decision_consequential",
-   "consequential": true,
-   "evidence_refs": [
-    {
-     "batch": "Batch_3",
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density"
-    }
-   ],
-   "marker_refs": [
-    "marker:open_edge_persistence"
-   ],
-   "capability_refs": [],
-   "current_actions": [
-    {
-     "id": "extend:4",
-     "verb": "EXTEND",
-     "tier": 1,
-     "status": "computed",
-     "cost": "low",
-     "title": "Extend the M2060 mosaic beyond its start"
-    }
-   ]
-  },
-  {
    "id": "vortex:Batch_3/rims/composition:M2060",
    "label": "COMPOSITION · M2060",
    "kind": "identity_uncertainty",
@@ -629,7 +685,36 @@
      "tier": 1,
      "status": "future",
      "cost": "medium",
-     "title": "Paired EDS: M2060 fines vs approved additive"
+     "title": "Paired EDS: M2060 fines vs selected-reference additive"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/rims/composition:M2068",
+   "label": "COMPOSITION · M2068",
+   "kind": "identity_uncertainty",
+   "statement": "the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot separate a finer additive from a different lower-Z phase.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "composition:M2068"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "eds:5",
+     "verb": "EDS",
+     "tier": 2,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2068 fines vs selected-reference additive"
     }
    ]
   },
@@ -637,7 +722,7 @@
    "id": "vortex:Batch_3/rims/spatial:M2088:porosity",
    "label": "EXTENT · M2088 · Porosity",
    "kind": "unresolved_spatial_structure",
-   "statement": "deviation still outside the approved local band at the end of the 524 µm captured section",
+   "statement": "deviation still outside the selected reference local band at the end of the 698 µm captured section",
    "source": "epistemic-field/1",
    "instantiated": true,
    "attention": "structured_limit",
@@ -668,38 +753,7 @@
      "tier": 2,
      "status": "computed",
      "cost": "medium",
-     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
-    }
-   ]
-  },
-  {
-   "id": "vortex:Batch_3/rims/spatial-dimension:additive_density",
-   "label": "EXTENT · additive_density",
-   "kind": "unresolved_spatial_structure",
-   "statement": "Additive density: adjacent-tile variance 1.9× the short-range prediction (95% CI 1.1-4.2); variogram still rising at 400 µm (structure larger than the longest coherent capture)",
-   "source": "epistemic-field/1",
-   "instantiated": true,
-   "attention": "structured_limit",
-   "consequential": false,
-   "evidence_refs": [
-    {
-     "batch": "Batch_3",
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density"
-    }
-   ],
-   "marker_refs": [
-    "marker:spatial_correlation_length"
-   ],
-   "capability_refs": [],
-   "current_actions": [
-    {
-     "id": "sections:5",
-     "verb": "SECTIONS",
-     "tier": 1,
-     "status": "computed",
-     "cost": "medium",
-     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+     "title": "Porosity: fields spaced ≥ 75 µm instead of adjacent tiles"
     }
    ]
   },
@@ -707,7 +761,7 @@
    "id": "vortex:Batch_3/rims/spatial-dimension:porosity",
    "label": "EXTENT · porosity",
    "kind": "unresolved_spatial_structure",
-   "statement": "Porosity: adjacent-tile variance 3.6× the short-range prediction (95% CI 2.0-7.8); variogram range ≈ 175 µm",
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
    "source": "epistemic-field/1",
    "instantiated": true,
    "attention": "structured_limit",
@@ -720,12 +774,13 @@
     }
    ],
    "marker_refs": [
+    "marker:phase_fraction_heterogeneity_curve",
     "marker:spatial_correlation_length"
    ],
    "capability_refs": [],
    "current_actions": [
     {
-     "id": "sections:5",
+     "id": "sections:4",
      "verb": "SECTIONS",
      "tier": 1,
      "status": "computed",
@@ -738,7 +793,7 @@
      "tier": 2,
      "status": "computed",
      "cost": "medium",
-     "title": "Porosity: fields spaced ≥ 175 µm instead of adjacent tiles"
+     "title": "Porosity: fields spaced ≥ 75 µm instead of adjacent tiles"
     }
    ]
   },
@@ -771,9 +826,232 @@
      "tier": 1,
      "status": "future",
      "cost": "medium",
-     "title": "Paired EDS: M2060 fines vs approved additive"
+     "title": "Paired EDS: M2060 fines vs selected-reference additive"
     }
    ]
+  },
+  {
+   "id": "vortex:Batch_3/missing_dimensions/M2068:composition",
+   "label": "COMPOSITION · M2068 (not acquired)",
+   "kind": "identity_uncertainty",
+   "statement": "Composition of the high-Z phase: not acquired; consequential for M2068",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "missing_dimensions",
+     "id": "M2068:composition"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "eds:5",
+     "verb": "EDS",
+     "tier": 2,
+     "status": "future",
+     "cost": "medium",
+     "title": "Paired EDS: M2068 fines vs selected-reference additive"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Batch_3/reference_sensitivity/cross_reference",
+   "label": "REFERENCE SENSITIVITY · Batch_3",
+   "kind": "structured_uncertainty",
+   "statement": "Interpretation of 5 observations changes across 3 eligible reference frames; the reference populations encode different structural regimes.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "reference_sensitivity",
+     "id": "cross_reference"
+    }
+   ],
+   "marker_refs": [
+    "marker:count_overdispersion_curve"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:Hackathon-Polaron-test/rims/population:Hackathon-Polaron-test",
+   "label": "PREVALENCE · Hackathon-Polaron-test",
+   "kind": "sampling_uncertainty",
+   "statement": "selected reference frame = 5-6 parent micrographs; 2 independent target micrographs; out-of-family prevalence 0/2 (95% CI 0-84%)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "decision_consequential",
+   "consequential": true,
+   "evidence_refs": [
+    {
+     "batch": "Hackathon-Polaron-test",
+     "collection": "rims",
+     "id": "population:Hackathon-Polaron-test"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    },
+    {
+     "id": "baseline:2",
+     "verb": "BASELINE",
+     "tier": 3,
+     "status": "computed",
+     "cost": "high",
+     "title": "Expand the selected reference frame (+5 independent parent micrographs)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:Hackathon-Polaron-test/rims/acquisition:M2316",
+   "label": "ACQUISITION · M2316",
+   "kind": "acquisition_sensitivity",
+   "statement": "acquired outside the tested acquisition range; sensitivity bounds do not apply.",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Hackathon-Polaron-test",
+     "collection": "rims",
+     "id": "acquisition:M2316"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:Hackathon-Polaron-test/rims/validity:M2316",
+   "label": "VALIDITY · M2316",
+   "kind": "measurement_validity",
+   "statement": "additive-vs-matrix contrast-to-noise 3.1 < 4.0: high-Z phase cannot be segmented reliably (different additive chemistry or beam/detector settings)",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Hackathon-Polaron-test",
+     "collection": "rims",
+     "id": "validity:M2316"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:Hackathon-Polaron-test/rims/spatial-dimension:porosity",
+   "label": "EXTENT · porosity",
+   "kind": "unresolved_spatial_structure",
+   "statement": "Porosity: adjacent-tile variance 19.5× the short-range prediction (95% CI 3.9-19872.3); variogram range ≈ 75 µm",
+   "source": "epistemic-field/1",
+   "instantiated": true,
+   "attention": "structured_limit",
+   "consequential": false,
+   "evidence_refs": [
+    {
+     "batch": "Hackathon-Polaron-test",
+     "collection": "rims",
+     "id": "spatial-dimension:porosity"
+    }
+   ],
+   "marker_refs": [],
+   "capability_refs": [],
+   "current_actions": [
+    {
+     "id": "sections:1",
+     "verb": "SECTIONS",
+     "tier": 1,
+     "status": "computed",
+     "cost": "medium",
+     "title": "Independent cross-sections from the lot (not adjacent tiles)"
+    }
+   ]
+  },
+  {
+   "id": "vortex:general/particle_pair_structure",
+   "label": "pair separation and exclusion are not in the production marker vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:high_z_nearest_neighbour",
+    "marker:high_z_pair_correlation"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:general/phase_boundary_geometry",
+   "label": "phase-boundary complexity is not in the production marker vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:phase_boundary_morphology"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:general/phase_continuity_distribution",
+   "label": "full continuous phase-length distributions are absent from the production vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:phase_chord_distribution",
+    "marker:phase_lineal_path"
+   ],
+   "capability_refs": [],
+   "current_actions": []
+  },
+  {
+   "id": "vortex:general/phase_topology_2d",
+   "label": "within-section phase topology is not in the production marker vocabulary",
+   "kind": "representational_gap",
+   "statement": "A proposed vocabulary gap; no loaded field directly instantiates it.",
+   "source": "research_bundle",
+   "instantiated": false,
+   "attention": "external_hypothesis",
+   "consequential": false,
+   "evidence_refs": [],
+   "marker_refs": [
+    "marker:minkowski_phase_morphology"
+   ],
+   "capability_refs": [],
+   "current_actions": []
   },
   {
    "id": "vortex:general/process_progression",
@@ -828,20 +1106,30 @@
  ],
  "open_blindspots": [
   "Batch_2/rims/population:Batch_2",
-  "Batch_3/rims/population:Batch_3"
+  "Batch_3/rims/population:Batch_3",
+  "Batch_3/missing_dimensions/M2068:composition",
+  "Hackathon-Polaron-test/rims/population:Hackathon-Polaron-test"
  ],
  "opportunity_map": {
   "question": "What additional useful ways of perceiving the current dataset should be investigated?",
   "local_loop": "NEXT CAPTURE resolves the current decision; this map searches for better representations and future observability.",
   "current_frontier": [
-   "marker:open_edge_persistence",
    "marker:fines_subfloor_size",
-   "marker:high_z_composition"
+   "marker:high_z_composition",
+   "marker:phase_conditioned_fines_distribution"
   ],
   "candidate_markers": {
    "computable_now": [
     "marker:open_edge_persistence",
-    "marker:spatial_correlation_length"
+    "marker:phase_fraction_heterogeneity_curve",
+    "marker:spatial_correlation_length",
+    "marker:count_overdispersion_curve",
+    "marker:high_z_pair_correlation",
+    "marker:phase_chord_distribution",
+    "marker:high_z_nearest_neighbour",
+    "marker:minkowski_phase_morphology",
+    "marker:phase_boundary_morphology",
+    "marker:phase_lineal_path"
    ],
    "needs_targeted_capture": [
     "marker:fines_subfloor_size"
@@ -856,6 +1144,61 @@
     "marker:multiscale_heterogeneity"
    ]
   },
+  "reference_sensitivity": [
+   {
+    "batch": "Batch_2",
+    "conclusion": "reference_sensitive",
+    "stable_dimensions": [
+     "additive_d50_um",
+     "pore_size_um",
+     "porosity",
+     "solid_chord_x_um"
+    ],
+    "sensitive_dimensions": [
+     "additive_area_frac",
+     "additive_density"
+    ],
+    "frame_dependent_findings": [
+     "M2048:additive_density",
+     "M2156:additive_area_frac"
+    ]
+   },
+   {
+    "batch": "Batch_3",
+    "conclusion": "reference_sensitive",
+    "stable_dimensions": [
+     "additive_density"
+    ],
+    "sensitive_dimensions": [
+     "additive_area_frac",
+     "additive_d50_um",
+     "pore_size_um",
+     "porosity",
+     "solid_chord_x_um"
+    ],
+    "frame_dependent_findings": [
+     "M2060:additive_area_frac",
+     "M2060:pore_size_um",
+     "M2088:additive_d50_um",
+     "M2088:porosity",
+     "M2088:solid_chord_x_um"
+    ]
+   },
+   {
+    "batch": "Hackathon-Polaron-test",
+    "conclusion": "reference_insensitive",
+    "stable_dimensions": [
+     "additive_area_frac",
+     "additive_d50_um",
+     "additive_density",
+     "pore_size_um",
+     "porosity",
+     "solid_chord_x_um"
+    ],
+    "sensitive_dimensions": [],
+    "frame_dependent_findings": []
+   }
+  ],
   "tooling_attractors": [
    "capability:eds",
    "capability:tomography_3d"
@@ -867,7 +1210,15 @@
     "purpose": "Implement or validate marker protocols supported by the loaded data.",
     "marker_refs": [
      "marker:open_edge_persistence",
-     "marker:spatial_correlation_length"
+     "marker:phase_fraction_heterogeneity_curve",
+     "marker:spatial_correlation_length",
+     "marker:count_overdispersion_curve",
+     "marker:high_z_pair_correlation",
+     "marker:phase_chord_distribution",
+     "marker:high_z_nearest_neighbour",
+     "marker:minkowski_phase_morphology",
+     "marker:phase_boundary_morphology",
+     "marker:phase_lineal_path"
     ]
    },
    {
@@ -908,7 +1259,15 @@
  "lanes": {
   "current_capture": [
    "marker:fines_subfloor_size",
+   "marker:count_overdispersion_curve",
+   "marker:high_z_nearest_neighbour",
+   "marker:high_z_pair_correlation",
+   "marker:minkowski_phase_morphology",
    "marker:open_edge_persistence",
+   "marker:phase_boundary_morphology",
+   "marker:phase_chord_distribution",
+   "marker:phase_fraction_heterogeneity_curve",
+   "marker:phase_lineal_path",
    "marker:spatial_correlation_length",
    "marker:latent_progression",
    "marker:multiscale_heterogeneity"
@@ -920,17 +1279,259 @@
  },
  "markers": [
   {
+   "id": "marker:count_overdispersion_curve",
+   "name": "Scale-dependent particle count overdispersion",
+   "family": "spatial_pattern",
+   "proposition": "The scale curve of number variance relative to mean count can expose spatial organization hidden by mean particle density.",
+   "scientific_definition": "Number variance and Fano ratio variance(N)/E(N) for centroid counts in equal-area square windows over 2–32 µm scales.",
+   "measurement_definition": "Count detected high-Z centroids in non-overlapping equal-area windows; retain mean count, number variance, Fano, physical area and support. Treat Poisson only as a comparator, not a diagnosis.",
+   "why_relevant": "Particle density is a count process; its unusual Batch_3 signal remains unusual across eligible frames, so the scale curve can test structural persistence without changing the production density KPI.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "observation_family": "spatial_count_process",
+   "support_model": "equal_area_count_windows_nested_in_parent",
+   "uncertainty_adapter": "number_variance_fano_parent_bootstrap",
+   "reference_protocol": "selected-reference_parent_scale_curve",
+   "marker_kind": "quantitative",
+   "representation": "multiscale_signature",
+   "observable": "How high-Z particle count variance and Fano ratio change with equal-area observation windows.",
+   "scientific_question": "Are high-Z object counts clustered, Poisson-like, or inhibited across the observed scales?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "object_detection",
+     "label": "merged or split objects change both counts and apparent spacing",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "mean counts near zero make Fano unstable",
+    "edge and detection-floor effects can mimic overdispersion"
+   ],
+   "redundant_with": [
+    {
+     "ref": {
+      "batch": "Batch_3",
+      "collection": "dimensions",
+      "id": "additive_density"
+     },
+     "increment": "adds scale-dependent count variation rather than another mean density"
+    }
+   ],
+   "existing_data_test": {
+    "status": "passed",
+    "note": "The engine now emits the descriptor; decision value and perturbation robustness remain untested.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "key": "Batch_3/reference_sensitivity/cross_reference",
+     "batch": "Batch_3",
+     "collection": "reference_sensitivity",
+     "id": "cross_reference",
+     "resolved": true,
+     "external": false,
+     "consequential": false,
+     "type": "reference_sensitivity",
+     "label": "REFERENCE SENSITIVITY · Batch_3",
+     "not_acquired": false
+    }
+   ],
+   "decision_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "dimensions",
+     "id": "additive_density",
+     "path": "spatial_support.scale_dependent_heterogeneity",
+     "resolved": true
+    }
+   ],
+   "closes": [
+    "Batch_3/reference_sensitivity/cross_reference"
+   ],
+   "closes_consequential": [],
+   "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/reference_sensitivity/cross_reference"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:zachary2011_local_fluctuations"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "met",
+     "basis": [
+      "record:engine.count_overdispersion"
+     ],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "met",
+     "basis": [
+      "record:engine.count_overdispersion"
+     ],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "met"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:zachary2011_local_fluctuations",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Local number variance is a scale-dependent point-process statistic and differs conceptually from local volume-fraction fluctuation.",
+     "note": "Supports number variance; the simple Fano comparator remains a project choice.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.count_overdispersion",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "Existing centroid maps support count mean, number variance and Fano descriptors in equally supported 2–32 µm windows with explicit parent counts.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.count_overdispersion",
+     "gate": "non_redundancy",
+     "counts": true,
+     "claim": "Count overdispersion describes arrangement relative to count intensity and is not another estimate of mean particle density.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 1
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "engine_fact",
+    "basis": "implemented non-decision descriptor in additive_density spatial support"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "linked to a current decision",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "low implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 7,
+   "priority_band": "investigate"
+  },
+  {
    "id": "marker:fines_subfloor_size",
    "name": "Sub-floor fines size distribution",
    "family": "distribution",
    "proposition": "Resolves the excess fine high-Z population of M2060 below the current detection floor, where it is now cut off by the pixel size.",
-   "scientific_definition": "Number-size distribution of high-Z (BSE-bright) objects per unit area, extended below the current detection floor and compared with approved micrographs imaged at the same pixel size.",
-   "measurement_definition": "Equivalent-diameter histogram of high-Z objects from BSE at a finer pixel (low kV), same segmentation rule as the engine; densities per 1000 µm² in bins below and above the current floor; approved micrographs imaged at the same settings.",
+   "scientific_definition": "Number-size distribution of high-Z (BSE-bright) objects per unit area, extended below the current detection floor and compared with selected-reference micrographs imaged at the same pixel size.",
+   "measurement_definition": "Equivalent-diameter histogram of high-Z objects from BSE at a finer pixel (low kV), same segmentation rule as the engine; densities per 1000 µm² in bins below and above the current floor; selected-reference micrographs imaged at the same settings.",
    "why_relevant": "The REJECT rests on M2060, and its excess objects pile up at the detection floor: the decision-driving population is only partly observed.",
    "decision_relevance": null,
-   "capture_requirements": "Higher-magnification, low-kV BSE on M2060 and on approved micrographs. No new instrument capability: the same acquisition as the controller's ZOOM action.",
+   "capture_requirements": "Higher-magnification, low-kV BSE on M2060 and on selected-reference micrographs. No new instrument capability: the same acquisition as the controller's ZOOM action.",
    "current_capture_compatible": true,
    "implementation_burden": "low",
+   "observation_family": "particle_size_distribution",
+   "support_model": "particles_nested_in_parent_micrograph",
+   "uncertainty_adapter": "parent_cluster_distribution",
+   "reference_protocol": "matched_resolution_parent_reference",
    "marker_kind": "quantitative",
    "representation": "distribution",
    "observable": "The number and size distribution of fine high-Z objects below the present detection floor.",
@@ -948,7 +1549,7 @@
     },
     {
      "id": "reference_resolution",
-     "label": "approved reference not imaged at the same pixel size",
+     "label": "selected-reference reference not imaged at the same pixel size",
      "controlled": null,
      "basis": []
     }
@@ -1148,25 +1749,33 @@
     "scientific literature basis remains open",
     "low implementation burden"
    ],
-   "opportunity_rank": 2,
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 1,
    "priority_band": "current_frontier"
   },
   {
    "id": "marker:high_z_composition",
    "name": "High-Z phase elemental identity",
    "family": "composition",
-   "proposition": "Which elements make up the excess fine high-Z objects in M2060, compared with the approved additive.",
-   "scientific_definition": "Elemental composition of the BSE-bright phase per object class (fine vs coarse), relative to the approved additive.",
-   "measurement_definition": "Paired elemental spectra or maps on M2060 fines and on approved additive particles; element ratios per object class.",
+   "proposition": "Which elements make up the excess fine high-Z objects in M2060, compared with the selected-reference additive.",
+   "scientific_definition": "Elemental composition of the BSE-bright phase per object class (fine vs coarse), relative to the selected-reference additive.",
+   "measurement_definition": "Paired elemental spectra or maps on M2060 fines and on selected-reference additive particles; element ratios per object class.",
    "why_relevant": "Supplier attribution of the surviving deviation needs chemistry; the field records composition as not acquired and consequential for M2060.",
    "decision_relevance": null,
    "capture_requirements": "Elemental spectroscopy co-registered with the BSE fields.",
    "current_capture_compatible": false,
    "implementation_burden": "medium",
+   "observation_family": "categorical_composition_with_ratios",
+   "support_model": "objects_nested_in_parent_micrograph",
+   "uncertainty_adapter": "parent_cluster_and_spectral_repeat",
+   "reference_protocol": "matched_acquisition_parent_reference",
    "marker_kind": "hybrid",
    "representation": "categorical_state",
-   "observable": "Whether the excess fines share the approved additive's elemental identity.",
-   "scientific_question": "Are the M2060 fines approved additive, another phase, or a mixed interaction-volume signal?",
+   "observable": "Whether the excess fines share the selected-reference additive's elemental identity.",
+   "scientific_question": "Are the M2060 fines selected-reference additive, another phase, or a mixed interaction-volume signal?",
    "required_modalities": [
     "elemental spectroscopy"
    ],
@@ -1332,7 +1941,7 @@
      "id": "record:rl11",
      "gate": "decision_value",
      "counts": true,
-     "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the approved BSE range).",
+     "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the selected-reference BSE range).",
      "note": null,
      "outcome": "passed",
      "kind": "project_record"
@@ -1383,8 +1992,448 @@
     "scientific literature basis remains open",
     "medium implementation burden"
    ],
-   "opportunity_rank": 3,
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 2,
    "priority_band": "current_frontier"
+  },
+  {
+   "id": "marker:high_z_nearest_neighbour",
+   "name": "High-Z nearest-neighbour spacing",
+   "family": "spatial_statistic",
+   "proposition": "Nearest-neighbour spacing provides an interpretable local companion to the multiscale count curve.",
+   "scientific_definition": "Distribution of first and selected higher-order centroid-neighbour distances, conditioned on particle size and section geometry.",
+   "measurement_definition": "Compute edge-corrected neighbour distances per parent and compare the empirical distributions with size-matched selected-reference parents; do not use an unconstrained Poisson null for finite particles.",
+   "why_relevant": "It can expose local clustering or regular spacing without replacing particle density.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "medium",
+   "observation_family": "marked_spatial_point_process",
+   "support_model": "particles_with_edge_censoring_nested_in_parent",
+   "uncertainty_adapter": "parent_cluster_distribution_bootstrap",
+   "reference_protocol": "size_matched_selected-reference_parent_reference",
+   "marker_kind": "quantitative",
+   "representation": "distribution",
+   "observable": "Distribution of edge-corrected distances from each high-Z object to its nearest neighbours.",
+   "scientific_question": "Do high-Z objects cluster or maintain exclusion distances after accounting for finite particle size?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "section_bias",
+     "label": "2-D section distances differ from a true 2-D point process and from 3-D spacing",
+     "controlled": null,
+     "basis": []
+    },
+    {
+     "id": "particle_size",
+     "label": "hard-particle exclusion changes the null spacing",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "boundary particles are censored",
+    "merged particles create artificially large distances"
+   ],
+   "redundant_with": [
+    {
+     "ref": "marker:high_z_pair_correlation",
+     "increment": "more local and interpretable, but less complete across separation scales"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; 2-D section and finite-particle nulls need explicit validation.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "particle_pair_structure",
+     "label": "pair separation and exclusion are not in the production marker vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "particle_pair_structure",
+     "label": "pair separation and exclusion are not in the production marker vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/particle_pair_structure"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:leggoe2005_nearest_neighbour"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:leggoe2005_nearest_neighbour",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Micrograph-derived nearest-neighbour statistics can characterize particle clustering, but the reference must respect finite-particle inhibition and section geometry.",
+     "note": "Directly motivates both the candidate and its stated confounds.",
+     "direction": "SUPPORTIVE",
+     "label": "STRONG DIRECT",
+     "strength": "STRONG DIRECT"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 1,
+    "strong_direct": 1,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "literature",
+    "basis": "micrograph-derived nearest-neighbour methods; implementation readiness unclaimed"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "medium implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 10,
+   "priority_band": "investigate"
+  },
+  {
+   "id": "marker:high_z_pair_correlation",
+   "name": "High-Z pair correlation",
+   "family": "spatial_statistic",
+   "proposition": "An edge-corrected pair-correlation curve can distinguish characteristic spacing from abundance alone.",
+   "scientific_definition": "Radial pair-correlation function of detected high-Z object centroids, with particle-size and finite-window effects retained as confounds.",
+   "measurement_definition": "Estimate an edge-corrected pair-correlation curve per parent micrograph and compare parent-level curves over lags supported by every included field.",
+   "why_relevant": "It could distinguish equal-density fields with different clustering or exclusion scales.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "medium",
+   "observation_family": "marked_spatial_point_process",
+   "support_model": "edge_corrected_pairs_nested_in_parent",
+   "uncertainty_adapter": "parent_cluster_block_bootstrap",
+   "reference_protocol": "selected-reference_parent_functional_reference",
+   "marker_kind": "quantitative",
+   "representation": "spatial_field",
+   "observable": "Excess or deficit of high-Z particle pairs as a function of separation distance.",
+   "scientific_question": "At which separations does the high-Z phase show clustering or exclusion beyond its mean density?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "finite_window_edges",
+     "label": "finite fields censor pairs at long separation",
+     "controlled": null,
+     "basis": []
+    },
+    {
+     "id": "particle_size",
+     "label": "finite particle size creates short-range exclusion",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "few particles produce unstable long-lag estimates",
+    "uncorrected boundaries bias the curve"
+   ],
+   "redundant_with": [
+    {
+     "ref": "marker:spatial_correlation_length",
+     "increment": "a full pair curve can reveal exclusion and preferred spacing before reduction to one range"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; no edge-corrected estimator has been validated in this project.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "particle_pair_structure",
+     "label": "pair separation and exclusion are not in the production marker vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "particle_pair_structure",
+     "label": "pair separation and exclusion are not in the production marker vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/particle_pair_structure"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:kainourgiakis2000_chords",
+      "paper:zachary2011_local_fluctuations"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:kainourgiakis2000_chords",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Matching a two-point correlation alone was insufficient to reproduce all structural and transport behaviour in the studied porous membranes.",
+     "note": "A scope limit: pair correlation should remain one candidate among complementary descriptors.",
+     "direction": "NEUTRAL",
+     "label": "NEUTRAL",
+     "strength": "INDIRECT"
+    },
+    {
+     "source": "paper",
+     "id": "paper:zachary2011_local_fluctuations",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Pair correlation describes average neighbours around a reference point and contributes to local number fluctuation.",
+     "note": "Supports investigating a full separation-dependent point-process descriptor.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 2,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "literature",
+    "basis": "point-process and local-fluctuation methods; implementation readiness unclaimed"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "medium implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 8,
+   "priority_band": "investigate"
   },
   {
    "id": "marker:latent_progression",
@@ -1398,6 +2447,10 @@
    "capture_requirements": null,
    "current_capture_compatible": true,
    "implementation_burden": null,
+   "observation_family": "learned_image_embedding",
+   "support_model": "crops_nested_in_field_and_parent",
+   "uncertainty_adapter": "hierarchical_resampling_and_normalisation_sensitivity",
+   "reference_protocol": "leave_one_parent_out_reference",
    "marker_kind": "quantitative",
    "representation": "multiscale_signature",
    "observable": "A continuous image-embedding axis that would order material states if robust.",
@@ -1618,8 +2671,228 @@
     "implemented test passed on current data",
     "tested and set aside"
    ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
    "opportunity_rank": null,
    "priority_band": "set_aside"
+  },
+  {
+   "id": "marker:minkowski_phase_morphology",
+   "name": "2-D Minkowski phase morphology",
+   "family": "morphology",
+   "proposition": "A compact morphology vector can distinguish binary structures with similar phase fraction but different boundary and component topology.",
+   "scientific_definition": "The 2-D intrinsic-volume vector: phase area, perimeter and Euler characteristic, optionally traced across morphological filter scale.",
+   "measurement_definition": "Compute the vector per field under native and perturbed segmentations; aggregate at parent level and retain each component rather than collapsing to a score.",
+   "why_relevant": "It exposes perimeter and Euler structure while preserving phase area as a separately auditable component.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "medium",
+   "observation_family": "binary_phase_morphology_vector",
+   "support_model": "fields_nested_in_parent_micrograph",
+   "uncertainty_adapter": "parent_cluster_plus_segmentation_perturbation",
+   "reference_protocol": "matched_resolution_multivariate_parent_reference",
+   "marker_kind": "quantitative",
+   "representation": "topological_descriptor",
+   "observable": "Area, boundary length and Euler characteristic of each segmented phase at a declared scale.",
+   "scientific_question": "Do phase amount, interface extent and within-section topology diverge across batches?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "resolution",
+     "label": "small components and Euler characteristic are resolution-sensitive",
+     "controlled": null,
+     "basis": []
+    },
+    {
+     "id": "segmentation",
+     "label": "topology can change under small threshold perturbations",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "2-D Euler characteristic does not establish 3-D connectivity",
+    "sub-resolution components destabilize topology"
+   ],
+   "redundant_with": [
+    {
+     "ref": {
+      "batch": "Batch_3",
+      "collection": "dimensions",
+      "id": "porosity"
+     },
+     "increment": "adds perimeter and Euler structure while retaining area explicitly"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; scale, digitisation and segmentation stability must be established first.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "phase_topology_2d",
+     "label": "within-section phase topology is not in the production marker vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "phase_topology_2d",
+     "label": "within-section phase topology is not in the production marker vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/phase_topology_2d"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:vogel2010_minkowski"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:vogel2010_minkowski",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Minkowski functions provide compact phase volume, interface and topology descriptors, with explicit resolution dependence.",
+     "note": "Supports a cautious 2-D candidate and its resolution caveat.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "literature",
+    "basis": "Minkowski-function image analysis with explicit resolution caveats; implementation readiness unclaimed"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "medium implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 11,
+   "priority_band": "investigate"
   },
   {
    "id": "marker:multiscale_heterogeneity",
@@ -1633,6 +2906,10 @@
    "capture_requirements": null,
    "current_capture_compatible": true,
    "implementation_burden": "low",
+   "observation_family": "bounded_phase_fraction",
+   "support_model": "equal_area_square_windows",
+   "uncertainty_adapter": "phase_fraction_heterogeneity",
+   "reference_protocol": "parent_cluster_scale_curve",
    "marker_kind": "quantitative",
    "representation": "multiscale_signature",
    "observable": "How local phase-fraction variability changes with observation window size.",
@@ -1829,6 +3106,10 @@
     "low implementation burden",
     "tested and set aside"
    ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
    "opportunity_rank": null,
    "priority_band": "set_aside"
   },
@@ -1837,13 +3118,17 @@
    "name": "Open-edge deviation phenotype",
    "family": "spatial_pattern",
    "proposition": "Classifies each registered deviation as bounded, open at the start, open at the end, or open at both edges.",
-   "scientific_definition": "A structural phenotype of a spatial KPI profile based on whether it returns to the approved local band before each captured edge.",
-   "measurement_definition": "Evaluate registered 100 µm profile windows against the approximate approved local band; record start/end persistence and captured extent without inventing distance beyond the image.",
+   "scientific_definition": "A structural phenotype of a spatial KPI profile based on whether it returns to the selected-reference local band before each captured edge.",
+   "measurement_definition": "Evaluate registered 100 µm local-window means against the descriptive parent-bootstrap reference envelope; record start/end persistence and captured extent without inventing distance beyond the image.",
    "why_relevant": "The same scalar deviation can imply a bounded inclusion or an extended zone; the engine already uses the open edge to justify EXTEND without claiming unseen geometry.",
    "decision_relevance": null,
    "capture_requirements": null,
    "current_capture_compatible": true,
    "implementation_burden": "low",
+   "observation_family": "functional_spatial_profile",
+   "support_model": "support_matched_100um_windows_nested_in_parent",
+   "uncertainty_adapter": "parent_cluster_simultaneous_excursion",
+   "reference_protocol": "selected-reference_parent_profile_reference",
    "marker_kind": "qualitative",
    "representation": "categorical_state",
    "observable": "Whether a measured deviation closes inside the registered section or remains open at a captured edge.",
@@ -1855,7 +3140,7 @@
    "known_confounds": [
     {
      "id": "local_band_approximation",
-     "label": "the approved local band is an approximate analysis support",
+     "label": "the selected-reference local band is an approximate analysis support",
      "controlled": true,
      "basis": [
       {
@@ -1877,18 +3162,6 @@
     "requires_actions": []
    },
    "blindspot_refs": [
-    {
-     "key": "Batch_3/rims/spatial:M2060:additive_density",
-     "batch": "Batch_3",
-     "collection": "rims",
-     "id": "spatial:M2060:additive_density",
-     "resolved": true,
-     "external": false,
-     "consequential": true,
-     "type": "spatial",
-     "label": "EXTENT · M2060 · Additive density",
-     "not_acquired": false
-    },
     {
      "key": "Batch_3/rims/spatial:M2088:porosity",
      "batch": "Batch_3",
@@ -1912,15 +3185,11 @@
     }
    ],
    "closes": [
-    "Batch_3/rims/spatial:M2060:additive_density",
     "Batch_3/rims/spatial:M2088:porosity"
    ],
-   "closes_consequential": [
-    "Batch_3/rims/spatial:M2060:additive_density"
-   ],
+   "closes_consequential": [],
    "general_gaps": [],
    "vortex_refs": [
-    "vortex:Batch_3/rims/spatial:M2060:additive_density",
     "vortex:Batch_3/rims/spatial:M2088:porosity"
    ],
    "status": "BUILDING",
@@ -1950,7 +3219,6 @@
     "blindspot_closure": {
      "state": "met",
      "basis": [
-      "Batch_3/rims/spatial:M2060:additive_density",
       "record:engine.open_edge_M2060"
      ],
      "excluded_fixture": []
@@ -2005,7 +3273,6 @@
     }
    ],
    "qualifiers": [
-    "OPEN CONSEQUENTIAL BLINDSPOT",
     "RESEARCH CASE OPEN"
    ],
    "evidence": [
@@ -2067,15 +3334,439 @@
    },
    "investigation_state": "INVESTIGATING",
    "ranking_factors": [
-    "addresses a decision-consequential inquiry vortex",
+    "addresses a structured inquiry vortex",
     "linked to a current decision",
     "computable / testable now",
     "implemented test passed on current data",
     "scientific literature basis remains open",
+    "low implementation burden",
+    "linked to a reference-sensitive dimension"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [
+     "porosity"
+    ],
+    "role": "can investigate why reference populations differ on linked dimensions"
+   },
+   "opportunity_rank": 4,
+   "priority_band": "investigate"
+  },
+  {
+   "id": "marker:phase_boundary_morphology",
+   "name": "Phase-boundary roughness and curvature",
+   "family": "morphology",
+   "proposition": "Scale-qualified boundary geometry can reveal morphology that phase fraction alone cannot express.",
+   "scientific_definition": "Perimeter density and curvature distribution of a segmented phase boundary after a declared, physically scaled boundary estimator.",
+   "measurement_definition": "Compute boundary descriptors per field at native resolution and under registered segmentation perturbations; aggregate by parent with block support.",
+   "why_relevant": "Area fraction can stay constant while interfacial shape changes materially.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "medium",
+   "observation_family": "segmented_phase_boundary",
+   "support_model": "boundary_arcs_and_blocks_nested_in_parent",
+   "uncertainty_adapter": "boundary_block_bootstrap_plus_segmentation_perturbation",
+   "reference_protocol": "matched_resolution_selected-reference_parent_reference",
+   "marker_kind": "quantitative",
+   "representation": "distribution",
+   "observable": "Boundary length, curvature and roughness of segmented pores or high-Z regions at a stated physical scale.",
+   "scientific_question": "Do equal-area phases differ in boundary complexity or interfacial morphology?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "pixelation",
+     "label": "perimeter and curvature depend strongly on pixel size and estimator",
+     "controlled": null,
+     "basis": []
+    },
+    {
+     "id": "segmentation",
+     "label": "threshold shifts move the boundary",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "sub-resolution roughness is not observable",
+    "raw pixel-chain perimeter is biased"
+   ],
+   "redundant_with": [],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; the descriptor is resolution-sensitive and has not been robustified.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "phase_boundary_geometry",
+     "label": "phase-boundary complexity is not in the production marker vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "phase_boundary_geometry",
+     "label": "phase-boundary complexity is not in the production marker vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/phase_boundary_geometry"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:vogel2010_minkowski"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "show it adds information beyond the tracked dimensions (a recorded test)"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:vogel2010_minkowski",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Interface measures can add structural information beyond phase volume, but resolution controls quantitative reliability.",
+     "note": "Indirect support for boundary-length investigation; curvature needs separate evidence.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "literature",
+    "basis": "morphometric image-analysis methods; implementation readiness unclaimed"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "medium implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 12,
+   "priority_band": "investigate"
+  },
+  {
+   "id": "marker:phase_chord_distribution",
+   "name": "Full phase chord-length distribution",
+   "family": "distribution",
+   "proposition": "A parent-level chord distribution retains tail and multimodal structure discarded by the current mean solid-chord marker.",
+   "scientific_definition": "Empirical distribution of contiguous phase intercept lengths along declared image directions at physical resolution.",
+   "measurement_definition": "Measure horizontal and, where justified, vertical phase chords per field; preserve direction; compare parent-level empirical distributions with clustered resampling.",
+   "why_relevant": "The current mean chord length can hide long tails or mixed structural populations.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "observation_family": "line_intercept_length_distribution",
+   "support_model": "chords_nested_in_lines_fields_and_parent",
+   "uncertainty_adapter": "parent_cluster_empirical_process",
+   "reference_protocol": "direction_matched_selected-reference_parent_reference",
+   "marker_kind": "quantitative",
+   "representation": "distribution",
+   "observable": "The full distribution of continuous intercept lengths through pore, matrix or high-Z phase.",
+   "scientific_question": "Do characteristic continuous phase lengths differ even when average chord length or phase fraction does not?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "direction",
+     "label": "chord distributions are direction-dependent in anisotropic material",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "image edges right-censor long chords",
+    "one direction can miss anisotropy"
+   ],
+   "redundant_with": [
+    {
+     "ref": {
+      "batch": "Batch_3",
+      "collection": "dimensions",
+      "id": "solid_chord_x_um"
+     },
+     "increment": "retains the full distribution and explicit directional censoring"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; the engine currently retains a mean chord marker, not the full distribution.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "phase_continuity_distribution",
+     "label": "full continuous phase-length distributions are absent from the production vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "phase_continuity_distribution",
+     "label": "full continuous phase-length distributions are absent from the production vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/phase_continuity_distribution"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:kainourgiakis2000_chords"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:kainourgiakis2000_chords",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Pore and solid chord-length distributions can retain structural information that porosity and two-point correlation alone do not.",
+     "note": "Supports preserving the full distribution rather than another mean.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "literature",
+    "basis": "porous-media reconstruction studies show chord distributions contain structure omitted by porosity and two-point summaries"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
     "low implementation burden"
    ],
-   "opportunity_rank": 1,
-   "priority_band": "current_frontier"
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 9,
+   "priority_band": "investigate"
   },
   {
    "id": "marker:phase_conditioned_fines_distribution",
@@ -2083,16 +3774,20 @@
    "family": "cross_modality",
    "proposition": "Conditions the M2060 fine-object distribution on elemental identity so size and composition are not conflated.",
    "scientific_definition": "Per-phase number-size distribution of fine objects, with phase identity defined by co-registered elemental spectra or maps.",
-   "measurement_definition": "Co-register EDS with higher-resolution BSE; assign fine objects to elemental classes; compare per-class size distributions and densities with approved material.",
-   "why_relevant": "The decision-driving fines are also at the dim end of the approved BSE range; size and phase identity must be separated before attributing the population.",
+   "measurement_definition": "Co-register EDS with higher-resolution BSE; assign fine objects to elemental classes; compare per-class size distributions and densities with selected-reference material.",
+   "why_relevant": "The decision-driving fines are also at the dim end of the selected-reference BSE range; size and phase identity must be separated before attributing the population.",
    "decision_relevance": null,
-   "capture_requirements": "Co-registered higher-resolution BSE and EDS on M2060 and approved additive particles.",
+   "capture_requirements": "Co-registered higher-resolution BSE and EDS on M2060 and selected-reference additive particles.",
    "current_capture_compatible": false,
    "implementation_burden": "medium",
+   "observation_family": "phase_conditioned_particle_distribution",
+   "support_model": "particles_nested_in_parent_micrograph",
+   "uncertainty_adapter": "parent_cluster_distribution",
+   "reference_protocol": "matched_multimodal_parent_reference",
    "marker_kind": "hybrid",
    "representation": "distribution",
    "observable": "Fine-particle size and density separated by elemental phase identity rather than BSE brightness alone.",
-   "scientific_question": "Does the excess persist within the approved additive chemistry, or belong to another phase?",
+   "scientific_question": "Does the excess persist within the selected-reference additive chemistry, or belong to another phase?",
    "required_modalities": [
     "BSE",
     "elemental spectroscopy"
@@ -2250,7 +3945,7 @@
      "id": "record:rl11",
      "gate": "decision_value",
      "counts": true,
-     "claim": "Conditioning the fine-object distribution on phase identity would discriminate approved additive fines from another lower-Z phase.",
+     "claim": "Conditioning the fine-object distribution on phase identity would discriminate selected-reference additive fines from another lower-Z phase.",
      "note": null,
      "outcome": "passed",
      "kind": "project_record"
@@ -2302,7 +3997,447 @@
     "scientific literature basis remains open",
     "medium implementation burden"
    ],
-   "opportunity_rank": 4,
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 3,
+   "priority_band": "current_frontier"
+  },
+  {
+   "id": "marker:phase_fraction_heterogeneity_curve",
+   "name": "Scale-dependent phase-fraction heterogeneity",
+   "family": "spatial_pattern",
+   "proposition": "The scale curve of local phase-fraction fluctuation can reveal persistent spatial organization that a global phase fraction omits.",
+   "scientific_definition": "Variance of equal-area local phase fractions over 2–32 µm square windows, reported both raw and divided by p(1−p) when the global fraction is away from zero and one.",
+   "measurement_definition": "Compute non-overlapping square-window phase fractions at each valid physical scale; retain raw variance, normalized fluctuation, windows, fields and independent parents; compare current, degrees-of-freedom pooled and parent-equal estimates.",
+   "why_relevant": "It treats scale-dependent variance as a candidate marker while preserving the production porosity and area-fraction markers.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "low",
+   "observation_family": "bounded_phase_fraction",
+   "support_model": "equal_area_square_windows_nested_in_parent",
+   "uncertainty_adapter": "phase_fraction_heterogeneity_parent_bootstrap",
+   "reference_protocol": "selected-reference_parent_scale_curve",
+   "marker_kind": "quantitative",
+   "representation": "multiscale_signature",
+   "observable": "Raw and p(1−p)-normalised fluctuation of porosity or high-Z area fraction as physical window size increases.",
+   "scientific_question": "Does a phase remain spatially heterogeneous after separating arrangement from the trivial effect of its global fraction?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "segmentation_threshold",
+     "label": "phase masks and their scale curves can shift with segmentation",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "large windows have few repeats",
+    "normalisation is unstable when p is near zero or one"
+   ],
+   "redundant_with": [
+    {
+     "ref": "marker:multiscale_heterogeneity",
+     "increment": "retains raw variance, adds p(1−p) normalisation and parent-aware support audit"
+    }
+   ],
+   "existing_data_test": {
+    "status": "passed",
+    "note": "The engine now emits the descriptor; scientific discrimination and perturbation robustness remain open.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "key": "Batch_3/rims/spatial-dimension:porosity",
+     "batch": "Batch_3",
+     "collection": "rims",
+     "id": "spatial-dimension:porosity",
+     "resolved": true,
+     "external": false,
+     "consequential": false,
+     "type": "spatial",
+     "label": "EXTENT · porosity",
+     "not_acquired": false
+    }
+   ],
+   "decision_refs": [
+    {
+     "batch": "Batch_3",
+     "collection": "dimensions",
+     "id": "porosity",
+     "path": "spatial_support.scale_dependent_heterogeneity",
+     "resolved": true
+    }
+   ],
+   "closes": [
+    "Batch_3/rims/spatial-dimension:porosity"
+   ],
+   "closes_consequential": [],
+   "general_gaps": [],
+   "vortex_refs": [
+    "vortex:Batch_3/rims/spatial-dimension:porosity"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: scientific relevance, measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "partial",
+     "basis": [
+      "paper:zachary2011_local_fluctuations"
+     ],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "met",
+     "basis": [
+      "record:engine.phase_fraction_heterogeneity"
+     ],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [
+      "record:engine.phase_fraction_heterogeneity"
+     ],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "partial"
+    },
+    {
+     "gate": "measurability",
+     "state": "met"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "needs replication: one strong source and a second independent supporting source"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [],
+   "evidence": [
+    {
+     "source": "paper",
+     "id": "paper:zachary2011_local_fluctuations",
+     "gate": "scientific_relevance",
+     "counts": true,
+     "claim": "Local volume-fraction variance across observation-window size is a meaningful scale-dependent descriptor distinct from point-number fluctuation.",
+     "note": "Supports the descriptor family, not a battery-electrode decision threshold.",
+     "direction": "SUPPORTIVE",
+     "label": "INDIRECT",
+     "strength": "INDIRECT"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.phase_fraction_heterogeneity",
+     "gate": "measurability",
+     "counts": true,
+     "claim": "Existing segmentations support raw and p(1−p)-normalised phase-fraction variance at each valid 2–32 µm scale with explicit window and parent counts.",
+     "note": null,
+     "outcome": "passed",
+     "kind": "engine_fact"
+    },
+    {
+     "source": "record",
+     "id": "record:engine.phase_fraction_heterogeneity",
+     "gate": "non_redundancy",
+     "counts": true,
+     "claim": "The new curve is more auditable than the rejected earlier scaling exponent, but incremental scientific discrimination has not yet been shown.",
+     "note": null,
+     "outcome": "inconclusive",
+     "kind": "engine_fact"
+    }
+   ],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 1,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 1
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "engine_fact",
+    "basis": "implemented non-decision descriptor in dimensions[*].spatial_support.scale_dependent_heterogeneity"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "linked to a current decision",
+    "computable / testable now",
+    "implemented test passed on current data",
+    "low implementation burden",
+    "linked to a reference-sensitive dimension"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [
+     "porosity"
+    ],
+    "role": "can investigate why reference populations differ on linked dimensions"
+   },
+   "opportunity_rank": 5,
+   "priority_band": "investigate"
+  },
+  {
+   "id": "marker:phase_lineal_path",
+   "name": "Phase lineal-path probability",
+   "family": "spatial_pattern",
+   "proposition": "A lineal-path curve can describe within-section continuity beyond area fraction and two-point co-occurrence.",
+   "scientific_definition": "Directional lineal-path probability L(r) for the pore or solid indicator field over supported segment lengths.",
+   "measurement_definition": "Estimate directional L(r) per parent over lengths fully supported by the image; compare curves with parent and spatial-block resampling.",
+   "why_relevant": "It offers a continuity-sensitive complement to fraction and chord summaries without claiming 3-D connectivity.",
+   "decision_relevance": null,
+   "capture_requirements": null,
+   "current_capture_compatible": true,
+   "implementation_burden": "medium",
+   "observation_family": "binary_spatial_random_field",
+   "support_model": "line_segments_nested_in_field_and_parent",
+   "uncertainty_adapter": "parent_cluster_spatial_block_bootstrap",
+   "reference_protocol": "direction_and_support_matched_parent_reference",
+   "marker_kind": "quantitative",
+   "representation": "multiscale_signature",
+   "observable": "Probability that a line segment of stated length lies wholly inside one segmented phase.",
+   "scientific_question": "Does a phase form continuous paths across length scales in the observed 2-D section?",
+   "required_modalities": [
+    "BSE"
+   ],
+   "required_capabilities": [],
+   "known_confounds": [
+    {
+     "id": "section_dimensionality",
+     "label": "2-D lineal paths do not establish 3-D connectivity",
+     "controlled": null,
+     "basis": []
+    }
+   ],
+   "known_failure_modes": [
+    "long segments are weakly supported",
+    "direction pooling can hide anisotropy"
+   ],
+   "redundant_with": [
+    {
+     "ref": "marker:phase_chord_distribution",
+     "increment": "expresses survival of whole segments as a scale curve"
+    }
+   ],
+   "existing_data_test": {
+    "status": "not_run",
+    "note": "Candidate only; continuity is restricted to the observed 2-D section.",
+    "requires_actions": []
+   },
+   "blindspot_refs": [
+    {
+     "general": "phase_continuity_distribution",
+     "label": "full continuous phase-length distributions are absent from the production vocabulary",
+     "external": true,
+     "resolved": false,
+     "consequential": false
+    }
+   ],
+   "decision_refs": [],
+   "closes": [],
+   "closes_consequential": [],
+   "general_gaps": [
+    {
+     "general": "phase_continuity_distribution",
+     "label": "full continuous phase-length distributions are absent from the production vocabulary"
+    }
+   ],
+   "vortex_refs": [
+    "vortex:general/phase_continuity_distribution"
+   ],
+   "status": "BUILDING",
+   "status_basis": "partly supported: measurability, non redundancy; scientific relevance not met",
+   "review": null,
+   "lane": "current_capture",
+   "gates": {
+    "scientific_relevance": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "measurability": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "robustness": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "blindspot_closure": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "non_redundancy": {
+     "state": "partial",
+     "basis": [],
+     "excluded_fixture": []
+    },
+    "admission": {
+     "state": "open",
+     "basis": [],
+     "excluded_fixture": []
+    }
+   },
+   "rail": [
+    {
+     "gate": "scientific_relevance",
+     "state": "open"
+    },
+    {
+     "gate": "measurability",
+     "state": "partial"
+    },
+    {
+     "gate": "robustness",
+     "state": "open"
+    },
+    {
+     "gate": "blindspot_closure",
+     "state": "partial"
+    },
+    {
+     "gate": "admission",
+     "state": "open"
+    }
+   ],
+   "next": [
+    {
+     "gate": "scientific_relevance",
+     "text": "no counted literature yet: needs one strong source (direct or transferable) plus an independent supporting source"
+    },
+    {
+     "gate": "measurability",
+     "text": "run the current-data test on existing micrographs (or acquire as stated) and record the result"
+    },
+    {
+     "gate": "robustness",
+     "text": "run the acquisition-perturbation suite and control each listed confound"
+    },
+    {
+     "gate": "blindspot_closure",
+     "text": "closes no consequential blindspot in the loaded fields"
+    },
+    {
+     "gate": "non_redundancy",
+     "text": "overlap with tracked dimensions is stated but untested"
+    },
+    {
+     "gate": "admission",
+     "text": "every evidence gate must be met first"
+    }
+   ],
+   "qualifiers": [
+    "RESEARCH CASE OPEN"
+   ],
+   "evidence": [],
+   "contradictory_evidence": [],
+   "counts": {
+    "papers": 0,
+    "supporting": 0,
+    "strong_direct": 0,
+    "contradictory": 0,
+    "fixture_papers": 0,
+    "records": 0
+   },
+   "fixture": false,
+   "bundle": "seed.controller",
+   "extended_by": [],
+   "provenance": {
+    "kind": "controller_seed",
+    "basis": "standard random-media descriptor; no implementation or decision-readiness claim"
+   },
+   "observability": {
+    "cls": "computable_now",
+    "label": "COMPUTABLE / TESTABLE NOW",
+    "basis": "the loaded data can support the defined test or implementation",
+    "required_modalities": [
+     "BSE"
+    ],
+    "required_capabilities": []
+   },
+   "investigation_state": "INVESTIGATING",
+   "ranking_factors": [
+    "addresses a structured inquiry vortex",
+    "computable / testable now",
+    "scientific literature basis remains open",
+    "medium implementation burden"
+   ],
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 13,
    "priority_band": "investigate"
   },
   {
@@ -2317,6 +4452,10 @@
    "capture_requirements": null,
    "current_capture_compatible": false,
    "implementation_burden": null,
+   "observation_family": "three_dimensional_topology",
+   "support_model": "volumes_nested_in_specimen",
+   "uncertainty_adapter": "parent_and_segmentation_perturbation",
+   "reference_protocol": "matched_volume_parent_reference",
    "marker_kind": "quantitative",
    "representation": "topological_descriptor",
    "observable": "Connected pore volume and path tortuosity through the electrode thickness.",
@@ -2490,7 +4629,11 @@
     "requires new observability",
     "scientific literature basis remains open"
    ],
-   "opportunity_rank": 6,
+   "reference_sensitivity": {
+    "matched_dimensions": [],
+    "role": "no existing link to a reference-sensitive dimension"
+   },
+   "opportunity_rank": 14,
    "priority_band": "investigate"
   },
   {
@@ -2500,11 +4643,15 @@
    "proposition": "Measures the characteristic spatial range of each supported KPI rather than treating adjacent fields as independent replicates.",
    "scientific_definition": "The lag at which the registered semivariogram reaches its plateau, or a lower bound when no plateau is observed within the coherent capture.",
    "measurement_definition": "Estimate per-KPI semivariograms from registered 25 µm columns, report range only when a plateau is supported, and otherwise report the longest tested lag as a lower bound.",
-   "why_relevant": "The loaded field already shows 175 µm porosity structure and additive-density structure longer than 400 µm; this changes field spacing and capture extent.",
+   "why_relevant": "The loaded field shows field-scale porosity structure, while cross-reference comparison changes several morphology interpretations; a parent-aware range can test whether scale explains those regime differences.",
    "decision_relevance": null,
    "capture_requirements": null,
    "current_capture_compatible": true,
    "implementation_burden": "low",
+   "observation_family": "spatial_random_field",
+   "support_model": "registered_transects_nested_in_parent",
+   "uncertainty_adapter": "parent_cluster_variogram",
+   "reference_protocol": "selected-reference_parent_range_reference",
    "marker_kind": "quantitative",
    "representation": "scalar",
    "observable": "The distance over which porosity or additive-density structure remains spatially correlated.",
@@ -2538,18 +4685,6 @@
    },
    "blindspot_refs": [
     {
-     "key": "Batch_3/rims/spatial-dimension:additive_density",
-     "batch": "Batch_3",
-     "collection": "rims",
-     "id": "spatial-dimension:additive_density",
-     "resolved": true,
-     "external": false,
-     "consequential": false,
-     "type": "spatial",
-     "label": "EXTENT · additive_density",
-     "not_acquired": false
-    },
-    {
      "key": "Batch_3/rims/spatial-dimension:porosity",
      "batch": "Batch_3",
      "collection": "rims",
@@ -2564,13 +4699,11 @@
    ],
    "decision_refs": [],
    "closes": [
-    "Batch_3/rims/spatial-dimension:additive_density",
     "Batch_3/rims/spatial-dimension:porosity"
    ],
    "closes_consequential": [],
    "general_gaps": [],
    "vortex_refs": [
-    "vortex:Batch_3/rims/spatial-dimension:additive_density",
     "vortex:Batch_3/rims/spatial-dimension:porosity"
    ],
    "status": "BUILDING",
@@ -2722,9 +4855,16 @@
     "computable / testable now",
     "implemented test passed on current data",
     "scientific literature basis remains open",
-    "low implementation burden"
+    "low implementation burden",
+    "linked to a reference-sensitive dimension"
    ],
-   "opportunity_rank": 5,
+   "reference_sensitivity": {
+    "matched_dimensions": [
+     "porosity"
+    ],
+    "role": "can investigate why reference populations differ on linked dimensions"
+   },
+   "opportunity_rank": 6,
    "priority_band": "investigate"
   }
  ],
@@ -2749,7 +4889,7 @@
       },
       "record:rl11"
      ],
-     "note": "the fines sit at the dim end of the approved range: consistent with a finer additive or with a lower-Z phase"
+     "note": "the fines sit at the dim end of the selected-reference range: consistent with a finer additive or with a lower-Z phase"
     },
     {
      "id": "low_kv_bse",
@@ -2763,7 +4903,7 @@
     "requirements": [
      "EDS detector on the SEM",
      "spectra co-registered with BSE fields",
-     "paired acquisition on approved micrographs"
+     "paired acquisition on selected-reference micrographs"
     ],
     "burden": "medium",
     "acquisition_cost_class": "medium",
@@ -2815,7 +4955,7 @@
     "marker:phase_conditioned_fines_distribution"
    ],
    "required_information": [
-    "Whether the excess fines share the approved additive's elemental identity.",
+    "Whether the excess fines share the selected-reference additive's elemental identity.",
     "Fine-particle size and density separated by elemental phase identity rather than BSE brightness alone."
    ],
    "decision_refs": [
@@ -3098,7 +5238,293 @@
    "attractor_rank": 2
   }
  ],
- "papers": [],
+ "papers": [
+  {
+   "id": "paper:kainourgiakis2000_chords",
+   "title": "Structural and Transport Properties of Alumina Porous Membranes from Process-Based and Statistical Reconstruction Techniques",
+   "authors": [
+    "M. E. Kainourgiakis",
+    "E. S. Kikkinides",
+    "Th. A. Steriotis",
+    "A. K. Stubos",
+    "K. P. Tzevelekos",
+    "N. K. Kanellopoulos"
+   ],
+   "year": 2000,
+   "venue": "Journal of Colloid and Interface Science",
+   "doi": "10.1006/jcis.2000.7115",
+   "url": "https://doi.org/10.1006/jcis.2000.7115",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "independence_group": "kainourgiakis-alumina-reconstruction",
+   "blindspot_refs": [],
+   "provenance": {
+    "kind": "literature",
+    "retrieved_by": "Codex web search",
+    "retrieved_at": "2026-10-04",
+    "source_api": "web",
+    "note": "Primary porous-material reconstruction study."
+   },
+   "marker_refs": [
+    "marker:high_z_pair_correlation",
+    "marker:phase_chord_distribution"
+   ],
+   "capability_refs": [],
+   "assessments": [
+    {
+     "target": "marker:high_z_pair_correlation",
+     "gate": "scientific_relevance",
+     "direction": "NEUTRAL",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "unknown",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Matching a two-point correlation alone was insufficient to reproduce all structural and transport behaviour in the studied porous membranes.",
+     "note": "A scope limit: pair correlation should remain one candidate among complementary descriptors.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "NEUTRAL",
+     "counts": true
+    },
+    {
+     "target": "marker:phase_chord_distribution",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "unknown",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Pore and solid chord-length distributions can retain structural information that porosity and two-point correlation alone do not.",
+     "note": "Supports preserving the full distribution rather than another mean.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    }
+   ]
+  },
+  {
+   "id": "paper:leggoe2005_nearest_neighbour",
+   "title": "Nth-nearest neighbor statistics for analysis of particle distribution data derived from micrographs",
+   "authors": [
+    "Jeremy Leggoe"
+   ],
+   "year": 2005,
+   "venue": "Scripta Materialia",
+   "doi": "10.1016/j.scriptamat.2005.07.041",
+   "url": "https://doi.org/10.1016/j.scriptamat.2005.07.041",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "independence_group": "leggoe-neighbour-micrograph",
+   "blindspot_refs": [],
+   "provenance": {
+    "kind": "literature",
+    "retrieved_by": "Codex web search",
+    "retrieved_at": "2026-10-04",
+    "source_api": "web",
+    "note": "Primary materials-characterization article."
+   },
+   "marker_refs": [
+    "marker:high_z_nearest_neighbour"
+   ],
+   "capability_refs": [],
+   "assessments": [
+    {
+     "target": "marker:high_z_nearest_neighbour",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "similar",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Micrograph-derived nearest-neighbour statistics can characterize particle clustering, but the reference must respect finite-particle inhibition and section geometry.",
+     "note": "Directly motivates both the candidate and its stated confounds.",
+     "transferability_class": "partial",
+     "strength": "STRONG DIRECT",
+     "label": "STRONG DIRECT",
+     "counts": true
+    }
+   ]
+  },
+  {
+   "id": "paper:vogel2010_minkowski",
+   "title": "Quantification of soil structure based on Minkowski functions",
+   "authors": [
+    "Hans-Jörg Vogel",
+    "Ulrich Weller",
+    "Steffen Schlüter"
+   ],
+   "year": 2010,
+   "venue": "Computers & Geosciences",
+   "doi": "10.1016/j.cageo.2010.03.007",
+   "url": "https://doi.org/10.1016/j.cageo.2010.03.007",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "independence_group": "vogel-minkowski-structure",
+   "blindspot_refs": [],
+   "provenance": {
+    "kind": "literature",
+    "retrieved_by": "Codex web search",
+    "retrieved_at": "2026-10-04",
+    "source_api": "web",
+    "note": "Primary morphology-method paper."
+   },
+   "marker_refs": [
+    "marker:minkowski_phase_morphology",
+    "marker:phase_boundary_morphology"
+   ],
+   "capability_refs": [],
+   "assessments": [
+    {
+     "target": "marker:minkowski_phase_morphology",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "different",
+      "scale": "unknown",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Minkowski functions provide compact phase volume, interface and topology descriptors, with explicit resolution dependence.",
+     "note": "Supports a cautious 2-D candidate and its resolution caveat.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    },
+    {
+     "target": "marker:phase_boundary_morphology",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "indirect",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "different",
+      "scale": "unknown",
+      "task": "similar",
+      "process": "different"
+     },
+     "claim": "Interface measures can add structural information beyond phase volume, but resolution controls quantitative reliability.",
+     "note": "Indirect support for boundary-length investigation; curvature needs separate evidence.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    }
+   ]
+  },
+  {
+   "id": "paper:zachary2011_local_fluctuations",
+   "title": "Hyperuniformity, quasi-long-range correlations, and void-space constraints in maximally random jammed particle packings. I. Polydisperse spheres",
+   "authors": [
+    "Chase E. Zachary",
+    "Yang Jiao",
+    "Salvatore Torquato"
+   ],
+   "year": 2011,
+   "venue": "Physical Review E",
+   "doi": "10.1103/PhysRevE.83.051308",
+   "url": "https://doi.org/10.1103/PhysRevE.83.051308",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "independence_group": "zachary-jiao-torquato-local-fluctuations",
+   "blindspot_refs": [],
+   "provenance": {
+    "kind": "literature",
+    "retrieved_by": "Codex web search",
+    "retrieved_at": "2026-10-04",
+    "source_api": "web",
+    "note": "Primary research article."
+   },
+   "marker_refs": [
+    "marker:count_overdispersion_curve",
+    "marker:high_z_pair_correlation",
+    "marker:phase_fraction_heterogeneity_curve"
+   ],
+   "capability_refs": [],
+   "assessments": [
+    {
+     "target": "marker:count_overdispersion_curve",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "similar",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Local number variance is a scale-dependent point-process statistic and differs conceptually from local volume-fraction fluctuation.",
+     "note": "Supports number variance; the simple Fano comparator remains a project choice.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    },
+    {
+     "target": "marker:high_z_pair_correlation",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "similar",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Pair correlation describes average neighbours around a reference point and contributes to local number fluctuation.",
+     "note": "Supports investigating a full separation-dependent point-process descriptor.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    },
+    {
+     "target": "marker:phase_fraction_heterogeneity_curve",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "similar",
+      "task": "same",
+      "process": "different"
+     },
+     "claim": "Local volume-fraction variance across observation-window size is a meaningful scale-dependent descriptor distinct from point-number fluctuation.",
+     "note": "Supports the descriptor family, not a battery-electrode decision threshold.",
+     "transferability_class": "low",
+     "strength": "INDIRECT",
+     "label": "INDIRECT",
+     "counts": true
+    }
+   ]
+  }
+ ],
  "records": [
   {
    "id": "record:claims_2d",
@@ -3156,6 +5582,39 @@
    "preview": "the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot separate a finer additive from a different lower-Z phase."
   },
   {
+   "id": "record:engine.count_overdispersion",
+   "kind": "engine_fact",
+   "title": "Spatial support: high-Z number variance and Fano curves",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "provenance": {},
+   "source": null,
+   "field_ref": {
+    "batch": "Batch_3",
+    "collection": "dimensions",
+    "id": "additive_density",
+    "path": "spatial_support.scale_dependent_heterogeneity"
+   },
+   "assessments": [
+    {
+     "target": "marker:count_overdispersion_curve",
+     "gate": "measurability",
+     "outcome": "passed",
+     "claim": "Existing centroid maps support count mean, number variance and Fano descriptors in equally supported 2–32 µm windows with explicit parent counts.",
+     "counts": true
+    },
+    {
+     "target": "marker:count_overdispersion_curve",
+     "gate": "non_redundancy",
+     "outcome": "passed",
+     "claim": "Count overdispersion describes arrangement relative to count intensity and is not another estimate of mean particle density.",
+     "counts": true
+    }
+   ],
+   "resolved": true,
+   "preview": "window_um 2 · window_area_um2 4 · n_windows 10679 · n_fields 5 · n_parents 5, window_um 4 · window_area_um2 16 · n_windows 2623 · n_fields 5 · n_parents 5, window_um 8 · window_area_um2 64 · n_windows 588 · n_fields 5 · n_parents 5, window_um 16 · window_area_um2 256 · n_windows 130 · n_fields 5 · n_parents 5 … (5)"
+  },
+  {
    "id": "record:engine.open_edge_M2060",
    "kind": "engine_fact",
    "title": "Registered profile: M2060 remains outside the local band at the captured start",
@@ -3196,6 +5655,39 @@
    "preview": "length_um 698"
   },
   {
+   "id": "record:engine.phase_fraction_heterogeneity",
+   "kind": "engine_fact",
+   "title": "Spatial support: raw and normalized phase-fraction heterogeneity curves",
+   "fixture": false,
+   "bundle": "seed.controller",
+   "provenance": {},
+   "source": null,
+   "field_ref": {
+    "batch": "Batch_3",
+    "collection": "dimensions",
+    "id": "porosity",
+    "path": "spatial_support.scale_dependent_heterogeneity"
+   },
+   "assessments": [
+    {
+     "target": "marker:phase_fraction_heterogeneity_curve",
+     "gate": "measurability",
+     "outcome": "passed",
+     "claim": "Existing segmentations support raw and p(1−p)-normalised phase-fraction variance at each valid 2–32 µm scale with explicit window and parent counts.",
+     "counts": true
+    },
+    {
+     "target": "marker:phase_fraction_heterogeneity_curve",
+     "gate": "non_redundancy",
+     "outcome": "inconclusive",
+     "claim": "The new curve is more auditable than the rejected earlier scaling exponent, but incremental scientific discrimination has not yet been shown.",
+     "counts": true
+    }
+   ],
+   "resolved": true,
+   "preview": "window_um 2 · window_area_um2 4 · n_windows 15551 · n_fields 7 · n_parents 6, window_um 4 · window_area_um2 16 · n_windows 3827 · n_fields 7 · n_parents 6, window_um 8 · window_area_um2 64 · n_windows 882 · n_fields 7 · n_parents 6, window_um 16 · window_area_um2 256 · n_windows 190 · n_fields 7 · n_parents 6 … (5)"
+  },
+  {
    "id": "record:engine.range_additive",
    "kind": "engine_fact",
    "title": "Spatial support: additive-density range exceeds the coherent reference capture",
@@ -3226,7 +5718,7 @@
     }
    ],
    "resolved": true,
-   "preview": "cls long-range · window_variance_slope -0.901 · tile_excess 1.88 · df 17"
+   "preview": "cls short-range · window_variance_slope -0.94 · tile_excess None · df 0"
   },
   {
    "id": "record:engine.range_porosity",
@@ -3252,7 +5744,7 @@
     }
    ],
    "resolved": true,
-   "preview": "cls fov-scale · window_variance_slope -0.856 · tile_excess 3.58 · df 18"
+   "preview": "cls fov-scale · window_variance_slope -0.914 · tile_excess 19.5 · df 1"
   },
   {
    "id": "record:engine.scale_M2060",
@@ -3297,14 +5789,14 @@
      "target": "marker:high_z_composition",
      "gate": "decision_value",
      "outcome": "passed",
-     "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the approved BSE range).",
+     "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the selected-reference BSE range).",
      "counts": true
     },
     {
      "target": "marker:phase_conditioned_fines_distribution",
      "gate": "decision_value",
      "outcome": "passed",
-     "claim": "Conditioning the fine-object distribution on phase identity would discriminate approved additive fines from another lower-Z phase.",
+     "claim": "Conditioning the fine-object distribution on phase identity would discriminate selected-reference additive fines from another lower-Z phase.",
      "counts": true
     }
    ]

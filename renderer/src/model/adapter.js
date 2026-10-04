@@ -45,7 +45,7 @@ export function buildModel(F) {
   }));
   const actions = F.actions.map(a => ({ ...a, reach: actionReach(a, F, RIM, OBS) }));
   return { F, DIM, OBS, ENT, MISS, RIM, PROF, rows, columns, keys, actions,
-           meta: { batch: F.context.batch, reference: F.context.reference, verdict: F.decision.verdict, p: F.decision.p_batch,
+           meta: { batch: F.context.batch, reference: F.context.reference_frame?.id || F.context.reference, verdict: F.decision.verdict, p: F.decision.p_batch,
                    role: F.context.role || 'incoming',
                    nIndependent: F.decision.n_independent, pivotal: F.decision.pivotal, linked: F.decision.reference_linked,
                    reasons: F.decision.reasons } };
@@ -194,10 +194,10 @@ export function structureVisual(M, stage, sel = {}) {
 }
 
 // concise, data-derived interpretation line (prose built only from contract fields)
-// what an observation is compared with: the approved population (incoming) or the other reference parents (self-audit)
+// what an observation is compared with: the selected reference frame (incoming) or the other reference parents (self-audit)
 export const isReference = M => M.meta.role === 'reference';
-export const frameWord = M => (isReference(M) ? 'the other reference micrographs' : 'approved');
-export const envelopeWord = M => (isReference(M) ? 'its leave-one-out envelope' : 'the approved envelope');
+export const frameWord = M => (isReference(M) ? 'the other reference micrographs' : 'the reference frame');
+export const envelopeWord = M => (isReference(M) ? 'its leave-one-out envelope' : 'the reference-frame envelope');
 
 export function interpretation(M, stage, sel = {}) {
   const s = typeof stage === 'number' ? stage : STAGES.indexOf(stage);

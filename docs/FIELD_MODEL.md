@@ -9,8 +9,8 @@ not the canonical representation.
 
 | Class | Quantities |
 |---|---|
-| **Measured** (from the current data) | per-micrograph KPI means; tile-sampling SD σ_w (pooled from replicate tiles); approved between-micrograph SD σ_b and its estimation term s²/n; simulation-calibrated 95/99% thresholds; worst tested acquisition shift per KPI; tested acquisition range; variance-vs-window-area slope β; tile-scale excess E with χ² CI; 25-µm transect variograms; additive size histogram; decision leverage (verdict with each micrograph removed); prevalence CI |
-| **Inferred with caveat** | spatial class (short-range / FOV-scale / long-range: variogram tails rest on 4 stitched sections); open spatial extent (100-µm window band is a visual aid); "fines at dim end" (n = 5 approved micrographs) |
+| **Measured** (from the current data) | per-micrograph KPI means; tile-sampling SD σ_w (pooled from replicate tiles); approved between-micrograph SD σ_b and its estimation term s²/n; simulation-calibrated 95/99% thresholds; worst tested acquisition shift per KPI; tested acquisition range; raw and p(1−p)-normalised phase-fraction fluctuation over 2–32 µm windows; equal-area high-Z mean count, number variance and Fano; current, degrees-of-freedom pooled and parent-equal variance estimates; unweighted, support-weighted and parent-bootstrap β; tile-scale excess E with χ² CI; 25-µm transect variograms; additive size histogram; decision leverage; prevalence CI |
+| **Inferred with caveat** | spatial class (short-range / FOV-scale / long-range: variogram tails rest on 4 stitched sections); descriptive parent-bootstrap local envelope (5 approved additive-valid parents, 6 porosity-valid parents); length-matched whole-profile maximum screen; "fines at dim end" (n = 5 approved micrographs) |
 | **Blindspot exposed, not resolvable** | composition of the high-Z phase; sub-0.36 µm particle population; extent beyond captured sections; untested acquisition factors (kV, working distance, dwell); through-thickness context (40–58 µm crops) |
 | **Future actions** | EDS, higher magnification / low kV, extended or spaced mosaics, independent sections, larger approved reference |
 
@@ -48,8 +48,11 @@ These mappings live in `qc/hero.py`; the contract carries only the quantities an
 | "beyond ref" | value outside every approved tile |
 | pulse | targeted by the selected NEXT CAPTURE action |
 
-Strip: stitched section, 25-µm column profile (100-µm windows, no edge padding) and the approved 100-µm window band.
-The band fades outside the captured extent; "◀ open" means the first or last window is still outside the band.
+Strip: stitched section, raw 25-µm full-height columns as context, unsmoothed 100-µm moving local means (no edge
+padding), and a support-matched 100-µm parent-cluster reference envelope. Only the local means are tested against the
+envelope. The envelope is a descriptive 2.5–97.5% reference-window quantile with bootstrap endpoint sensitivity, not a
+calibrated 95% interval. The former flattened mean ± 1.96 window SD remains in the contract as a population-spread audit.
+"◀ open" means the first or last 100-µm local mean is still outside the envelope.
 
 ## 4. Dataset geometry measured on this data
 
@@ -61,6 +64,11 @@ The band fades outside the captured extent; "◀ open" means the first or last w
 
 Approved reference: additive density, additive D50 and pore size have σ_b = 0 (baseline micrographs differ no more than
 tiles do). The approved material is one population, and its envelope is set by sampling.
+
+The operational β remains the original unweighted fit and remains the spatial-class input. Parent-bootstrap medians are
+−0.78 (high-Z area), −0.90 (high-Z count) and −0.86 (porosity), close to the operational fits. Support weighting changes
+the high-Z area fit materially (−0.67 versus −0.78), so that sensitivity is exposed rather than silently replacing the
+validated model. At 32 µm only five windows per field remain, and every scale reports its window, field and parent counts.
 
 ## 5. NEXT CAPTURE rules
 
@@ -79,7 +87,7 @@ Cost is ordinal. No information-gain score is invented; "computed effect" appear
 | REIMAGE | validity gate failed | measurability | grounded |
 | BASELINE | always | population support (MDC at n+5, simulated) | computed |
 
-Batch 3 output: REPEAT M2060 → ZOOM M2060 → EDS M2060 → EXTEND M2060 left → SECTIONS (prevalence 1/6: CI width 64 → 44 → 35 → 30 pts
+Batch 3 output: REPEAT M2060 → ZOOM M2060 → EDS M2060 → EXTEND M2060 at both captured edges → SECTIONS (prevalence 1/6: CI width 64 → 44 → 35 → 30 pts
 with +7/14/21 sections) → EXTEND M2088 right → SPACE porosity ≥ 175 µm → BASELINE (D50 MDC 0.29 → 0.24 µm,
 density 5.6 → 4.5 per 1000 µm², porosity 2.3 → 1.9 pts).
 Batch 2 output: SECTIONS (its ACCEPT rests on the minimum of 3 independent micrographs) → BASELINE.
