@@ -1,0 +1,846 @@
+{
+ "schema_version": "marker-research/1",
+ "bundle": {
+  "id": "qte77.research.0001",
+  "kind": "research_agent",
+  "produced_by": "qte77 research agent",
+  "produced_at": "2026-10-04",
+  "notes": "Literature evidence for GRAMSINATOR's 4 open questions (FIELD_MODEL.md §7) plus the open marker/capability cases in seed.controller.json. Papers only; no markers/capabilities/records/reviews defined here."
+ },
+ "papers": [
+  {
+   "id": "paper:q1-usseglio-viretta-2018-rve",
+   "title": "Resolving the Discrepancy in Tortuosity Factor Estimation for Li-Ion Battery Electrodes through Micro-Macro Modeling and Experiment",
+   "authors": [
+    "Usseglio-Viretta, F.L.E.",
+    "Colclasure, A.",
+    "Mistry, A.N.",
+    "Claver, K.P.Y.",
+    "Pouraghajan, F.",
+    "Finegan, D.P.",
+    "Heenan, T.M.M.",
+    "Abraham, D.",
+    "Mukherjee, P.P.",
+    "Wheeler, D.",
+    "Shearing, P.",
+    "Cooper, S.J.",
+    "Smith, K."
+   ],
+   "year": 2018,
+   "venue": "Journal of The Electrochemical Society",
+   "doi": "10.1149/2.0731814jes",
+   "url": "https://iopscience.iop.org/article/10.1149/2.0731814jes",
+   "independence_group": "nrel-ucl-purdue-tortuosity-consortium",
+   "assessments": [
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "scientific_relevance",
+     "direction": "CONTRADICTORY",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "X-ray-CT-based microstructure modeling found the representative volume element (RVE) for porosity (volume fraction) and tortuosity of a graphite Li-ion anode converges at 30x30x30 micrometers^3, versus 50x50x50 micrometers^3 for an NMC cathode (verbatim: \"a volume of 50x50x50 um^3 and 30x30x30 um^3, respectively for the NMC and the graphite volume samples, is a representative volume element (RVE) for volume fraction and tortuosity\") -- roughly 6x smaller in linear dimension than the ~175 micrometer lateral correlation range measured in the SEM cross-section.",
+     "note": "Contradicts treating ~175um as a typical/expected porosity correlation scale for graphite anodes: RVE-based convergence happens far below that distance, consistent with ~175um being anomalously large (possible prep artifact or non-stationary coating-thickness trend) rather than the normal pore-scale correlation length. Caveat: RVE-convergence-distance and variogram correlation range are related but not identical metrics, and the paper itself notes larger RVEs have been reported elsewhere in the literature for less-porous graphite materials, so this is a moderate-strength, not decisive, contradiction."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q1-rve-porosity)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q1-taiwo-2016-stereology-bias",
+   "title": "Comparison of three-dimensional analysis and stereological techniques for quantifying lithium-ion battery electrode microstructures",
+   "authors": [
+    "Taiwo, O.O.",
+    "Finegan, D.P.",
+    "Eastwood, D.S.",
+    "Fife, J.L.",
+    "Brown, L.D.",
+    "Darr, J.A.",
+    "Lee, P.D.",
+    "Brett, D.J.L.",
+    "Shearing, P.R."
+   ],
+   "year": 2016,
+   "venue": "Journal of Microscopy",
+   "doi": "10.1111/jmi.12389",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4999027/",
+   "independence_group": "nrel-ucl-purdue-tortuosity-consortium",
+   "assessments": [
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "scientific_relevance",
+     "direction": "NEUTRAL",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "similar",
+      "scale": "similar",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Direct 3D synchrotron X-ray tomography versus 2D stereological analysis (virtual 2D slices taken from the same 3D tomogram, not physically re-sectioned) of LCO, LMO and graphite Li-ion electrodes (analyzed volumes ~483-764 micrometers across, ~650nm voxels) showed 2D-slice porosity estimates biased from -34.36% to +26.69% relative to true 3D porosity, and tortuosity overestimated by up to 91.6%, depending on slicing direction and electrode type.",
+     "note": "This is 2D-sampling (stereological) bias intrinsic to inferring 3D structure from a single 2D plane, independent of any physical sample-preparation damage -- the comparison uses virtual slices of one tomogram, not separately prepared physical cross-sections. It cautions against reading single-2D-cross-section spatial statistics (such as the ~175um SEM variogram) at face value as representative of true 3D structure, but it does not address, and so cannot confirm or rule out, a physical cross-section-preparation artefact (ion-milling, polishing smear) specifically. Set to NEUTRAL: a relevant caution about 2D-vs-3D sampling generally, not direct evidence for or against the prep-artefact hypothesis. Shares co-authors (Finegan, Shearing) with the Usseglio-Viretta 2018 entry above, hence the same independence_group."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q1-rve-porosity)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q1-norris-2022-multiscale-heterogeneity",
+   "title": "Probing the Influence of Multiscale Heterogeneity on Effective Properties of Graphite Electrodes",
+   "authors": [
+    "Norris, C.",
+    "Parmananda, M.",
+    "Roberts, S.A.",
+    "Mukherjee, P.P."
+   ],
+   "year": 2022,
+   "venue": "ACS Applied Materials & Interfaces",
+   "doi": "10.1021/acsami.1c19694",
+   "url": "https://pubs.acs.org/doi/10.1021/acsami.1c19694",
+   "independence_group": "nrel-ucl-purdue-tortuosity-consortium",
+   "assessments": [
+    {
+     "target": "marker:spatial_correlation_length",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "unknown",
+      "task": "similar",
+      "process": "similar"
+     },
+     "claim": "X-ray-CT characterization of 18 commercially manufactured graphite Li-ion anode electrodes found spatial/structural heterogeneity (directional tortuosity, pore-scale anisotropy) spanning multiple length scales -- from individual particle morphology up to larger inter-sample/inter-image scales -- linked to manufacturing-process-driven anisotropy (e.g. calendering).",
+     "note": "Supports the plausibility that long-range, manufacturing-driven spatial correlation in graphite anode porosity is a real, documented phenomenon rather than necessarily a sectioning artefact, lending some plausibility to a ~175um-scale lateral correlation being genuine structure. Caveat: only abstract/snippet-level metadata was retrieved (no full-text read), and no specific micrometer value for the heterogeneity length scale was found, so this is directional/weaker support, not confirmation of the 175um figure itself. Shares a co-author (Mukherjee) with the Usseglio-Viretta 2018 entry above, hence the same independence_group."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q1-rve-porosity)",
+    "retrieved_at": "2026-10-04",
+    "note": "summary"
+   }
+  },
+  {
+   "id": "paper:q2-sanchez-zmap-bse",
+   "title": "Mean Atomic Number Quantitative Assessment in Backscattered Electron Imaging",
+   "authors": [
+    "Sánchez, E.",
+    "Torres Deluigi, M.",
+    "Castellano, G."
+   ],
+   "year": 2012,
+   "venue": "Microscopy and Microanalysis, 18, 1355-1361",
+   "doi": "10.1017/s1431927612013566",
+   "url": "https://doi.org/10.1017/S1431927612013566",
+   "independence_group": "sanchez-unsl-2012",
+   "assessments": [
+    {
+     "target": "marker:high_z_composition",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "same",
+      "scale": "similar",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "A Monte Carlo (PENELOPE)-fitted exponential transform converts BSE gray level to a quantitative mean-Z map, validated on 34 metal standards (Z=12-76) and 26 mineral standards (Z=10.4-73.2) at 20 keV; but repeated measurement sessions under nominally identical conditions do not reproduce the same gray level for a given Z ('the intensities I are not correlated to a unique Z value') because of instrument/detector drift, so a fresh calibration against known standards is required each session before BSE gray level can be trusted as a Z/composition indicator.",
+     "note": "Peer-reviewed, directly on the BSE-grey-to-Z question; shows raw/uncalibrated BSE brightness is not a portable, stand-alone Z signal. Materials are metal/mineral standards, not Si/SiOx/C."
+    },
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "same",
+      "scale": "similar",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Even with their calibrated BSE-to-Z mapping method, the authors validate phase identification on an unknown rock thin section against independent EDS X-ray spectra acquired from each mineral region ('the results obtained herein are compared to quantitative assessments performed with X-ray spectra from each mineral phase'), i.e. EDS is retained as the ground-truth confirmation for phase identity rather than being replaced by the BSE Z-map.",
+     "note": "Precedent for treating quantitative BSE grey-level analysis as a screening layer that still needs EDS to confirm specific unknown phases, not a substitute for it."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q2-bse-contrast)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q2-abe-sio2-si-charging",
+   "title": "Contrast Reversal Effect in SEM due to Charging",
+   "authors": [
+    "Abe, H.",
+    "Babin, S.",
+    "Borisov, S.S.",
+    "Hamaguchi, A.",
+    "Miyano, Y.",
+    "Yamazaki, Y."
+   ],
+   "year": 2008,
+   "venue": "49th International Conference on Electron, Ion, and Photon Beam Technology and Nanofabrication (EIPBN 2008), paper 6C-4",
+   "url": "https://eipbn.org/abstracts/2008/papers/6C-4.pdf",
+   "independence_group": "abe-toshiba-abeam-2008",
+   "assessments": [
+    {
+     "target": "marker:high_z_composition",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "similar",
+      "task": "similar",
+      "process": "different"
+     },
+     "claim": "CD-SEM imaging of 20 nm SiO2 lines on a silicon substrate shows the observed image contrast reverses between 200 V and 2 kV (SiO2 brighter than Si below ~500 V, darker above); Monte Carlo simulation of the backscattering coefficient alone showed eta(SiO2) > eta(Si) consistently across the whole simulated voltage range with the two curves never crossing, so the true Z-contrast ordering never actually reverses -- the authors conclude the observed brightness reversal is instead caused by local charging of the dielectric line, which curves BSE trajectories and changes which electrons escape the sample.",
+     "note": "Full text read directly (not search snippet). Real demonstration that observed BSE/SE grey-level ordering between Si and its oxide does not reliably track the underlying Z-contrast physics once charging or other non-compositional effects are present. Caveat: voltage range (0.2-2 kV) is well below this project's 5-20 kV operating range and the geometry is CD-SEM lines, not an anode composite cross-section, and this is an unrefereed conference paper -- transfer is illustrative, not quantitative."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q2-bse-contrast)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q2-assad-carbon-contamination-bse",
+   "title": "Monte Carlo Computation of the Influence of Carbon Contamination Layer on the Energy Distribution of Backscattered Electrons Emerging from Al and Au",
+   "authors": [
+    "Assa'd, A.M.D."
+   ],
+   "year": 2019,
+   "venue": "Jordan Journal of Physics, 12(1), 37-44",
+   "url": "https://jjp.yu.edu.jo/index.php/jjp/article/view/760",
+   "independence_group": "assad-amman-2019",
+   "assessments": [
+    {
+     "target": "marker:high_z_composition",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "different",
+      "task": "similar",
+      "process": "different"
+     },
+     "claim": "Using a CASINO Monte Carlo model (0.5-20 keV), the paper shows that for a 5-nm carbon layer on an Al substrate (Z=13, a close proxy for Si, Z=14), the backscattering coefficient eta rises with primary energy until it becomes equal to that of clean (uncoated) Al at Ep >= 5 keV; for a 5-nm C layer on Au it equalizes at Ep >= 10 keV. The authors attribute this to the BSE range (their Table 1, e.g. R_BSE = 195 nm for 5-nm-C-on-Al at 5 keV vs. 190 nm for clean Al) exceeding the carbon-layer thickness at these energies, so that 'the 5-nm C-layer has no more effect on eta values.'",
+     "note": "Full text read directly. At typical SEM voltages (5-20 keV) a thin carbon layer becomes essentially transparent to BSE -- a carbon-coated high-Z particle and a bare high-Z particle of the same substrate would show the same BSE brightness, so brightness alone cannot confirm or rule out a thin carbon coating. Caveat: the modeled layer (5 nm) represents incidental contamination, not the thicker, deliberate carbon coatings (often tens of nm) used in Si/C battery anodes, and substrates are Al/Au, not Si/SiOx."
+    },
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "different",
+      "task": "similar",
+      "process": "different"
+     },
+     "claim": "Because the 5-nm carbon layer's effect on the BSE coefficient vanishes at typical SEM energies (>=5-10 keV, matching clean-substrate eta), the Monte Carlo result implies the BSE channel carries no information about a thin coating once it becomes 'invisible' to it -- an elemental technique such as EDS, which directly detects carbon, would be needed to confirm coating presence under these conditions.",
+     "note": "This is the paper authors' quantitative result (eta equalization); the inference that EDS specifically is the needed confirmation technique is ours, not stated by the paper."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q2-bse-contrast)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:small2002-low-kv-eds-particles",
+   "title": "The Analysis of Particles at Low Accelerating Voltages (<=10 kV) With Energy Dispersive X-Ray Spectroscopy (EDS)",
+   "authors": [
+    "Small, J. A."
+   ],
+   "year": 2002,
+   "venue": "Journal of Research of the National Institute of Standards and Technology (NIST JRES)",
+   "doi": "10.6028/jres.107.047",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4863854/",
+   "independence_group": "nist-small-particle-epma",
+   "assessments": [
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "same",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "At 10 kV, particle/bulk X-ray intensity ratios for Fe and Ca microspheres stayed near unity across the full size range tested (0.9-18 micron diameter), with a maximum intensity loss of only about 10%; at 25 kV, particles below ~5 micron lost 50-75% of their bulk X-ray intensity (e.g. a 2 micron sphere lost 50%, the smallest ~1 micron microspheres lost 75%). This shows that at 10 kV a particle as small as ~0.9 micron retains most of its own characteristic X-ray signal relative to the same material in bulk, i.e. the X-ray generation volume at 10 kV is not grossly larger than a sub-micron particle.",
+     "note": "SUPPORTIVE for particles down to ~0.9 micron at 10 kV. Caveat: these are isolated Fe/Ca microspheres sitting on/in a substrate, analyzed via particle/bulk intensity-ratio corrections -- not Si fines embedded inside a surrounding graphite matrix in a polished cross-section, and not a carbon-based matrix. The paper does not test particles below 0.9 micron. At 5 kV the paper reports a confounding beam-induced surface-contamination (carbon deposition) effect, distinct from matrix-signal mixing, that further degrades accuracy -- so 5 kV data here should not be read as evidence against feasibility at 10 kV specifically."
+    },
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "CONTRADICTORY",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "For the paper's separate Si/Mg microsphere series (quoted verbatim): 'With the exception of a drop in the particle/bulk ratio for the smallest particle at 0.93 um, due to the particle mass effect, the particle/bulk curves for both Si and Mg at 10 kV are relatively flat.' At 5 kV, the Mg and Si particle/bulk values additionally 'show an unexpected and significant bias <1 for the smaller particles,' which the authors attribute to beam-induced carbon contamination rather than pure interaction-volume physics. No particle below 0.93 um was tested anywhere in the paper.",
+     "note": "CONTRADICTORY, and more task-relevant than the Fe/Ca result above: Si is the element actually of interest for Si fines in a graphite-Si anode, and the paper's own smallest Si-bearing particle (0.93 um) -- sitting almost exactly at the top of the 0.5-1 um fines range in question -- already shows a measurable mass-effect deviation at 10 kV, with the 5 kV case further degraded (albeit confounded by contamination in this specific experiment). Net: the Fe/Ca and Si/Mg results from the same paper disagree, and neither tests below 0.93 um, so Small (2002) alone does not resolve whether sub-0.5 um Si fines in graphite are cleanly resolvable at 5-10 kV."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q3-eds-resolution)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:moy2019-low-kv-epma-olivine",
+   "title": "Solving the iron quantification problem in low-kV EPMA: An essential step toward improved analytical spatial resolution in electron probe microanalysis—Olivines",
+   "authors": [
+    "Moy, A.",
+    "Fournelle, J. H.",
+    "von der Handt, A."
+   ],
+   "year": 2019,
+   "venue": "American Mineralogist",
+   "doi": "10.2138/am-2019-6865",
+   "url": "https://doi.org/10.2138/am-2019-6865",
+   "independence_group": "wisc-minnesota-penepma-olivine",
+   "assessments": [
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "CONTRADICTORY",
+     "directness": "adjacent",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "different",
+      "modality": "same",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "PENEPMA Monte Carlo simulations (validated against edge-resolution SEM experiments) show that reducing the beam voltage from 15-20 kV to <=10 kV (often 5-7 kV) is required to bring the electron/X-ray interaction volume down to submicron size, shrinking it from ~3 micron to ~0.5 micron in 'common geological materials'. For Fo80 olivine at 7 kV, the simulated 1%-of-maximum (outer bounding) contour of MgKalpha X-ray generation spans approximately 800 nm lateral x 500 nm depth with a tungsten source, and approximately 600 nm lateral x 400 nm depth with a field-emission source -- the same order of magnitude as a 0.3-1 micron particle, not clearly smaller than it.",
+     "note": "CONTRADICTORY by extrapolation to the graphite-matrix case: olivine ((Mg,Fe)2SiO4) has a higher mean atomic number and higher density (~3.3-4.4 g/cm3) than graphite (Z=6, ~2.2 g/cm3), so this ~400-800 nm interaction-volume-at-7kV result is a favorable benchmark (and is the 1%-contour outer envelope, not a sharp edge). A lower-Z, lower-density graphite matrix is expected to produce an even larger interaction volume at the same kV (consistent with the Kanaya-Okayama calculation in Miculescu et al. 2011, paper:miculescu2011-casino-multilayer), implying worse, not better, matrix-signal mixing for sub-micron Si fines embedded in graphite."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q3-eds-resolution)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:miculescu2011-casino-multilayer",
+   "title": "A Study on the Influence of the Primary Electron Beam on Nanodimensional Layers Analysis",
+   "authors": [
+    "Miculescu, F.",
+    "Jepu, I.",
+    "Porosnicu, C.",
+    "Lungu, C. P.",
+    "Miculescu, M.",
+    "Burhala, B."
+   ],
+   "year": 2011,
+   "venue": "Digest Journal of Nanomaterials and Biostructures, Vol. 6, No. 1, p. 307-317",
+   "url": "https://www.chalcogen.ro/307_Miculescu.pdf",
+   "independence_group": "politehnica-bucharest-casino-ko",
+   "assessments": [
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "CONTRADICTORY",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "different",
+      "modality": "same",
+      "scale": "similar",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "The paper reports the Kanaya-Okayama total electron range formula used in its CASINO-based Monte Carlo analysis of Cu-Ni-Cu-Fe-Ta metal multilayers, R(nm) = 27.6*A*E0^1.67 / (rho * Z^0.889), and states this predicts penetration depth drops by a factor of ~10 when beam energy drops from 20 to 5 keV. Applying this formula (as stated in the paper) to graphite (A=12.01 g/mol, Z=6, rho=2.2 g/cm3) gives total electron ranges of approximately 0.45 micron at 5 kV, 0.79 micron at 7 kV, and 1.43 micron at 10 kV -- these bound the Si Kalpha X-ray generation volume from above (the actual X-ray-generation range is somewhat smaller, since generation stops once electron energy falls below the ~1.84 keV Si-K ionization threshold), so they are an upper-bound comparison, but even as an upper bound they are comparable to or larger than the 0.3-1 micron Si fines of interest across the whole 5-10 kV range.",
+     "note": "CONTRADICTORY, expressed as an upper bound: the 0.45-1.43 micron graphite-specific figures are our own calculation applying the paper's explicitly stated and cited (Kanaya & Okayama) TOTAL ELECTRON RANGE formula to graphite's atomic weight/number/density, not the (smaller) X-ray generation range itself -- the paper itself only simulates metal multilayers on Si, not carbon, so this is a derived, not directly published, graphite number. It should be read as physics-consistent corroboration of the Moy et al. (2019) result (paper:moy2019-low-kv-epma-olivine), not as an independent experimental or simulated measurement in graphite."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q3-eds-resolution)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q3-newbury-2002-low-voltage-barriers",
+   "title": "Barriers to Quantitative Electron Probe X-Ray Microanalysis for Low Voltage Scanning Electron Microscopy",
+   "authors": [
+    "Newbury, D.E."
+   ],
+   "year": 2002,
+   "venue": "Journal of Research of the National Institute of Standards and Technology",
+   "doi": "10.6028/jres.107.049",
+   "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4863847/",
+   "independence_group": "nist-jres-2002-lowkV",
+   "assessments": [
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Using the Kanaya-Okayama analytical range formula, the paper's Table 2 gives the Cu L-shell x-ray/electron excitation range at 5 kV as only approx. 50 nm in an Fe matrix and approx. 80 nm in an Au matrix -- both far smaller than a 0.36 um (360 nm) fine particle, meaning that for a dense, high-Z particle the primary excitation range at 5 kV is contained well within the particle rather than spreading into the surrounding (lower-density) carbon.",
+     "note": "SUPPORTIVE specifically at 5 kV for a dense, high-Z (Fe/Au-class) particle: the physically relevant comparison is the range INSIDE the particle's own material, not the carbon-matrix range. Method is an analytical formula (Kanaya & Okayama 1972), not a Monte Carlo simulation or direct experiment, so method_strength is capped at moderate."
+    },
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "NEUTRAL",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "The same Table 2 gives the carbon-matrix range at 5 kV as approx. 490 nm (vs. approx. 130 nm at 2.5 kV) -- the relevant figure once scattered electrons/X-rays escape the particle into the surrounding graphite, or for particles smaller than the ~50-80 nm Fe/Au range above. The paper's low-voltage table stops at 5 kV and 2.5 kV; it gives no Fe/Au range value at 10 kV, and its only 10 kV entry (Table 1, Cu K-shell, 270 nm in carbon) is explicitly outside the overvoltage regime (E0>19 keV) the paper itself says is required for that line.",
+     "note": "NEUTRAL / gap flag: this source does not resolve feasibility at 10 kV (the upper end of the requested 5-10 kV window) for a high-Z particle. Resolving it would need either extrapolating the K-O formula beyond this paper's own tabulated points (deliberately not done here, to avoid inventing a number the paper doesn't state) or a dedicated Monte Carlo run (e.g. CASINO, see paper:q3-drouin-2007-casino) at 10 kV in a graphite/high-Z-particle geometry."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q3-eds-resolution)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q3-drouin-2007-casino",
+   "title": "CASINO V2.42 - A Fast and Easy-to-use Modeling Tool for Scanning Electron Microscopy and Microanalysis Users",
+   "authors": [
+    "Drouin, D.",
+    "Couture, A.R.",
+    "Joly, D.",
+    "Tastet, X.",
+    "Aimez, V.",
+    "Gauvin, R."
+   ],
+   "year": 2007,
+   "venue": "Scanning",
+   "doi": "10.1002/sca.20000",
+   "url": "https://doi.org/10.1002/sca.20000",
+   "independence_group": "u-sherbrooke-casino",
+   "assessments": [
+    {
+     "target": "capability:eds",
+     "gate": "literature_convergence",
+     "direction": "NEUTRAL",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "unknown",
+      "modality": "same",
+      "scale": "unknown",
+      "task": "different",
+      "process": "unknown"
+     },
+     "claim": "CASINO v2.42 is the freely available Monte Carlo electron-trajectory simulation tool the field uses to compute interaction/X-ray-generation volumes as a function of beam energy and matrix for SEM/EDS; the abstract describes the software's imaging/microanalysis/lithography scope but does not itself state a carbon-matrix sub-micron-particle number.",
+     "note": "NEUTRAL, tool-reference only: this is the standard method that could produce a directly-simulated graphite/high-Z-particle number at 10 kV (the gap flagged in paper:q3-newbury-2002-low-voltage-barriers), but was only read at abstract/metadata level here (paywalled full text), so it carries no independent numeric weight of its own."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q3-eds-resolution)",
+    "retrieved_at": "2026-10-04",
+    "note": "summary"
+   }
+  },
+  {
+   "id": "paper:q4-ossila-si-nanopowder",
+   "title": "Silicon Nanopowder (product datasheet)",
+   "authors": [
+    "Ossila Ltd."
+   ],
+   "year": null,
+   "venue": "supplier datasheet (Ossila Ltd.)",
+   "doi": null,
+   "url": "https://www.ossila.com/products/silicon-nanopowder",
+   "independence_group": "ossila",
+   "assessments": [
+    {
+     "target": "marker:fines_subfloor_size",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Commercial battery-grade silicon nanopowder (Ossila, purity >99.5%, explicitly described as 'Applied as an anode material for Li-ion batteries') reports D50 = 90 nm (0.09 µm) -- i.e. the bulk of this product's population already lies below a 0.36 µm sub-floor threshold.",
+     "note": "Supplier datasheet. Both the purity figure and the Li-ion-anode application statement were confirmed by a direct re-fetch of the product page (verbatim quotes), not inferred from a search-engine summary."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q4-additive-specs)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q4-wacker-nanosize-si-patent",
+   "title": "Silicon particle-containing anode materials for lithium ion batteries (US Patent 10,777,807 B2)",
+   "authors": [
+    "Haufe, S."
+   ],
+   "year": 2020,
+   "venue": "US Patent 10,777,807 B2 (Wacker Chemie AG); not peer-reviewed",
+   "doi": null,
+   "url": "https://patents.google.com/patent/US10777807B2/en",
+   "independence_group": "wacker-chemie",
+   "assessments": [
+    {
+     "target": "marker:fines_subfloor_size",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Wacker Chemie's US Patent 10,777,807 B2 reports Comparative Example 4 nanosize, unaggregated Si particles with d10=0.09 µm, d50=0.18 µm, d90=0.32 µm, measured by laser light scattering (Horiba LA 950) -- a D90 entirely below the 0.36 µm sub-floor threshold -- explicitly in the context of lithium-ion battery anode material. The patent frames this as an inferior comparative example (worse cycling retention than its preferred coarser, splinter-shaped particles), so it demonstrates the grade is real, produced, and battery-tested, not that it is the industry-preferred grade.",
+     "note": "Patent disclosure, not peer-reviewed. Verified by direct fetch of the example data table and the bibliographic header (assignee: Wacker Chemie AG, a major industrial silicon producer)."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q4-additive-specs)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:q4-daejoo-siox-d50-patent",
+   "title": "Negative electrode active material for non-aqueous electrolyte rechargeable battery, method of fabricating the same, and non-aqueous electrolyte rechargeable battery including the same (US Patent 9,577,255 B2)",
+   "authors": [
+    "Cha, W.B.",
+    "Kim, S.S.",
+    "Oh, S.M.",
+    "Kim, K.Y."
+   ],
+   "year": 2017,
+   "venue": "US Patent 9,577,255 B2 (Dae Joo Electronic Materials Co., Ltd.); not peer-reviewed",
+   "doi": null,
+   "url": "https://patents.google.com/patent/US9577255B2/en",
+   "independence_group": "daejoo-electronic-materials",
+   "assessments": [
+    {
+     "target": "marker:fines_subfloor_size",
+     "gate": "scientific_relevance",
+     "direction": "NEUTRAL",
+     "directness": "adjacent",
+     "method_strength": "weak",
+     "transferability": {
+      "material": "same",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Dae Joo Electronic Materials' US Patent 9,577,255 B2 (SiOx in which crystalline Si is dispersed in SiO2, for a Li-ion battery negative-electrode active material) reports D50 = 4.0-4.5 µm by laser diffraction for its SiOx samples -- i.e. the typical/bulk SiOx particle population is roughly 10-12x coarser than the 0.36 µm sub-floor threshold, with no stated sub-micron fine-fraction content in the parts of the document that could be verified.",
+     "note": "Patent disclosure, not peer-reviewed. D10/D90/fine-fraction-percent values for SiOx specifically could not be confirmed in the fetched text; a search-engine snippet claimed '29% below 1.0 µm' for a related compound in a different patent, but this could not be verified in the document and is therefore dropped per the project's claim-verification rule rather than reported as fact."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (q4-additive-specs)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:shearing2010-graphite-3d-microstructure",
+   "title": "Characterization of the 3-dimensional microstructure of a graphite negative electrode from a Li-ion battery",
+   "authors": [
+    "Shearing, P. R.",
+    "Howard, L. E.",
+    "Jørgensen, P. S.",
+    "Brandon, N. P.",
+    "Harris, S. J."
+   ],
+   "year": 2010,
+   "venue": "Electrochemistry Communications",
+   "doi": "10.1016/j.elecom.2009.12.038",
+   "url": "https://doi.org/10.1016/j.elecom.2009.12.038",
+   "independence_group": "imperial-shearing-brandon",
+   "assessments": [
+    {
+     "target": "marker:pore_connectivity_3d",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "same",
+      "modality": "different",
+      "scale": "same",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "X-ray tomography of a graphite negative electrode (43 x 348 x 478 um volume, 480 nm voxels) found the representative-volume-element size needed to reliably determine porosity and tortuosity is as large as the ENTIRE reconstructed sample volume, whereas a much smaller volume (43 x 60 x 60 um) already suffices for volume-specific surface area -- i.e. tortuosity specifically (unlike surface area) cannot be established from a small or 2-D slice and demands the full 3-D dataset.",
+     "note": "Abstract/findings verified directly via DTU institutional repository record and CrossRef metadata; this is the most direct, numeric evidence for why 2-D sections can't establish pore-network tortuosity."
+    },
+    {
+     "target": "capability:tomography_3d",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "same",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "3-D X-ray tomographic reconstruction (not 2-D SEM sectioning) was the method used to obtain the first characterization of a graphite Li-ion negative electrode's 3-D microstructure, including porosity, tortuosity and surface area, with results showing the 3-D reconstruction's required volume scales differently per property.",
+     "note": "Same verification basis: DTU repository abstract record plus CrossRef metadata."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (3d-pore-tomography)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  },
+  {
+   "id": "paper:ebner2013-tortuosity-anisotropy",
+   "title": "Tortuosity Anisotropy in Lithium-Ion Battery Electrodes",
+   "authors": [
+    "Ebner, M.",
+    "Chung, D.-W.",
+    "García, R. E.",
+    "Wood, V."
+   ],
+   "year": 2013,
+   "venue": "Advanced Energy Materials",
+   "doi": "10.1002/aenm.201301278",
+   "url": "https://doi.org/10.1002/aenm.201301278",
+   "independence_group": "ethz-wood-lab",
+   "assessments": [
+    {
+     "target": "marker:pore_connectivity_3d",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "Synchrotron X-ray tomography and 3-D diffusion simulation of lithium-ion electrodes built from non-spherical (platelet, e.g. graphite) and spherical (e.g. NMC) active-material particles shows manufacturing-induced particle alignment causes tortuosity anisotropy (through-plane tortuosity markedly higher than in-plane) -- a directional transport property that requires measuring along orthogonal axes through a full 3-D volume and cannot be read off a single 2-D cross-section.",
+     "note": "Metadata (title/authors/year/venue) verified via CrossRef. Abstract content verified only via secondary sources (the group's own Purdue news page and ECS conference abstract), not the primary Wiley page (403 on fetch, no open-access copy via Unpaywall or ETH Research Collection). One AI-generated search summary described the non-spherical material as LiCoO2 rather than graphite, which could not be reconciled against primary text -- material transferability hedged to 'similar' and the claim phrased to cover either reading (non-spherical platelet particles, of which graphite is the Purdue-confirmed example on the journal's back cover)."
+    },
+    {
+     "target": "capability:tomography_3d",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "similar",
+      "modality": "same",
+      "scale": "same",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "3-D diffusion simulations run on synchrotron X-ray tomography reconstructions (not 2-D sections) were required to quantify in-plane vs. through-plane tortuosity and its dependence on particle shape, alignment, and calendering-induced porosity reduction in lithium-ion electrodes.",
+     "note": "Same verification basis and same material-identification caveat as the marker assessment above."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (3d-pore-tomography)",
+    "retrieved_at": "2026-10-04",
+    "note": "summary"
+   }
+  },
+  {
+   "id": "paper:sailer2023-fibsem-graphite-porosity",
+   "title": "Quantitative FIB/SEM tomogram analysis of closed and open porosity of spheroidized graphite anode materials for LiBs applications",
+   "authors": [
+    "Sailer, S.",
+    "Mundszinger, M.",
+    "Martin, J.",
+    "Mancini, M.",
+    "Wohlfahrt-Mehrens, M.",
+    "Kaiser, U."
+   ],
+   "year": 2023,
+   "venue": "Micron",
+   "doi": "10.1016/j.micron.2022.103398",
+   "url": "https://doi.org/10.1016/j.micron.2022.103398",
+   "independence_group": "ulm-kaiser-zsw-wohlfahrtmehrens",
+   "assessments": [
+    {
+     "target": "marker:pore_connectivity_3d",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "same",
+      "modality": "different",
+      "scale": "similar",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "FIB-SEM tomograms of spheroidized graphite anode particles, segmented with a CNN-based scheme, were used to quantify open porosity (pores connected to the particle surface, electrolyte-accessible) versus closed porosity (isolated, electrolyte-inaccessible pores) -- a connectivity distinction a single 2-D cross-section cannot make, since a pore that looks isolated in one slice may connect to the surface through the third dimension.",
+     "note": "Title/authors/year/venue verified independently via CrossRef. Abstract read in full (secondary aggregator); the specific open/closed percentage values quoted in one web-search summary could not be traced to primary text, so no numeric split is reported here."
+    },
+    {
+     "target": "capability:tomography_3d",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "same",
+      "modality": "same",
+      "scale": "similar",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "FIB-SEM tomography, combined with CNN-based image segmentation, directly delivers quantitative open-vs-closed pore-connectivity measurements for graphite battery-anode particles -- a 3-D electrolyte-accessibility property that 2-D imaging alone cannot resolve. This is the only FIB-SEM (as opposed to X-ray CT) source in this evidence set, broadening the capability's modality coverage.",
+     "note": "Same verification basis as the marker assessment above."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (3d-pore-tomography)",
+    "retrieved_at": "2026-10-04",
+    "note": "summary"
+   }
+  },
+  {
+   "id": "paper:cooper2016-taufactor",
+   "title": "TauFactor: An open-source application for calculating tortuosity factors from tomographic data",
+   "authors": [
+    "Cooper, S. J.",
+    "Bertei, A.",
+    "Shearing, P. R.",
+    "Kilner, J. A.",
+    "Brandon, N. P."
+   ],
+   "year": 2016,
+   "venue": "SoftwareX",
+   "doi": "10.1016/j.softx.2016.09.002",
+   "url": "https://doi.org/10.1016/j.softx.2016.09.002",
+   "independence_group": "imperial-shearing-brandon",
+   "assessments": [
+    {
+     "target": "marker:pore_connectivity_3d",
+     "gate": "scientific_relevance",
+     "direction": "SUPPORTIVE",
+     "directness": "adjacent",
+     "method_strength": "moderate",
+     "transferability": {
+      "material": "unknown",
+      "modality": "different",
+      "scale": "same",
+      "task": "similar",
+      "process": "unknown"
+     },
+     "claim": "The tortuosity factor -- which quantifies how pore-network convolution reduces diffusive transport -- is computed directly from 3-D image-based microstructural (tomographic) data; the tool's own stated motivation is that increasing availability of 3-D imaging let the field move from porosity-based correlations (e.g. the Bruggeman relation) that only approximate tortuosity to direct measurement of the real 3-D pore network.",
+     "note": "Abstract verified directly via Imperial College Spiral repository record; general porous-media tool paper, not graphite-specific, so marked adjacent/moderate for the marker target."
+    },
+    {
+     "target": "capability:tomography_3d",
+     "gate": "literature_convergence",
+     "direction": "SUPPORTIVE",
+     "directness": "direct",
+     "method_strength": "strong",
+     "transferability": {
+      "material": "unknown",
+      "modality": "same",
+      "scale": "same",
+      "task": "same",
+      "process": "unknown"
+     },
+     "claim": "States explicitly that 'the increasing availability of 3-D imaging techniques has spurred interest in calculating [the tortuosity factor] more directly' versus the long-standing practice of approximating it with porosity-based correlations like Bruggeman's, and provides an open-source tool built to run on tomography datasets exceeding 10^8 voxels -- direct evidence that 3-D tomography is the capability needed to measure tortuosity rather than infer it from porosity alone.",
+     "note": "Abstract verified directly via Imperial College Spiral repository record, cross-checked against a DOAJ-indexed summary of the same text."
+    }
+   ],
+   "provenance": {
+    "kind": "research_agent",
+    "retrieved_by": "qte77 research agent (3d-pore-tomography)",
+    "retrieved_at": "2026-10-04",
+    "note": "read"
+   }
+  }
+ ]
+}
