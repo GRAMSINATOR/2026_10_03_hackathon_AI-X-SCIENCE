@@ -4,6 +4,10 @@ Detect whether an incoming batch of battery-electrode material has changed again
 from multi-detector SEM cross-sections. It explains *what* physically changed and *how sure* it is, and outputs
 **ACCEPT / INVESTIGATE / REJECT**.
 
+This repository is the team's **Track 4 (Polaron) submission core**: the scientific model, the uncertainty field, the
+Evidence Instrument and the NEXT CAPTURE logic. The evaluation and agent-readiness layer (drift suite, held-out scoring,
+run journal) lives in [qte77/2026-10-03-london-ai-science-hack](https://github.com/qte77/2026-10-03-london-ai-science-hack).
+
 ## Key findings (from reconnaissance; details in `docs/RESEARCH_LOG.md`)
 
 1. **Fields are not independent samples.** The 31 fields are tiles cut from **13 parent micrographs**. Tiles of one parent
@@ -32,6 +36,7 @@ uv venv --python 3.12 .venv && uv pip install --python .venv/Scripts/python.exe 
 # data: data/Batch_1, data/Batch_2, data/Batch_3 (TIFFs from the hackathon drive)
 python -m qc reference data/Batch_1 --noise-from data/Batch_2 data/Batch_3   # approved reference (~2 min)
 python -m qc assess data/Batch_2 data/Batch_3                                # verdicts + reports/<batch>/result.json
+(cd renderer && npm install && npm run build)                               # Evidence Instrument renderer (once)
 streamlit run app.py                                                         # interactive dashboard
 ```
 
@@ -70,6 +75,21 @@ TIFFs → fields (BSE + SE + InLens, co-registered) → provenance (parent micro
 | In-plane solid chord length | moderate (1.84, blur) |
 
 Moderate KPIs can trigger INVESTIGATE but never REJECT on their own.
+
+### Public hosting: derived results only, no imagery
+```bash
+python -m qc provenance                 # tile -> parent micrograph map: reports/provenance_map.csv / .json
+python -m qc bundle public_bundle       # image-free derived bundle; the export fails if any imagery would be included
+QC_PUBLIC=1 QC_REF=public_bundle/reference.json QC_REPORTS=public_bundle/reports \
+  QC_CACHE=public_bundle/cache/fields streamlit run app.py
+```
+Public mode needs no `data/` folder and never runs the pipeline. Micrograph imagery (micrographs, segmentation,
+thumbnails, mosaics, embedded image payloads) is withheld unless `QC_PUBLIC_IMAGES=1`, while profiles, extents, rims and
+actions stay intact. See `docs/PUBLIC_MODE.md`.
+
+## Licence and data
+The code is licensed under Apache-2.0 (`LICENSE`). **Sponsor-provided datasets and any imagery derived from them are
+excluded from this licence** and remain subject to their original rights and terms (`NOTICE`).
 
 ## Layout
 * `qc/`: `io` (discovery, 25 nm/px from XResolution), `segment`, `features` (KPIs, acquisition, cache), `provenance`,

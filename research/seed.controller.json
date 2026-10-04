@@ -1,0 +1,186 @@
+{
+ "schema_version": "marker-research/1",
+ "bundle": {
+  "id": "seed.controller",
+  "kind": "controller_seed",
+  "produced_by": "controller agent (Claude) from epistemic-field/1 blindspots, docs/RESEARCH_LOG.md and docs/CLAIMS.md",
+  "produced_at": "2026-10-04",
+  "notes": "No literature. Every evidence item is an engine fact (a reference into epistemic-field/1) or a project research-log record. Literature is the research agent's lane (qte77): papers attach to these cases by id."
+ },
+ "markers": [
+  {
+   "id": "marker:fines_subfloor_size",
+   "name": "Sub-floor fines size distribution",
+   "family": "distribution",
+   "proposition": "Resolves the excess fine high-Z population of M2060 below the current detection floor, where it is now cut off by the pixel size.",
+   "scientific_definition": "Number-size distribution of high-Z (BSE-bright) objects per unit area, extended below the current detection floor and compared with approved micrographs imaged at the same pixel size.",
+   "measurement_definition": "Equivalent-diameter histogram of high-Z objects from BSE at a finer pixel (low kV), same segmentation rule as the engine; densities per 1000 µm² in bins below and above the current floor; approved micrographs imaged at the same settings.",
+   "current_capture_compatible": true,
+   "required_modalities": ["BSE"],
+   "capture_requirements": "Higher-magnification, low-kV BSE on M2060 and on approved micrographs. No new instrument capability: the same acquisition as the controller's ZOOM action.",
+   "existing_data_test": {"status": "requires_acquisition", "note": "Cannot be computed from the existing micrographs: the population is truncated at the detection floor."},
+   "blindspot_refs": [{"batch": "Batch_3", "collection": "rims", "id": "scale:M2060"}],
+   "decision_refs": [{"batch": "Batch_3", "collection": "entities", "id": "M2060", "path": "leverage"}],
+   "why_relevant": "The REJECT rests on M2060, and its excess objects pile up at the detection floor: the decision-driving population is only partly observed.",
+   "known_confounds": [
+    {"id": "subsurface_signal", "label": "sub-surface objects counted as fines (BSE interaction depth)", "controlled": null, "basis": []},
+    {"id": "reference_resolution", "label": "approved reference not imaged at the same pixel size", "controlled": null, "basis": []}
+   ],
+   "known_failure_modes": ["segmentation threshold drifts with magnification", "beam drift or charging at high magnification"],
+   "redundant_with": [{"ref": {"batch": "Batch_3", "collection": "dimensions", "id": "additive_d50_um"}, "increment": "D50 is a median above the floor; this extends the distribution below it"}],
+   "provenance": {"kind": "controller_seed", "basis": "rim scale:M2060 and the ZOOM action rationale in epistemic-field/1"}
+  },
+  {
+   "id": "marker:high_z_composition",
+   "name": "High-Z phase elemental identity",
+   "family": "composition",
+   "proposition": "Which elements make up the excess fine high-Z objects in M2060, compared with the approved additive.",
+   "scientific_definition": "Elemental composition of the BSE-bright phase per object class (fine vs coarse), relative to the approved additive.",
+   "measurement_definition": "Paired elemental spectra or maps on M2060 fines and on approved additive particles; element ratios per object class.",
+   "current_capture_compatible": false,
+   "required_modalities": ["elemental spectroscopy"],
+   "required_capabilities": ["capability:eds"],
+   "capture_requirements": "Elemental spectroscopy co-registered with the BSE fields.",
+   "existing_data_test": {"status": "not_run", "note": "BSE grey level depends on mean atomic number and depth; it cannot identify elements."},
+   "blindspot_refs": [
+    {"batch": "Batch_3", "collection": "rims", "id": "composition:M2060"},
+    {"batch": "Batch_3", "collection": "missing_dimensions", "id": "M2060:composition"}
+   ],
+   "decision_refs": [{"batch": "Batch_3", "collection": "entities", "id": "M2060", "path": "leverage"}],
+   "why_relevant": "Supplier attribution of the surviving deviation needs chemistry; the field records composition as not acquired and consequential for M2060.",
+   "known_confounds": [{"id": "interaction_volume", "label": "spectroscopy signal volume larger than sub-micrometre fines (mixing with the matrix)", "controlled": null, "basis": []}],
+   "known_failure_modes": ["fines smaller than the spectral spatial resolution at the chosen kV"],
+   "redundant_with": [],
+   "provenance": {"kind": "controller_seed", "basis": "dimension composition (kind missing, would_require) and rim composition:M2060"}
+  },
+  {
+   "id": "marker:multiscale_heterogeneity",
+   "name": "Multiscale heterogeneity scaling",
+   "family": "spatial_pattern",
+   "proposition": "How the variability of local porosity and additive fraction decays with window size: clustered versus random arrangement.",
+   "scientific_definition": "Scaling exponent of the coefficient of variation of local phase fraction against window size; a slower decay than a random arrangement indicates clustering.",
+   "measurement_definition": "CV of local porosity and additive area fraction in windows of 1–16 µm per micrograph; log-log slope; between-micrograph ICC.",
+   "current_capture_compatible": true,
+   "required_modalities": ["BSE"],
+   "blindspot_refs": [{"general": "spatial_arrangement", "label": "particle and pore arrangement (clustering) is not in the KPI vocabulary"}],
+   "why_relevant": "Would add arrangement, not amount, to the vocabulary.",
+   "known_confounds": [{"id": "segmentation_threshold", "label": "phase fractions depend on the segmentation threshold", "controlled": null, "basis": []}],
+   "redundant_with": [],
+   "provenance": {"kind": "project_record", "basis": "docs/RESEARCH_LOG.md row 7"}
+  },
+  {
+   "id": "marker:latent_progression",
+   "name": "Latent progression axis (pseudotime)",
+   "family": "process_variation",
+   "proposition": "A learned image embedding orders micrographs along a continuous process-progression axis.",
+   "scientific_definition": "Leading axis of a self-supervised image embedding (DINOv2 ViT-B/14) of micrograph crops, read as a progression of material state.",
+   "measurement_definition": "1875 crops per channel, three normalisations, PCA and diffusion map; stability by leave-one-out, bootstrap and cross-channel agreement.",
+   "current_capture_compatible": true,
+   "required_modalities": ["BSE", "SE", "InLens"],
+   "blindspot_refs": [{"general": "process_progression", "label": "continuous process drift between lots is not in the KPI vocabulary"}],
+   "why_relevant": "Would expose gradual process drift that discrete KPIs miss.",
+   "known_confounds": [
+    {"id": "black_level", "label": "detector black level and contrast stretch differ per micrograph", "controlled": false, "basis": ["record:rl4"]},
+    {"id": "blur", "label": "focus and blur", "controlled": false, "basis": ["record:rl5"]}
+   ],
+   "redundant_with": [],
+   "provenance": {"kind": "project_record", "basis": "docs/RESEARCH_LOG.md rows 5 and 6"}
+  },
+  {
+   "id": "marker:pore_connectivity_3d",
+   "name": "3-D pore network connectivity",
+   "family": "morphology",
+   "proposition": "Connectivity and tortuosity of the pore network, which 2-D cross-sections cannot establish.",
+   "scientific_definition": "Fraction of pore volume connected across the electrode thickness, and the geometric tortuosity of the connected network.",
+   "measurement_definition": "Segmented 3-D volume of the electrode; connected-component analysis and path-length tortuosity.",
+   "current_capture_compatible": false,
+   "required_modalities": ["3-D volume"],
+   "required_capabilities": ["capability:tomography_3d"],
+   "existing_data_test": {"status": "not_run", "note": "Single 2-D sections of non-infiltrated pores."},
+   "blindspot_refs": [{"general": "three_d_transport_structure", "label": "3-D transport-relevant pore structure is outside the 2-D section vocabulary"}],
+   "why_relevant": "Not tied to the current QC decision: exploratory.",
+   "redundant_with": [],
+   "provenance": {"kind": "controller_seed", "basis": "docs/CLAIMS.md (no tortuosity or 3-D claims from 2-D sections)"}
+  }
+ ],
+ "capabilities": [
+  {
+   "id": "capability:eds",
+   "name": "EDS / elemental mapping",
+   "capability_type": "spectroscopy",
+   "why_current_workflow_cannot_resolve": "BSE contrast cannot distinguish a finer specified additive from a different lower-Z phase; no further BSE capture resolves chemistry.",
+   "blindspot_refs": [{"batch": "Batch_3", "collection": "rims", "id": "composition:M2060"}],
+   "decision_refs": [{"batch": "Batch_3", "collection": "entities", "id": "M2060", "path": "leverage"}],
+   "existing_capability_substitutes": [
+    {"id": "bse_grey_level", "label": "BSE grey level of the fines (mean-Z contrast)", "ruled_out": true,
+     "basis": [{"batch": "Batch_3", "collection": "rims", "id": "composition:M2060", "path": "statement"}, "record:rl11"],
+     "note": "the fines sit at the dim end of the approved range: consistent with a finer additive or with a lower-Z phase"},
+    {"id": "low_kv_bse", "label": "low-kV, higher-magnification BSE (controller ZOOM)", "ruled_out": null, "basis": [],
+     "note": "may separate sub-surface signal from a lower-Z phase; cannot establish elemental identity. Not yet assessed."}
+   ],
+   "integration": {
+    "requirements": ["EDS detector on the SEM", "spectra co-registered with BSE fields", "paired acquisition on approved micrographs"],
+    "burden": "medium",
+    "acquisition_cost_class": "medium",
+    "workflow_effect": "one extra modality pass on flagged micrographs only",
+    "data_interface_requirements": ["per-object element ratios keyed to engine object classes", "composition becomes an acquired dimension in epistemic-field/1"],
+    "acceptable": null
+   },
+   "provenance": {"kind": "controller_seed", "basis": "dimension composition would_require EDS; EDS action rationale and cost class in epistemic-field/1"}
+  },
+  {
+   "id": "capability:tomography_3d",
+   "name": "3-D tomography (FIB-SEM or X-ray CT)",
+   "capability_type": "volumetric imaging",
+   "why_current_workflow_cannot_resolve": "Cross-sections are 2-D; connectivity and tortuosity are 3-D properties.",
+   "existing_capability_substitutes": [
+    {"id": "more_sections", "label": "more independent 2-D sections (controller SECTIONS)", "ruled_out": null, "basis": [],
+     "note": "constrains lot prevalence, not 3-D connectivity. Not yet assessed."}
+   ],
+   "provenance": {"kind": "controller_seed", "basis": "docs/CLAIMS.md"}
+  }
+ ],
+ "papers": [],
+ "records": [
+  {"id": "record:engine.scale_M2060", "kind": "engine_fact", "title": "Scale rim: the excess high-Z population piles up at the detection floor",
+   "field_ref": {"batch": "Batch_3", "collection": "rims", "id": "scale:M2060", "path": "basis"},
+   "assessments": [{"target": "marker:fines_subfloor_size", "gate": "measurability", "outcome": "inconclusive",
+                    "claim": "The population is truncated by the current pixel size: not computable from existing micrographs, observable with a finer BSE pixel."}]},
+  {"id": "record:engine.composition_M2060", "kind": "engine_fact", "title": "Composition rim: BSE alone cannot identify the deviating phase",
+   "field_ref": {"batch": "Batch_3", "collection": "rims", "id": "composition:M2060", "path": "statement"},
+   "assessments": [{"target": "marker:high_z_composition", "gate": "measurability", "outcome": "failed",
+                    "claim": "BSE alone cannot separate a finer additive from a different lower-Z phase."}]},
+  {"id": "record:rl4", "kind": "project_record", "title": "Research log #4: acquisition differs per micrograph",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 4 | Acquisition is constant"}, "assessments": []},
+  {"id": "record:rl5", "kind": "project_record", "title": "Research log #5: learned latent progression (DINOv2)",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 5 | Latent progression (learned)"},
+   "assessments": [
+    {"target": "marker:latent_progression", "gate": "measurability", "outcome": "passed", "claim": "The embedding was computed from existing crops of every micrograph."},
+    {"target": "marker:latent_progression", "gate": "robustness", "outcome": "failed",
+     "claim": "The leading axis tracks black level (ρ≈0.8) and disagrees across detectors and normalisations (|ρ| 0.07–0.25); a 1.5 px blur moves a tile about as far as the gap between micrographs."}]},
+  {"id": "record:rl6", "kind": "project_record", "title": "Research log #6: no progression in robust KPIs",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 6 | Latent progression (KPIs)"},
+   "assessments": [{"target": "marker:latent_progression", "gate": "scientific_relevance", "outcome": "failed",
+                    "claim": "Micrograph-level robust KPIs show no coherent dominant axis: discrete micrograph offsets, not a continuum."}]},
+  {"id": "record:rl7", "kind": "project_record", "title": "Research log #7: multiscale scaling exponents",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 7 | Multiscale / geometric signature differs"},
+   "assessments": [
+    {"target": "marker:multiscale_heterogeneity", "gate": "measurability", "outcome": "passed", "claim": "Computed from existing segmentations for every micrograph: exponents −0.5…−0.7 (clustered, not random)."},
+    {"target": "marker:multiscale_heterogeneity", "gate": "decision_value", "outcome": "failed",
+     "claim": "Between-micrograph ICC 0.2–0.3: a property of the material class, not discriminating between micrographs."}]},
+  {"id": "record:rl11", "kind": "project_record", "title": "Research log #11: M2060 has an excess of fine high-Z objects",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 11 | M2060 has a finer additive"},
+   "assessments": [{"target": "marker:high_z_composition", "gate": "decision_value", "outcome": "passed",
+                    "claim": "The excess drives the Batch 3 REJECT; its chemistry, or a sub-surface fraction, is uncertain (fines at the dim end of the approved BSE range)."}]},
+  {"id": "record:claims_2d", "kind": "project_record", "title": "Claims: no 3-D or tortuosity claims from 2-D sections",
+   "source": {"path": "docs/CLAIMS.md", "locator": "3-D particle sizes, absolute porosity or tortuosity"},
+   "assessments": [{"target": "marker:pore_connectivity_3d", "gate": "measurability", "outcome": "failed",
+                    "claim": "The dataset is 2-D sections of non-infiltrated pores; connectivity and tortuosity cannot be measured from it."}]}
+ ],
+ "reviews": [
+  {"target": "marker:multiscale_heterogeneity", "decision": "reject", "by": "project research log", "date": "2026-10-03",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 7 | Multiscale / geometric signature differs"}, "note": "killed: not discriminating between micrographs"},
+  {"target": "marker:latent_progression", "decision": "reject", "by": "project research log", "date": "2026-10-03",
+   "source": {"path": "docs/RESEARCH_LOG.md", "locator": "| 5 | Latent progression (learned)"}, "note": "pseudotime abandoned"}
+ ]
+}

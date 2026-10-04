@@ -1,0 +1,12 @@
+# One surface: the dashboard uses the Evidence Instrument's own page colours, so the embedded instrument is seamless
+# with the page (and never sits on Streamlit's dark theme).
+[theme]
+base = "light"
+backgroundColor = "#e4e3df"
+secondaryBackgroundColor = "#dad9d4"
+textColor = "#1f1e1b"
+primaryColor = "#1f1e1b"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"

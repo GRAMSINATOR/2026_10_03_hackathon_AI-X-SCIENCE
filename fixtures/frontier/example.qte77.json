@@ -1,0 +1,85 @@
+{
+ "schema_version": "marker-research/1",
+ "bundle": {
+  "id": "example.qte77",
+  "kind": "fixture",
+  "produced_by": "FIXTURE: hand-written example of a research-agent bundle (not produced by qte77, not literature)",
+  "produced_at": "2026-10-04",
+  "notes": "Synthetic placeholders that show the ingestion shape and how papers, contradictions and new candidates render. Every title is a placeholder; there are no DOIs or links. By rule, nothing in this bundle advances a gate, a demand or a state."
+ },
+ "markers": [
+  {
+   "id": "marker:fines_contaminant_screen",
+   "name": "Contaminant elements in the fine fraction",
+   "family": "composition",
+   "proposition": "FIXTURE candidate: screens the fine high-Z fraction for elements absent from the approved additive.",
+   "scientific_definition": "Presence of elements in the fine high-Z fraction that are absent from the approved additive.",
+   "measurement_definition": "Element list per fine object from co-registered spectroscopy; compared with the approved additive.",
+   "current_capture_compatible": false,
+   "required_modalities": ["elemental spectroscopy"],
+   "required_capabilities": ["capability:eds"],
+   "blindspot_refs": [{"batch": "Batch_3", "collection": "rims", "id": "composition:M2060"}],
+   "why_relevant": "FIXTURE: illustrates a second marker demand converging on the same capability.",
+   "provenance": {"kind": "fixture"}
+  }
+ ],
+ "papers": [
+  {
+   "id": "paper:fixture-hrbse-fines",
+   "title": "FIXTURE · Placeholder study: sub-micrometre additive size distributions from high-resolution BSE",
+   "authors": ["Placeholder, A."],
+   "year": null,
+   "venue": "fixture placeholder (not a publication)",
+   "doi": null,
+   "url": null,
+   "independence_group": "fixture-group-a",
+   "assessments": [
+    {"target": "marker:fines_subfloor_size", "gate": "scientific_relevance", "direction": "SUPPORTIVE", "directness": "adjacent", "method_strength": "moderate",
+     "transferability": {"material": "similar", "modality": "same", "scale": "same", "task": "similar", "process": "unknown"},
+     "claim": "FIXTURE: finer BSE pixels recover a sub-floor fine mode that coarse pixels truncate.",
+     "note": "Placeholder showing an adjacent, moderate, transferable source."}
+   ],
+   "provenance": {"kind": "fixture", "retrieved_by": "none (hand-written)", "retrieved_at": "2026-10-04"}
+  },
+  {
+   "id": "paper:fixture-eds-mapping",
+   "title": "FIXTURE · Placeholder study: elemental mapping separates additive grades in electrode cross-sections",
+   "authors": ["Placeholder, B."],
+   "year": null,
+   "venue": "fixture placeholder (not a publication)",
+   "doi": null,
+   "url": null,
+   "independence_group": "fixture-group-b",
+   "assessments": [
+    {"target": "capability:eds", "gate": "literature_convergence", "direction": "SUPPORTIVE", "directness": "direct", "method_strength": "strong",
+     "transferability": {"material": "similar", "modality": "same", "scale": "similar", "task": "same", "process": "unknown"},
+     "claim": "FIXTURE: element ratios from co-registered spectroscopy distinguish two additive grades that BSE shows alike.",
+     "note": "Placeholder showing a STRONG DIRECT source."},
+    {"target": "marker:high_z_composition", "gate": "scientific_relevance", "direction": "SUPPORTIVE", "directness": "direct", "method_strength": "strong",
+     "transferability": {"material": "similar", "modality": "same", "scale": "similar", "task": "same", "process": "unknown"},
+     "claim": "FIXTURE: phase identity of the bright fraction is resolvable by elemental spectroscopy.",
+     "note": "The same source can bear on a marker and on a capability with separate assessments."}
+   ],
+   "provenance": {"kind": "fixture", "retrieved_by": "none (hand-written)", "retrieved_at": "2026-10-04"}
+  },
+  {
+   "id": "paper:fixture-eds-resolution",
+   "title": "FIXTURE · Placeholder study: spectroscopy signal volume limits identification of sub-micrometre particles",
+   "authors": ["Placeholder, C."],
+   "year": null,
+   "venue": "fixture placeholder (not a publication)",
+   "doi": null,
+   "url": null,
+   "independence_group": "fixture-group-c",
+   "assessments": [
+    {"target": "capability:eds", "gate": "literature_convergence", "direction": "CONTRADICTORY", "directness": "adjacent", "method_strength": "strong",
+     "transferability": {"material": "similar", "modality": "same", "scale": "same", "task": "similar", "process": "unknown"},
+     "claim": "FIXTURE: at conventional accelerating voltages the signal volume exceeds sub-micrometre fines, so element ratios mix with the matrix.",
+     "note": "Placeholder showing that contradictory evidence stays visible and can contest a gate."}
+   ],
+   "provenance": {"kind": "fixture", "retrieved_by": "none (hand-written)", "retrieved_at": "2026-10-04"}
+  }
+ ],
+ "records": [],
+ "reviews": []
+}

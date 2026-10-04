@@ -6,7 +6,7 @@ from multiprocessing import Pool
 
 import numpy as np
 
-from . import explain, field, hero, provenance, spatial, stats
+from . import brief, explain, field, hero, instrument, provenance, spatial, stats
 from .features import CACHE, process_field
 from .io import discover
 
@@ -118,4 +118,12 @@ def assess(batch_dir, workers=None, ref=None):
     json.dump(_clean(res['field']), open(fpath, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
     open(os.path.join(REPORTS, batch, 'evidence_field.html'), 'w', encoding='utf-8').write(
         hero.render(json.load(open(fpath, encoding='utf-8'))))
+    # human decision layer: governed brief derived from the contract only, checked against it before anything renders it
+    F = json.load(open(fpath, encoding='utf-8'))
+    B = brief.write(F, os.path.join(REPORTS, batch, 'brief.json'))
+    bad = brief.check(B, F)
+    if bad:
+        raise ValueError(f'decision brief incoherent with the field: {bad[:5]}')
+    if os.path.exists(instrument.DIST):   # primary renderer (build once: cd renderer && npm run build)
+        open(os.path.join(REPORTS, batch, 'instrument.html'), 'w', encoding='utf-8').write(instrument.render(F, brief=B))
     return res

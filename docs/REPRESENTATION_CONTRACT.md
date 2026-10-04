@@ -7,13 +7,15 @@ scientific model (qc.stats · qc.spatial · qc.robustness · qc.provenance)
 reports/<batch>/field.json        ← the uncertainty field: renderer-independent epistemic state
         │  (JSON only; no Python engine needed)
         ▼
-renderer(s): qc/hero.py = V1 exploratory/diagnostic renderer · tables · SVG · R3F · …
+renderer(s): renderer/ = Evidence Instrument (React Three Fiber, primary; docs/RENDERER_INSTRUMENT.md) ·
+             qc/hero.py = V1 exploratory/diagnostic renderer (legacy, parity checks) · tables · …
 ```
 
 * Schema: `schema/epistemic_field.v1.schema.json` (JSON Schema 2020-12).
 * Coherence rules that a schema cannot express live in `qc/contract.py:check`: referential integrity, status vs thresholds,
   scrutiny logic, shares summing to 1, leverage vs pivotal, action triggers resolvable, and no presentation vocabulary.
-* Canonical fixture: `fixtures/epistemic_field.Batch_3.json` plus `fixtures/assets/` (BSE thumbnails at 8× downsampling).
+* Canonical fixtures: `fixtures/epistemic_field.Batch_3.json` (reject) and `.Batch_2.json` (accept) plus `fixtures/assets/`:
+  BSE thumbnails and registered engine segmentation (`*_seg.png`, labels 0 pore / 1 matrix / 2 high-Z) at 8× downsampling.
   Regenerate with `python -m qc fixture reports/Batch_3`.
 * Tests: `tests/test_contract.py` (schema, coherence, non-vacuity, reproducibility from the engine, renderer independence,
   no invented geometry) and `tests/test_field.py` (the preserved scientific claims).

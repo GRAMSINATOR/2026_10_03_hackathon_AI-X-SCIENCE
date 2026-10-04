@@ -6,3 +6,16 @@ reports/
 work/emb/*.npz
 work/viz/*.html
 work/*.log
+renderer/node_modules/
+
+# local visual design references (development only; never shipped or committed)
+refs/
+
+# Sponsor micrograph-derived imagery (issue #4): never commit NEW files of these kinds until publication consent is
+# confirmed. Ignore rules do not untrack files already in Git; those need an explicit decision (see docs/PUBLIC_MODE.md).
+fixtures/assets/
+work/viz/*.png
+work/viz/*.jpg
+work/instrument_*.html
+# derived public bundle output (python -m qc bundle)
+public_bundle/

@@ -2,6 +2,7 @@
         python -m qc assess data/Batch_3 [...]     (verdict + report for incoming batches)"""
 import argparse
 import json
+import os
 
 from . import pipeline
 
@@ -37,7 +38,24 @@ def main():
     b.add_argument('batches', nargs='+')
     for p in (a, b):
         p.add_argument('--workers', type=int, default=None)
+    pv = sub.add_parser('provenance', help='export the tile -> parent micrograph map (derived numbers only)')
+    pv.add_argument('--out', default=pipeline.REPORTS)
+    bu = sub.add_parser('bundle', help='export an image-free derived bundle for public hosting')
+    bu.add_argument('out')
+    bu.add_argument('--batches', nargs='*', default=None)
     args = ap.parse_args()
+    if args.cmd == 'provenance':
+        from . import provmap
+        doc = provmap.export(args.out)
+        linked = [p for p, v in doc['parents'].items() if v['in_approved_reference']]
+        print(f"{doc['n_tiles']} tiles -> {doc['n_parents']} parent micrographs ({len(linked)} approved) -> "
+              f"{os.path.join(args.out, 'provenance_map.csv')} / .json")
+        return
+    if args.cmd == 'bundle':
+        from . import bundle
+        r = bundle.export(args.out, args.batches)
+        print(f"image-free bundle: {r['out']} ({', '.join(r['batches'])}); check passed")
+        return
     if args.cmd == 'fixture':
         from . import contract
         path = contract.export_fixture(args.report_dir, args.out)

@@ -39,9 +39,18 @@ def export_fixture(report_dir, out_dir, asset_src='cache/fields'):
             im.resize((im.width // 2, im.height // 2)).save(os.path.join(out_dir, rel), quality=80)
             assets[fld['id']] = dict(image=rel, detector='BSE', downsample=8, image_px_um=fld['px_nm'] * 8 / 1000,
                                      width_um=fld['width_um'], height_um=fld['height_um'])
+            lab = os.path.join(asset_src, f"{fld['id']}_lab.png")
+            if os.path.exists(lab):   # registered segmentation produced by the engine (same frame as the BSE image)
+                srel = f"assets/{fld['id']}_seg.png"
+                L = Image.open(lab)
+                L.resize((L.width // 2, L.height // 2), Image.NEAREST).save(os.path.join(out_dir, srel), optimize=True)
+                assets[fld['id']]['segmentation'] = dict(image=srel, encoding={'0': 'pore', '1': 'matrix', '2': 'high_z'},
+                                                         image_px_um=fld['px_nm'] * 8 / 1000)
     fx = normalise(dict(f, assets=assets))
     path = os.path.join(out_dir, f"epistemic_field.{f['context']['batch']}.json")
     json.dump(fx, open(path, 'w', encoding='utf-8'), indent=1, ensure_ascii=False)
+    from . import brief   # the matching governed decision brief, derived from the fixture itself
+    brief.write(fx, os.path.join(out_dir, f"decision_brief.{f['context']['batch']}.json"))
     return path
 
 

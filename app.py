@@ -8,12 +8,33 @@ import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 
-from qc import provenance, viz
-from qc.pipeline import REF_PATH, known_records
+from qc import brief, frontier, instrument, provenance, viz
+from qc.features import CACHE
+from qc.pipeline import REF_PATH, REPORTS, known_records
 from qc.stats import KPIS, SECONDARY
 
-st.set_page_config(page_title='Electrode batch QC · Polaron Track 4', layout='wide', page_icon='🔬')
+# Modes. QC_PUBLIC=1: derived results only (no data/, never runs the pipeline). QC_PUBLIC_IMAGES: micrograph-derived
+# imagery (micrographs, segmentation, thumbnails, mosaics, embedded image payloads); off by default in public mode.
+# Paths follow QC_REF / QC_REPORTS / QC_CACHE (and QC_DATA for raw folders). See docs/PUBLIC_MODE.md.
+PUBLIC = os.environ.get('QC_PUBLIC') == '1'
+IMAGES = os.environ.get('QC_PUBLIC_IMAGES', '0' if PUBLIC else '1') == '1'
+DATA = os.environ.get('QC_DATA', 'data')
+SENS = os.path.join(os.path.dirname(os.path.normpath(CACHE)), 'sens', 'summary.json')
+PROV_MAP = os.path.join(REPORTS, 'provenance_map.json')
+WITHHELD = 'Micrograph imagery withheld: this deployment shows derived numbers only.'
+
+st.set_page_config(page_title='Electrode batch QC · Polaron Track 4', layout='wide', page_icon='🔬', initial_sidebar_state='collapsed')
+# one surface with the instrument (theme in .streamlit/config.toml); no sidebar; a compact header row
 st.markdown("""<style>
+[data-testid="stSidebar"], [data-testid="stSidebarCollapsedControl"], [data-testid="collapsedControl"] {display: none !important;}
+.stApp, header[data-testid="stHeader"] {background: #e4e3df;}
+header[data-testid="stHeader"] {height: 0; min-height: 0;}
+[data-testid="stMainBlockContainer"], .block-container {padding: .55rem 1.1rem 1.2rem; max-width: 1940px;}
+[data-testid="stMainBlockContainer"] > div > div > [data-testid="stHorizontalBlock"]:first-of-type {gap: .6rem; margin-bottom: -.4rem;}
+[data-testid="stMainBlockContainer"] > div > div > [data-testid="stHorizontalBlock"]:first-of-type [data-baseweb="select"] > div
+  {min-height: 30px; font-size: 12.5px; background: #dad9d4; border: 0; box-shadow: inset -1px 2px 4px rgba(40,36,30,.12);}
+[data-testid="stMainBlockContainer"] > div > div > [data-testid="stHorizontalBlock"]:first-of-type p {font-size: 12px; color: #8b8880;}
+iframe {border: 0;}
 .verdict {border-radius: 10px; padding: 18px 22px; margin-bottom: 8px; color: #0b0b0b; background: #fcfcfb; border: 1px solid rgba(11,11,11,.10);}
 .verdict h1 {margin: 0; font-size: 2.1rem;} .verdict p {margin: 4px 0 0 0; color: #52514e;}
 .chip {display:inline-block; padding: 2px 8px; border-radius: 6px; font-size: .85rem; margin-right: 6px; border: 1px solid rgba(11,11,11,.12);}
@@ -27,67 +48,113 @@ def load_json(path, mtime):
 
 @st.cache_data
 def all_chains(mtime):
-    return provenance.build(known_records(), ref['name'])
+    """Every known parent micrograph as a tile chain. Prefers the exported map (derived numbers); recomputing needs the
+    local engine cache (edge strips), which a public bundle does not contain."""
+    if os.path.exists(PROV_MAP):
+        parents = json.load(open(PROV_MAP))['parents']
+        return {p: [k for run in v['runs'] for k in (run + [None])][:-1] for p, v in parents.items()}
+    return provenance.build(known_records(), ref['name'])['chains']
+
+
+def _runs(chain):
+    """Split a tile chain (None = gap of unknown separation) into runs of abutting tiles."""
+    runs = [[]]
+    for k in chain:
+        if k is None:
+            runs.append([])
+        else:
+            runs[-1].append(k)
+    return [r for r in runs if r]
+
+
+@st.cache_data
+def render_instrument(path, mtime, images, research=()):
+    F = json.load(open(path, encoding='utf-8'))
+    html = instrument.render(F, images=images, brief=brief.build(F))   # brief derived from the same contract
+    return frontier.attach(html, REPORTS)   # + lab-level Marker Frontier (research/ bundles; `research` = cache key)
 
 
 if not os.path.exists(REF_PATH):
-    st.error('No reference yet. Run:  python -m qc reference data/Batch_1 --noise-from data/Batch_2 data/Batch_3')
+    st.error('No approved reference found (QC_REF). ' + ('This derived bundle is incomplete.' if PUBLIC else
+             'Run:  python -m qc reference data/Batch_1 --noise-from data/Batch_2 data/Batch_3'))
     st.stop()
 ref = load_json(REF_PATH, os.path.getmtime(REF_PATH))
 
-# ---------------- sidebar
-st.sidebar.title('Electrode batch QC')
-st.sidebar.caption(f"Approved reference: **{ref['name']}** · {len(ref['micrographs'])} micrographs · {ref['px_nm']:.1f} nm/px")
-batches = sorted(d for d in os.listdir('data') if os.path.isdir(os.path.join('data', d)))
+# ---------------- discreet control row (top left): batch, run, reference; dev-only controls behind a popover
+# presentation mode by default; dev mode (QC_DEV=1 or ?dev=1) adds the renderer switch and the legacy colour key
+DEV = os.environ.get('QC_DEV') == '1' or st.query_params.get('dev') == '1'
+have_data = not PUBLIC and os.path.isdir(DATA)
+reported = {b for b in (os.listdir(REPORTS) if os.path.isdir(REPORTS) else []) if os.path.exists(os.path.join(REPORTS, b, 'result.json'))}
+raw = {b for b in os.listdir(DATA) if os.path.isdir(os.path.join(DATA, b))} if have_data else set()
+batches = sorted(reported | raw)
+if not batches:
+    st.error('No assessed batches found (QC_REPORTS).')
+    st.stop()
 default = next((i for i, b in reversed(list(enumerate(batches))) if b != ref['name']), 0)
-batch = st.sidebar.selectbox('Batch to assess', batches, index=default)
-res_path = os.path.join('reports', batch, 'result.json')
-if st.sidebar.button('Run / refresh assessment', type='primary') or not os.path.exists(res_path):
-    with st.spinner(f'Segmenting and measuring {batch} …'):
-        out = subprocess.run([sys.executable, '-m', 'qc', 'assess', os.path.join('data', batch)], capture_output=True, text=True)
-    if out.returncode != 0:
-        st.sidebar.error(out.stderr[-2000:])
-        st.stop()
-    st.cache_data.clear()
-res = load_json(res_path, os.path.getmtime(res_path))
-d = res['decision']
-st.sidebar.markdown('---')
-st.sidebar.markdown('**Colour key**  \n'
+bar = st.columns([0.8, 0.62, 5.1, 0.4] if DEV else [0.8, 0.62, 5.5], vertical_alignment='center')
+batch = bar[0].selectbox('Batch', batches, index=default, label_visibility='collapsed')
+res_path = os.path.join(REPORTS, batch, 'result.json')
+can_run = have_data and batch in raw
+bar[2].caption(f"approved reference {ref['name']} · {len(ref['micrographs'])} micrographs · {ref['px_nm']:.1f} nm/px"
+               + (' · public mode, derived results only' + ('' if IMAGES else ', no imagery') if PUBLIC else ''))
+renderer = 'instrument'
+if DEV:
+    with bar[3].popover('dev'):
+        # primary renderer (contract epistemic-field/1 -> renderer); legacy kept for parity checks
+        renderer = st.radio('Renderer', ['instrument', 'legacy'] if IMAGES else ['instrument'], horizontal=True,
+                            help='instrument = React Three Fiber Evidence Instrument; legacy = V1 exploratory HTML renderer '
+                                 '(embeds imagery, so it is unavailable without imagery)')
+        st.markdown('**Colour key (legacy)**  \n'
                     f"<span class='chip' style='border-color:{viz.ROLE['baseline']}'>■ approved baseline</span>"
                     f"<span class='chip' style='border-color:{viz.ROLE['batch']}'>■ this batch</span>"
                     f"<span class='chip' style='border-color:{viz.ROLE['other']}'>■ other batches</span>", unsafe_allow_html=True)
-st.sidebar.markdown('Overlays: <span style="color:#2a78d6">■ pores</span> · <span style="color:#eb6834">■ high-Z additive</span>',
+        st.markdown('Overlays: <span style="color:#2a78d6">■ pores</span> · <span style="color:#eb6834">■ high-Z additive</span>',
                     unsafe_allow_html=True)
-
-# ---------------- hero: Evidence Field (the uncertainty field as a control surface)
-hero_path = os.path.join('reports', batch, 'evidence_field.html')
-if os.path.exists(hero_path) and d['verdict'] != 'REFERENCE':
-    components.html(open(hero_path, encoding='utf-8').read(), height=1130, scrolling=True)
-    st.caption('V1 exploratory renderer of the uncertainty-field contract epistemic-field/1 (docs/REPRESENTATION_CONTRACT.md). '
-               'The QC proof layer below holds the primitive statistics.')
-    st.markdown('---')
-    st.markdown('### QC proof layer')
-
-# ---------------- verdict banner
-col, icon = viz.VERDICT[d['verdict']]
-st.markdown(f"""<div class='verdict' style='border-left: 10px solid {col}'>
+# the pipeline runs only on an explicit click, never on page load
+if can_run and bar[1].button('Run / refresh', type='tertiary', icon=':material/refresh:', help=f'Segment and measure {batch} again'):
+    with st.spinner(f'Segmenting and measuring {batch} …'):
+        out = subprocess.run([sys.executable, '-m', 'qc', 'assess', os.path.join(DATA, batch)], capture_output=True, text=True)
+    if out.returncode != 0:
+        st.error(out.stderr[-2000:])
+        st.stop()
+    st.cache_data.clear()
+if not os.path.exists(res_path):
+    st.info(f'No assessment for {batch} yet. ' + ('Click "Run / refresh" to measure it.' if can_run else
+            'It is not part of this derived bundle.'))
+    st.stop()
+res = load_json(res_path, os.path.getmtime(res_path))
+d = res['decision']
+field_path = os.path.join(REPORTS, batch, 'field.json')
+hero_path = os.path.join(REPORTS, batch, 'evidence_field.html')
+view = None
+if d['verdict'] != 'REFERENCE':
+    if renderer == 'instrument' and os.path.exists(field_path) and os.path.exists(instrument.DIST):
+        view = render_instrument(field_path, os.path.getmtime(field_path), IMAGES, frontier.signature(REPORTS))   # contract -> renderer, per mode
+    elif renderer == 'legacy' and IMAGES and os.path.exists(hero_path):
+        view = open(hero_path, encoding='utf-8').read()
+if view:
+    components.html(view, height=1900 if renderer == 'instrument' else 1130, scrolling=True)
+    if DEV:
+        st.caption('Renders only the uncertainty-field contract epistemic-field/1 (docs/REPRESENTATION_CONTRACT.md).')
+    proof = st.expander('QC proof layer · primitive statistics', expanded=False)   # the instrument already carries the verdict
+else:
+    proof = st.container()
+    # ---------------- verdict banner (only when no renderer view is available: the instrument carries the verdict itself)
+    col, icon = viz.VERDICT[d['verdict']]
+    st.markdown(f"""<div class='verdict' style='border-left: 10px solid {col}'>
 <h1>{icon} {d['verdict']} <span style='font-size:1.1rem;color:#52514e;font-weight:400'>— {batch}</span></h1>
 <p>{res['summary']}</p></div>""", unsafe_allow_html=True)
-c1, c2, c3, c4 = st.columns(4)
+    for r in d['reasons']:
+        st.markdown(f'- {r}')
+c1, c2, c3, c4 = proof.columns(4)
 c1.metric('Independent micrographs', d.get('n_independent', d['n_micrographs']), help='Fields are tiles of parent micrographs; the micrograph is the statistical unit. Micrographs continuous with approved baseline sections are not counted.')
 c2.metric('Fields (tiles)', res['n_fields'])
 c3.metric('Micrographs outside 99% envelope', d['d99'], help='on robust KPIs (additive phase)')
 c4.metric('Batch p-value', f"{d['p_batch']:.3f}" if d['verdict'] != 'REFERENCE' else '—',
           help='Probability that a batch drawn from the approved population would look at least this deviant '
                '(parametric bootstrap with small-baseline uncertainty).')
-for r in d['reasons']:
-    st.markdown(f'- {r}')
-if res.get('actions'):
-    with st.expander('Recommended actions', expanded=d['verdict'] != 'ACCEPT'):
-        for a in res['actions']:
-            st.markdown(f'- {a}')
 
-tabs = st.tabs(['Why: evidence', 'Material-state map', 'Provenance', 'Field explorer', 'Method & uncertainty'])
+tabs = proof.tabs(['Why: evidence', 'Material-state map', 'Provenance', 'Field explorer', 'Method & uncertainty'])
 
 # ---------------- evidence
 with tabs[0]:
@@ -123,7 +190,10 @@ with tabs[0]:
                 m = mg_by[t['parent']]
                 worst = max(KPIS, key=lambda k: abs(m['score'][k]['t'] or 0))
                 fid = max(m['tile_kpi'], key=lambda f: abs((m['tile_kpi'][f].get(worst) or 0) - ref['kpi'][worst]['mean']))
-                st.image(viz.overlay(f"{res['batch']}__{fid}"), caption=f'{fid}: BSE with segmentation (most deviating tile)')
+                if IMAGES:
+                    st.image(viz.overlay(f"{res['batch']}__{fid}"), caption=f'{fid}: BSE with segmentation (most deviating tile)')
+                else:
+                    st.caption(f'Most deviating tile: {fid}. {WITHHELD}')
 
 # ---------------- state map
 with tabs[1]:
@@ -147,10 +217,20 @@ with tabs[2]:
                 'Border colour = batch folder the tile came from. Several micrographs span **multiple batch folders**, so '
                 'tiles are not independent samples: all statistics are computed per micrograph.')
     show_all = st.checkbox('Show every known micrograph', value=False)
-    prov = all_chains(max(os.path.getmtime(os.path.join('cache', 'fields', f)) for f in os.listdir('cache/fields')))
-    chains = prov['chains'] if show_all else res['chains']
+    stamps = [os.path.join(CACHE, f) for f in os.listdir(CACHE)] if os.path.isdir(CACHE) else []
+    chains = all_chains(max([os.path.getmtime(p) for p in stamps + [PROV_MAP] if os.path.exists(p)], default=0)) if show_all else res['chains']
     statuses = {m['parent']: m['status'] for m in res['micrographs']}
-    st.image(viz.mosaic(chains, res['batch'], ref['name'], statuses), width='stretch')
+    if IMAGES:
+        st.image(viz.mosaic(chains, res['batch'], ref['name'], statuses), width='stretch')
+    else:   # the same chains as numbers: parent, runs of abutting tiles (with their batch), status in this batch
+        rows = []
+        for pid, ch in chains.items():
+            runs = ' | '.join(' → '.join(f"{k.split('__')[1]} ({k.split('__')[0].replace('Batch_', 'B')})" for k in run)
+                              for run in _runs(ch))
+            rows.append({'parent micrograph': pid, 'tiles (abutting runs; | = unknown separation)': runs,
+                         'tiles': sum(k is not None for k in ch), 'status in this batch': statuses.get(pid, '—')})
+        st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
+        st.caption(WITHHELD + ' Full tile → parent map: provenance_map.csv / .json (python -m qc provenance).')
     if res['links']:
         st.caption('Edge links (normalised cross-correlation of abutting edges; non-neighbours score ≈0 ± 0.15): ' +
                    ', '.join(f"{l['left'].split('__')[1]}→{l['right'].split('__')[1]} ({l['ncc']:.2f})" for l in res['links']))
@@ -163,12 +243,15 @@ with tabs[3]:
     fid = b.selectbox('Field', mg[pid]['fids'])
     key = f"{res['batch']}__{fid}"
     rec = viz.record(key)
-    dets = ['BSE'] + [x for x in ('SE2', 'InLens') if os.path.exists(os.path.join('cache', 'fields', f'{key}_{x}.jpg'))]
-    det = c.radio('Detector', dets, horizontal=True)
-    ov = e.checkbox('Segmentation overlay', value=True)
-    st.image(viz.overlay(key, det) if ov else viz.thumb(key, det), width='stretch',
-             caption=f"{fid} · {rec['detectors'].get(det, det)} · {rec['W'] * rec['px_nm'] / 1000:.0f} × {rec['H'] * rec['px_nm'] / 1000:.0f} µm · "
-                     f"{rec['px_nm']:.1f} nm/px (display downsampled 4×)")
+    size = f"{rec['W'] * rec['px_nm'] / 1000:.0f} × {rec['H'] * rec['px_nm'] / 1000:.0f} µm · {rec['px_nm']:.1f} nm/px"
+    if IMAGES:
+        dets = ['BSE'] + [x for x in ('SE2', 'InLens') if os.path.exists(os.path.join(CACHE, f'{key}_{x}.jpg'))]
+        det = c.radio('Detector', dets, horizontal=True)
+        ov = e.checkbox('Segmentation overlay', value=True)
+        st.image(viz.overlay(key, det) if ov else viz.thumb(key, det), width='stretch',
+                 caption=f"{fid} · {rec['detectors'].get(det, det)} · {size} (display downsampled 4×)")
+    else:
+        st.caption(f"{fid} · detectors {', '.join(rec['detectors'].values())} · {size}. {WITHHELD}")
     rows = []
     for k, meta in KPIS.items():
         R = ref['kpi'][k]
@@ -216,7 +299,7 @@ stretch/black-level/resolution changes; porosity and chord lengths are acquisiti
 **What is not claimed.** Chemistry of the bright phase (no EDS), 3-D sizes or absolute porosity (2-D sections of
 non-infiltrated pores), process origin of cracks (may be sample preparation), any tool-wear prediction, any material
 "trajectory" (pseudotime was tested: the leading latent axis changed with detector/normalisation and tracked black level).""")
-    sens = 'cache/sens/summary.json'
+    sens = SENS
     if os.path.exists(sens):
         st.subheader('Verdict sensitivity to analysis choices')
         S = json.load(open(sens))

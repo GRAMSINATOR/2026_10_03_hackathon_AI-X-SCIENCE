@@ -1,0 +1,180 @@
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "marker-research/1",
+ "title": "Research bundle (marker-research/1): the ingestion socket of the Marker Frontier",
+ "description": "One file per research run, dropped into research/. Bundles supply candidate markers, capability cases, paper evidence, project records and reviews. They never assert a state: qc/frontier.py derives gates and states. Score-like property names are rejected everywhere.",
+ "type": "object",
+ "required": ["schema_version", "bundle"],
+ "properties": {
+  "schema_version": {"const": "marker-research/1"},
+  "bundle": {
+   "type": "object",
+   "required": ["id", "kind", "produced_by"],
+   "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["controller_seed", "research_agent", "fixture"]},
+    "produced_by": {"type": "string"},
+    "produced_at": {"type": "string"},
+    "notes": {"type": "string"}
+   }
+  },
+  "markers": {"type": "array", "items": {"$ref": "#/$defs/marker"}},
+  "capabilities": {"type": "array", "items": {"$ref": "#/$defs/capability"}},
+  "papers": {"type": "array", "items": {"$ref": "#/$defs/paper"}},
+  "records": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+  "reviews": {"type": "array", "items": {"$ref": "#/$defs/review"}}
+ },
+ "propertyNames": {"$ref": "#/$defs/noScore"},
+ "$defs": {
+  "noScore": {"not": {"pattern": "[Ss]core|[Cc]onfidence|[Pp]robability|[Ll]ikelihood|[Cc]redence"}},
+  "markerId": {"type": "string", "pattern": "^marker:[a-z0-9_.-]+$"},
+  "capabilityId": {"type": "string", "pattern": "^capability:[a-z0-9_.-]+$"},
+  "fieldRef": {
+   "description": "A location in a loaded epistemic-field/1 document (same addressing as decision-brief/1 proof_refs, plus the batch).",
+   "type": "object",
+   "required": ["batch", "collection"],
+   "properties": {
+    "batch": {"type": "string"},
+    "collection": {"enum": ["rims", "missing_dimensions", "dimensions", "entities", "observations", "spatial_profiles", "actions", "decision", "summary", "context"]},
+    "id": {"type": "string"},
+    "path": {"type": ["string", "null"]}
+   }
+  },
+  "blindspotRef": {
+   "oneOf": [
+    {"type": "object", "required": ["batch", "collection", "id"],
+     "properties": {"batch": {"type": "string"}, "collection": {"enum": ["rims", "missing_dimensions"]}, "id": {"type": "string"}}, "additionalProperties": false},
+    {"type": "object", "required": ["general", "label"], "description": "A vocabulary gap that no loaded field instantiates (explicitly external).",
+     "properties": {"general": {"type": "string"}, "label": {"type": "string"}}, "additionalProperties": false}
+   ]
+  },
+  "basis": {
+   "type": "array",
+   "items": {"oneOf": [{"type": "string", "pattern": "^(record|paper):"}, {"$ref": "#/$defs/fieldRef"}]}
+  },
+  "provenance": {
+   "type": "object",
+   "properties": {
+    "kind": {"enum": ["controller_seed", "project_record", "engine_fact", "literature", "current_data_test", "research_agent", "fixture", "derived_stub"]},
+    "basis": {"type": "string"}, "retrieved_by": {"type": "string"}, "retrieved_at": {"type": "string"},
+    "query": {"type": "string"}, "source_api": {"type": "string"}, "note": {"type": "string"}
+   },
+   "propertyNames": {"$ref": "#/$defs/noScore"}
+  },
+  "marker": {
+   "type": "object",
+   "required": ["id", "name", "family", "proposition"],
+   "propertyNames": {"$ref": "#/$defs/noScore"},
+   "properties": {
+    "id": {"$ref": "#/$defs/markerId"},
+    "name": {"type": "string"},
+    "family": {"enum": ["scalar", "distribution", "spatial_pattern", "morphology", "cross_modality", "acquisition_signature", "spatial_statistic", "composition", "process_variation", "other"]},
+    "proposition": {"type": "string", "description": "one short scientific meaning"},
+    "scientific_definition": {"type": "string"},
+    "measurement_definition": {"type": "string"},
+    "why_relevant": {"type": "string"},
+    "decision_relevance": {"type": "string"},
+    "current_capture_compatible": {"type": ["boolean", "null"]},
+    "required_modalities": {"type": "array", "items": {"type": "string"}},
+    "required_capabilities": {"type": "array", "items": {"$ref": "#/$defs/capabilityId"}},
+    "capture_requirements": {"type": "string"},
+    "existing_data_test": {"type": "object", "properties": {"status": {"enum": ["not_run", "requires_acquisition"]}, "note": {"type": "string"}},
+                           "description": "a plan only: passed / failed / inconclusive come from records"},
+    "blindspot_refs": {"type": "array", "items": {"$ref": "#/$defs/blindspotRef"}},
+    "decision_refs": {"type": "array", "items": {"$ref": "#/$defs/fieldRef"}},
+    "known_confounds": {"type": "array", "items": {"type": "object", "required": ["id", "label"],
+     "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "controlled": {"type": ["boolean", "null"]}, "basis": {"$ref": "#/$defs/basis"}}}},
+    "known_failure_modes": {"type": "array", "items": {"type": "string"}},
+    "redundant_with": {"type": "array", "items": {"type": "object", "properties": {"ref": {"oneOf": [{"$ref": "#/$defs/fieldRef"}, {"$ref": "#/$defs/markerId"}]}, "increment": {"type": ["string", "null"]}}}},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "status": false
+   }
+  },
+  "capability": {
+   "type": "object",
+   "required": ["id", "name", "capability_type"],
+   "propertyNames": {"$ref": "#/$defs/noScore"},
+   "properties": {
+    "id": {"$ref": "#/$defs/capabilityId"},
+    "name": {"type": "string"},
+    "capability_type": {"type": "string"},
+    "why_current_workflow_cannot_resolve": {"type": "string"},
+    "non_substitutability_evidence": {"type": "string"},
+    "blindspot_refs": {"type": "array", "items": {"$ref": "#/$defs/blindspotRef"}},
+    "decision_refs": {"type": "array", "items": {"$ref": "#/$defs/fieldRef"}},
+    "existing_capability_substitutes": {"type": "array", "items": {"type": "object", "required": ["id", "label"],
+     "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "ruled_out": {"type": ["boolean", "null"]}, "basis": {"$ref": "#/$defs/basis"}, "note": {"type": "string"}}}},
+    "integration": {"type": ["object", "null"], "properties": {
+     "requirements": {"type": "array", "items": {"type": "string"}}, "burden": {"enum": ["low", "medium", "high"]},
+     "acquisition_cost_class": {"enum": ["low", "medium", "high"]}, "workflow_effect": {"type": "string"},
+     "data_interface_requirements": {"type": "array", "items": {"type": "string"}}, "acceptable": {"type": ["boolean", "null"]}}},
+    "provenance": {"$ref": "#/$defs/provenance"},
+    "status": false
+   }
+  },
+  "paperAssessment": {
+   "type": "object",
+   "required": ["target", "gate", "direction", "directness", "method_strength", "transferability", "claim"],
+   "propertyNames": {"$ref": "#/$defs/noScore"},
+   "properties": {
+    "target": {"oneOf": [{"$ref": "#/$defs/markerId"}, {"$ref": "#/$defs/capabilityId"}]},
+    "gate": {"enum": ["scientific_relevance", "robustness", "literature_convergence"]},
+    "direction": {"enum": ["SUPPORTIVE", "CONTRADICTORY", "NEUTRAL"]},
+    "directness": {"enum": ["direct", "adjacent", "indirect"], "description": "direct = tests this exact marker / capability question; adjacent = same question in a comparable system, or a closely related question; indirect = background or mechanism only"},
+    "method_strength": {"enum": ["strong", "moderate", "weak"]},
+    "transferability": {"type": "object", "required": ["material", "modality"],
+     "properties": {"material": {"$ref": "#/$defs/axis"}, "modality": {"$ref": "#/$defs/axis"}, "scale": {"$ref": "#/$defs/axis"}, "task": {"$ref": "#/$defs/axis"}, "process": {"$ref": "#/$defs/axis"}},
+     "additionalProperties": false},
+    "claim": {"type": "string", "description": "the exact proposition this source bears on"},
+    "note": {"type": "string", "description": "why this matters, in one line"}
+   }
+  },
+  "axis": {"enum": ["same", "similar", "different", "unknown"]},
+  "paper": {
+   "type": "object",
+   "required": ["id", "title", "assessments"],
+   "propertyNames": {"$ref": "#/$defs/noScore"},
+   "properties": {
+    "id": {"type": "string", "pattern": "^paper:"},
+    "title": {"type": "string"},
+    "authors": {"type": "array", "items": {"type": "string"}},
+    "year": {"type": ["integer", "null"]},
+    "venue": {"type": ["string", "null"]},
+    "doi": {"type": ["string", "null"]},
+    "url": {"type": ["string", "null"], "description": "canonical link; required (or a DOI) unless the paper is fixture"},
+    "independence_group": {"type": "string", "description": "papers sharing a group (same lab, dataset or derivative work) count as one independent source"},
+    "blindspot_refs": {"type": "array", "items": {"$ref": "#/$defs/blindspotRef"}},
+    "assessments": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/paperAssessment"}},
+    "provenance": {"$ref": "#/$defs/provenance"}
+   }
+  },
+  "record": {
+   "type": "object",
+   "required": ["id", "kind", "title"],
+   "propertyNames": {"$ref": "#/$defs/noScore"},
+   "properties": {
+    "id": {"type": "string", "pattern": "^record:"},
+    "kind": {"enum": ["project_record", "engine_fact", "current_data_test"]},
+    "title": {"type": "string"},
+    "field_ref": {"$ref": "#/$defs/fieldRef"},
+    "source": {"type": "object", "required": ["path"], "properties": {"path": {"type": "string"}, "locator": {"type": "string"}}},
+    "assessments": {"type": "array", "items": {"type": "object", "required": ["target", "gate", "outcome", "claim"],
+     "properties": {"target": {"oneOf": [{"$ref": "#/$defs/markerId"}, {"$ref": "#/$defs/capabilityId"}]},
+                    "gate": {"enum": ["scientific_relevance", "measurability", "robustness", "decision_value", "non_redundancy"]},
+                    "outcome": {"enum": ["passed", "failed", "inconclusive"]}, "claim": {"type": "string"}, "note": {"type": "string"}}}},
+    "provenance": {"$ref": "#/$defs/provenance"}
+   }
+  },
+  "review": {
+   "type": "object",
+   "required": ["target", "decision", "by", "date"],
+   "properties": {
+    "target": {"oneOf": [{"$ref": "#/$defs/markerId"}, {"$ref": "#/$defs/capabilityId"}]},
+    "decision": {"enum": ["admit", "reject", "recommend", "integrated", "defer"]},
+    "by": {"type": "string"}, "date": {"type": "string"}, "note": {"type": "string"},
+    "source": {"type": "object", "properties": {"path": {"type": "string"}, "locator": {"type": "string"}}},
+    "provenance": {"$ref": "#/$defs/provenance"}
+   }
+  }
+ }
+}

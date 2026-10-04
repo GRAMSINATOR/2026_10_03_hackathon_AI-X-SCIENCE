@@ -1,0 +1,12 @@
+Electrode batch QC from SEM (Polaron Track 4, London AI x Science hackathon, October 2026)
+Copyright 2026 GRAMSINATOR and contributors
+
+The source code in this repository is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Sponsor data are excluded from that licence. The SEM micrographs provided for the challenge, and any imagery derived
+from them, are NOT licensed under the Apache License. This includes micrograph crops and thumbnails, segmentation
+overlays and label images, mosaics, screenshots showing micrograph content, and image payloads embedded in generated
+pages. They remain subject to their original rights and terms. Their presence in this repository, or in its history,
+grants no licence to them.
+
+Evaluation layer (separate repository, Apache-2.0): https://github.com/qte77/2026-10-03-london-ai-science-hack
