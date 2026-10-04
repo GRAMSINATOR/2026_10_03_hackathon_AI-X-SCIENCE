@@ -90,8 +90,6 @@ function Main({ payload }) {
 
       {brief && <Hero brief={brief} onTrace={onTrace} traced={trace && trace.id} />}
 
-      <ReferenceComparison field={M.F} />
-
       <section className="deck examiner" ref={examRef} aria-label="Examiner Control Matrix">
         <div className="ex-head">
           <div><h2>EXAMINER CONTROL MATRIX</h2><span>proof and challenge surface · read the evidence through five lenses</span></div>
@@ -113,6 +111,7 @@ function Main({ payload }) {
       <details className="audit hatch">
         <summary><i className="hatch-pull" aria-hidden="true" /><span>SERVICE HATCH</span><b>Raw statistical proof</b></summary>
         <div className="auditbody">
+          <ReferenceComparison field={M.F} />
           <section><h4>Engine decision record</h4><ul>{M.meta.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
             <p className="muted">severity p = {fmt(M.F.decision.tests.severity_p)} · count p = {fmt(M.F.decision.tests.count_p)} · {M.F.decision.tests.combination} ·
               P(any of {M.F.decision.n_independent} outside 99% | reference frame) = {fmt(M.F.decision.null_calibration.p_any_outside_99)}</p></section>

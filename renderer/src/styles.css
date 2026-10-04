@@ -258,6 +258,7 @@ html, body { margin: 0; background: var(--page); color: var(--ink); font: 13px/1
   background: var(--grain), var(--face); box-shadow: var(--cut-deep); }
 .auditbody h4 { margin: 0 0 4px; color: var(--ink); font-weight: 680; } .auditbody ul { margin: 0; padding-left: 16px; }
 .auditbody td { padding: 1px 6px 1px 0; vertical-align: top; } .auditbody td:first-child { color: var(--mut); }
+.auditbody .refcmp { grid-column: 1 / -1; margin: 0; }
 
 /* laptop widths: same construction, tighter type, so the readout stays near half the viewport */
 @media (max-width: 1600px) {
