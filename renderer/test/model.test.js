@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { buildModel, keyVisual, STAGES, interpretation } from '../src/model/adapter.js';
 import { HUE, CATEGORY, chromaFromExceedance, mix } from '../src/model/palette.js';
-import { explainKey, explainStage, explainAction, legendFor } from '../src/model/explain.js';
+import { explainKey, explainStage, explainAction, actionPresentation, legendFor } from '../src/model/explain.js';
 import { populationSchedule, keyPhase } from '../src/model/wave.js';
 import { stackLayers, registration, layerForKey, prospective } from '../src/model/stack.js';
 
@@ -203,6 +203,18 @@ describe('explanation panel is linked to the keys', () => {
     const ext = explainAction(M3, idx(M3, 'EXTEND', 'M2060'));
     expect(ext.hue).toBe(M3.actions[idx(M3, 'EXTEND', 'M2060')].reach.hue);
     expect(ext.rows.find(r => r[0] === 'expected effect')[1]).toMatch(/698 µm.*start/);
+  });
+  it('compresses selected actions without changing their contract semantics', () => {
+    const repeat = actionPresentation(M3, idx(M3, 'REPEAT', 'M2060'));
+    expect(repeat.listLabel).toBe('M2060 · approved acquisition settings');
+    expect(repeat.why).toBe('Tests whether the decision-driving deviation in M2060 is acquisition-driven.');
+    expect(repeat.resolves).toBe('Acquisition vs material change');
+    expect(repeat).toMatchObject({ tier: 'T1', grounding: 'GROUNDED', cost: 'LOW COST' });
+    expect(repeat.leverage).toBe('DECISION-DRIVING — verdict changes to ACCEPT without M2060.');
+    expect(actionPresentation(M3, idx(M3, 'EDS')).grounding).toBe('PROSPECTIVE');
+    const accept = actionPresentation(M2, idx(M2, 'SECTIONS'));
+    expect(accept.why).toBe('Measures how widely the result extends across the lot.');
+    expect(accept.resolves).toBe('Lot prevalence');
   });
   it('pads carry a stage-specific second line', () => {
     expect(vis(M3, 'M2060:additive_density', 0).sub).toBe('z +6.7');

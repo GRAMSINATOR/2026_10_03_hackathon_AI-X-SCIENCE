@@ -1,16 +1,38 @@
 // Page order = information hierarchy: decision brief (what is known / not known / enough? / next) -> Examiner Control
 // Matrix (the proof and challenge surface) -> registered spatial evidence -> raw statistical proof (on demand).
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from 'react';
 import Instrument from './scene/Instrument.jsx';
 import Panel from './ui/Panel.jsx';
-import Hero from './ui/Hero.jsx';
+import Hero, { StatusReadout } from './ui/Hero.jsx';
+import { installGrain } from './ui/grain.js';
+import brandLogo from './assets/brand-logo.png';   // company mark (branding/), the only image the renderer ships
 import SpatialEvidence from './ui/SpatialEvidence.jsx';
 import MarkerFrontier from './ui/MarkerFrontier.jsx';   // recursive-research layer (marker-frontier/1); loads its own payload
 import { buildModel, interpretation, STAGES, formatValue, SPATIAL_LAYER_DIMS, MASK_OF_DIMENSION } from './model/adapter.js';
 import { navTarget } from './model/brief.js';
 import { loadPayload } from './data.js';
 
+// lens selector: a slide switch. One raised block travels in a recessed slot and seats in the detent of the chosen lens.
+function LensSelector({ stage, setStage }) {
+  const ref = useRef(null), [pos, setPos] = useState(null);
+  useLayoutEffect(() => {
+    const el = ref.current; if (!el) return;
+    const place = () => { const b = el.querySelectorAll('button')[stage]; if (b) setPos({ x: b.offsetLeft, w: b.offsetWidth }); };
+    place();
+    const ro = new ResizeObserver(place); ro.observe(el);
+    if (document.fonts) document.fonts.ready.then(place);
+    return () => ro.disconnect();
+  }, [stage]);
+  return (
+    <nav className="lens" ref={ref} aria-label="examiner lens">
+      {pos && <span className="lens-block" aria-hidden="true" style={{ transform: `translateX(${pos.x}px)`, width: pos.w }} />}
+      {STAGES.map((s, i) => <button key={s} className={i === stage ? 'on' : ''} onClick={() => setStage(i)} aria-pressed={i === stage}><span>{i + 1}</span>{s}</button>)}
+    </nav>
+  );
+}
+
 export default function App() {
+  useEffect(() => { installGrain(); }, []);
   const [payload, setPayload] = useState(null), [err, setErr] = useState(null);
   useEffect(() => { loadPayload().then(setPayload).catch(e => setErr(String(e))); }, []);
   if (err) return <div className="fatal">Could not load the evidence payload: {err}</div>;
@@ -59,18 +81,18 @@ function Main({ payload }) {
   return (
     <div className="app">
       <header className="bar">
-        <div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{M.meta.batch}</b><span className="muted">vs approved {M.meta.reference}</span></div>
-        <span className="bar-note">decision brief · every statement traces to its proof below</span>
+        <div className="ident"><span className="brand">EVIDENCE INSTRUMENT</span><b>{M.meta.batch}</b><span className="muted">{M.meta.role === 'reference' ? 'configured reference population · self-audit' : `vs approved ${M.meta.reference}`}</span></div>
+        <StatusReadout brief={brief} onTrace={onTrace} traced={trace && trace.id} />
+        <span className="bar-note">every statement traces to its proof below</span>
+        <img className="brand-logo" src={brandLogo} alt="Parallax" />
       </header>
 
       {brief && <Hero brief={brief} onTrace={onTrace} traced={trace && trace.id} />}
 
-      <section className="examiner" ref={examRef} aria-label="Examiner Control Matrix">
+      <section className="deck examiner" ref={examRef} aria-label="Examiner Control Matrix">
         <div className="ex-head">
           <div><h2>EXAMINER CONTROL MATRIX</h2><span>proof and challenge surface · read the evidence through five lenses</span></div>
-          <nav className="stages" aria-label="examiner lens">
-            {STAGES.map((s, i) => <button key={s} className={i === stage ? 'on' : ''} onClick={() => setStage(i)} aria-pressed={i === stage}><span>{i + 1}</span>{s}</button>)}
-          </nav>
+          <LensSelector stage={stage} setStage={setStage} />
         </div>
         <div className="main">
           <Instrument M={M} stage={stage} sel={sel} onSelectKey={onSelectKey} onClear={clear} />
@@ -79,13 +101,14 @@ function Main({ payload }) {
         <p className="interp" aria-live="polite">{interpretation(M, stage, { action })}</p>
       </section>
 
-      <div ref={spatialRef}>
+      <div ref={spatialRef} className="inspect">
+        <div className="bay-head"><h2>IMAGING / INSPECTION BAY</h2><span>registered micrograph, segmentation and profile on one µm axis</span></div>
         <SpatialEvidence M={M} entity={entity} setEntity={setEntity} stage={stage} action={action} assets={payload.assets} imagery={payload.imagery !== false}
                          kpi={kpi} setKpi={setKpi} overlays={overlays} setOverlays={setOverlays} highlightKpi={k && k.entity === entity ? k.dimension : null} />
       </div>
 
-      <details className="audit">
-        <summary>Raw statistical proof</summary>
+      <details className="audit hatch">
+        <summary><i className="hatch-pull" aria-hidden="true" /><span>SERVICE HATCH</span><b>Raw statistical proof</b></summary>
         <div className="auditbody">
           <section><h4>Engine decision record</h4><ul>{M.meta.reasons.map((r, i) => <li key={i}>{r}</li>)}</ul>
             <p className="muted">severity p = {fmt(M.F.decision.tests.severity_p)} · count p = {fmt(M.F.decision.tests.count_p)} · {M.F.decision.tests.combination} ·

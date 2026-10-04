@@ -7,6 +7,7 @@
  },
  "hero": {
   "decision": {
+   "title": "DECISION",
    "state": "ACCEPT",
    "claims": [
     "decision.verdict"
@@ -14,6 +15,7 @@
    "footer": "decision.scope"
   },
   "data_support": {
+   "title": "DATA SUPPORT",
    "state": "SUFFICIENT FOR QC",
    "qualifier": "AT THE MINIMUM · NOT FOR PREVALENCE",
    "claims": [
@@ -24,18 +26,21 @@
    ]
   },
   "surviving_evidence": {
+   "title": "SURVIVING EVIDENCE",
    "state": "NO DEVIATION",
    "claims": [
     "evidence.none"
    ]
   },
   "limits": {
+   "title": "LIMITS",
    "state": "PREVALENCE",
    "claims": [
     "limit.population:Batch_2"
    ]
   },
   "acquisition_policy": {
+   "title": "ACQUISITION POLICY",
    "state": "EXPAND SAMPLING",
    "mode": "expand_sampling",
    "sequence": "Independent sections",

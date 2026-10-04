@@ -51,14 +51,14 @@ def acquisition_notes(m, ref, envelope='acq_envelope', label='baseline'):
     return [f"{d['label']} {d['value']:.3g} ({label} {d['lo']:.3g}–{d['hi']:.3g})" for d in acquisition_deviations(m, ref, envelope)]
 
 
-def micrograph_text(m, ref, links):
+def micrograph_text(m, ref, links, against='approved'):
     sc = m['score']
     head = f"{m['parent']} ({m['n_tiles']} tile{'s' if m['n_tiles'] > 1 else ''}: {', '.join(m['fids'])})"
     bad = sorted([(k, s) for k, s in sc.items() if s['status'] in ('deviant', 'out')], key=lambda x: -abs(x[1]['t']))
     lines = []
     for k, s in bad:
         R = ref['kpi'][k]
-        lines.append(f"{KPIS[k]['label']}: {fmt(k, s['value'])} vs approved {fmt(k, R['mean'])} ± {fmt(k, R['sd'])} "
+        lines.append(f"{KPIS[k]['label']}: {fmt(k, s['value'])} vs {against} {fmt(k, R['mean'])} ± {fmt(k, R['sd'])} "
                      f"({s['pct']:+.0f}%, t = {s['t']:+.1f}, {'outside 99%' if s['status'] == 'out' else 'outside 95%'} envelope; "
                      f"{s['tiles_beyond95']}/{s['n_tiles']} tiles beyond 95%{'' if s['consistent'] else ' – spatially inconsistent'}).")
     interp, risks = [], []
@@ -108,6 +108,11 @@ def micrograph_text(m, ref, links):
 
 def batch_summary(batch, decision, mtexts):
     flagged = [t for t in mtexts if t['status'] in ('deviant', 'out')]
+    if decision['verdict'] == 'REFERENCE':   # a role, not a verdict; departures are local, not defects
+        s = f"{batch}: REFERENCE (self-audit, no QC verdict). {decision['n_micrographs']} parent micrographs, each against the other {decision['n_micrographs'] - 1}."
+        if flagged:
+            s += ' Local departures from the rest of the reference: ' + '; '.join(f"{t['parent']} ({t['status']})" for t in flagged) + '.'
+        return s
     s = f"{batch}: {decision['verdict']}. {decision['n_micrographs']} independent micrograph(s)."
     if flagged:
         main = lambda t: next((i for i in t['interpretation'] if not i.startswith(('caveat', 'acquisition check'))), 'see KPIs')
@@ -144,8 +149,12 @@ def actions(decision, mtexts, mgs):
 
 def markdown_report(res, ref):
     d = res['decision']
-    L = [f"# QC report - {res['batch']}", '', f"**Verdict: {d['verdict']}**  (batch p = {d['p_batch']:.3f}; "
-         f"{d['n_micrographs']} independent micrographs from {res['n_fields']} fields; reference {ref['name']})", '']
+    if d['verdict'] == 'REFERENCE':   # role, not a verdict: the reference audits itself, leave-one-parent-out
+        L = [f"# Reference self-audit - {res['batch']}", '', f"**Role: REFERENCE** (no QC verdict; {d['n_micrographs']} parent micrographs "
+             f"from {res['n_fields']} fields, each compared with the other {d['n_micrographs'] - 1})", '']
+    else:
+        L = [f"# QC report - {res['batch']}", '', f"**Verdict: {d['verdict']}**  (batch p = {d['p_batch']:.3f}; "
+             f"{d['n_micrographs']} independent micrographs from {res['n_fields']} fields; reference {ref['name']})", '']
     L += [f'- {r}' for r in d['reasons']] + ['', '## Recommended actions'] + [f'- {a}' for a in res['actions']] + ['']
     L += ['## Micrographs', '', '| micrograph | tiles | status | ' + ' | '.join(v['short'] for v in KPIS.values()) + ' |',
           '|---|---|---|' + '---|' * len(KPIS)]

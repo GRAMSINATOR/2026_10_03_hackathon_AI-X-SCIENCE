@@ -180,6 +180,69 @@ def build_reference(mgs, name, sw):
     return ref
 
 
+def loo_frames(mgs, records, parent_of, R_sim=40_000):
+    """Leave-one-parent-micrograph-out frames for the reference self-audit. The frame of reference micrograph i is built
+    from the OTHER eligible parents only (location, between-micrograph spread, baseline support) and from a
+    tile-sampling SD pooled without i's own tiles, so no reference observation is tested against a model that contains
+    it. Expects gate() to have been applied to mgs."""
+    frames = {}
+    for m in mgs:
+        sw = within_sd([r for r in records if parent_of[r['key']] != m['parent']], parent_of)
+        rest = [x for x in mgs if x is not m]
+        kpi = {}
+        for k, meta in KPIS.items():
+            u = [x for x in rest if x['gate'][meta['family']] and np.isfinite(x['kpi'][k])]
+            if len(u) >= 2:
+                kpi[k] = dict(_kpi_ref([x['kpi'][k] for x in u], [x['n_tiles'] for x in u], sw[k]['sd'], R_sim=R_sim),
+                              used=[x['parent'] for x in u])
+        frames[m['parent']] = dict(kpi=kpi)
+    return frames
+
+
+def self_audit(mgs, ref, frames, R=100_000):
+    """Reference self-audit (role REFERENCE, no QC verdict): every reference micrograph scored against its own
+    leave-one-out frame; departures counted on robust KPIs; the chance of that many departures under the reference model
+    (calibrated with full-reference parameters, so approximate); and each parent's influence on the reference location."""
+    robust = [k for k, v in KPIS.items() if v['cls'] == 'robust']
+    for m in mgs:
+        gate(m, ref['px_nm'])
+        F = frames[m['parent']]
+        m['score'] = score(m, F)
+        m['status'] = worst(m['score'])
+        m['ref_linked'], m['leverage'] = False, None
+        infl = {}
+        for k, Rk in ref['kpi'].items():
+            if m['parent'] in Rk.get('used', []) and k in F['kpi']:
+                sh = Rk['mean'] - F['kpi'][k]['mean']
+                infl[k] = dict(mean_shift=float(sh), shift_over_mdc=float(abs(sh) / Rk['mdc95']) if Rk['mdc95'] else None)
+        m['reference_influence'] = infl
+    valid = [m for m in mgs if m['gate']['additive']]
+    d99 = sum(any(m['score'][k]['status'] == 'out' for k in robust) for m in valid)
+    d95 = sum(any(m['score'][k]['status'] in ('out', 'deviant') for k in robust) for m in valid)
+    sev = max([abs(m['score'][k]['t']) / m['score'][k]['q99'] for m in valid for k in robust if m['score'][k].get('q99')], default=0.0)
+    _, null = null_pvalue([ref['kpi'][k] for k in robust], [m['n_tiles'] for m in valid], sev, d95, R=R)
+    departures = [f"{m['parent']}:{k}" for m in mgs for k in KPIS if m['score'][k]['status'] in ('deviant', 'out')]
+    gate_fail = [m['parent'] for m in mgs if not all(m['gate'].values())]
+    n = len(mgs)
+    reasons = [f'reference self-audit, no QC verdict: each of the {n} reference micrographs is compared with a leave-one-out '
+               f'frame built from the other {n - 1} (statistical unit: parent micrograph).']
+    reasons.append(f'{d95} of {len(valid)} additive-valid reference micrographs leave their leave-one-out 95% envelope on a robust KPI; '
+                   f'at least one such excursion is expected by chance with probability {null["p_any95"]:.2f} for {len(valid)} micrographs.'
+                   if d95 else f'no reference micrograph leaves its leave-one-out 95% envelope on a robust KPI (chance of at least one '
+                   f'excursion for {len(valid)} micrographs: {null["p_any95"]:.2f}).')
+    if gate_fail:
+        reasons.append(f'measurement-validity gate failed for {", ".join(gate_fail)}: the reference contains it, but the affected KPIs '
+                       'are not trustworthy there and are excluded from the reference statistics.')
+    return dict(verdict='REFERENCE', p_batch=None, d99=d99, d95=d95, severity=sev, n_micrographs=n, n_independent=n,
+                n_valid_additive=len(valid), ref_linked=[], reasons=reasons,
+                null=dict(p_any99=null['p_any99'], p_any95=null['p_any95'], p_severity=None, p_count=None),
+                consistent_out=[], moderate_out=[], gate_fail=gate_fail, pivotal=[],
+                self_audit=dict(method='leave_one_parent_out', n_parents=n, frame_size=n - 1, n_valid_additive=len(valid),
+                                departures=departures, p_chance_any_95=null['p_any95'],
+                                p_chance_at_least_observed=null['p_count'] if d95 else 1.0,
+                                calibration='chance computed with full-reference parameters (approximate)'))
+
+
 def score(m, ref):
     res = {}
     for k, meta in KPIS.items():

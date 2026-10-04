@@ -63,9 +63,9 @@ function Frontier({ doc, batch, brief, onTrace }) {
       </header>
 
       <div className="mf-lanes">
-        <section className="mf-lane lane-m" aria-label="Track with current capture: marker admission">
-          <div className="mf-lane-h"><span className="mf-ch">TRACK WITH CURRENT CAPTURE</span><em>marker admission</em></div>
-          {L.active.map(m => <MarkerCard key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}
+        <section className="mf-lane lane-m" aria-label="Current capture markers: marker admission">
+          <div className="mf-lane-h"><span className="mf-ch">CURRENT CAPTURE MARKERS</span><em>marker admission · observable with today's capture</em></div>
+          <div className="mf-mods">{L.active.map(m => <MarkerCard key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}</div>
           {!L.active.length && <p className="mf-empty">No active marker case. The open blindspots below are where a current-capture marker could help.</p>}
           {L.setAside.length > 0 && (
             <div className="mf-aside">
@@ -73,10 +73,10 @@ function Frontier({ doc, batch, brief, onTrace }) {
               {L.setAside.map(m => <AsideRow key={m.id} m={m} ctx={ctx} onOpen={el => open('marker', m.id, el)} />)}
             </div>)}
         </section>
-        <section className="mf-lane lane-c" aria-label="Requires new capability: capability expansion">
-          <div className="mf-lane-h"><span className="mf-ch">REQUIRES NEW CAPABILITY</span><em>capability expansion</em></div>
-          {L.capabilities.map(c => <CapabilityCard key={c.id} c={c} ctx={ctx} onOpen={el => open('capability', c.id, el)}
-                                                   onMarker={(id, el) => open('marker', id, el)} />)}
+        <section className="mf-lane lane-c" aria-label="New capability cases: capability expansion">
+          <div className="mf-lane-h"><span className="mf-ch">NEW CAPABILITY CASES</span><em>capability expansion · needs a measurement the lab lacks</em></div>
+          <div className="mf-mods">{L.capabilities.map(c => <CapabilityCard key={c.id} c={c} ctx={ctx} onOpen={el => open('capability', c.id, el)}
+                                                   onMarker={(id, el) => open('marker', id, el)} />)}</div>
           {!L.capabilities.length && <p className="mf-empty">No capability case. A marker that current capture cannot observe creates one.</p>}
         </section>
       </div>

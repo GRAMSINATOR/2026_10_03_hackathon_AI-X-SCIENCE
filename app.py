@@ -127,13 +127,13 @@ d = res['decision']
 field_path = os.path.join(REPORTS, batch, 'field.json')
 hero_path = os.path.join(REPORTS, batch, 'evidence_field.html')
 view = None
-if d['verdict'] != 'REFERENCE':
-    if renderer == 'instrument' and os.path.exists(field_path) and os.path.exists(instrument.DIST):
-        view = render_instrument(field_path, os.path.getmtime(field_path), IMAGES, frontier.signature(REPORTS))   # contract -> renderer, per mode
-    elif renderer == 'legacy' and IMAGES and os.path.exists(hero_path):
-        view = open(hero_path, encoding='utf-8').read()
+IS_REF = d['verdict'] == 'REFERENCE'   # the reference renders through the same instrument, in its self-audit role
+if renderer == 'instrument' and os.path.exists(field_path) and os.path.exists(instrument.DIST):
+    view = render_instrument(field_path, os.path.getmtime(field_path), IMAGES, frontier.signature(REPORTS))   # contract -> renderer, per mode
+elif renderer == 'legacy' and IMAGES and not IS_REF and os.path.exists(hero_path):   # V1 renderer predates the reference role
+    view = open(hero_path, encoding='utf-8').read()
 if view:
-    components.html(view, height=1900 if renderer == 'instrument' else 1130, scrolling=True)
+    components.html(view, height=3050 if renderer == 'instrument' else 1130, scrolling=True)
     if DEV:
         st.caption('Renders only the uncertainty-field contract epistemic-field/1 (docs/REPRESENTATION_CONTRACT.md).')
     proof = st.expander('QC proof layer · primitive statistics', expanded=False)   # the instrument already carries the verdict
@@ -147,10 +147,12 @@ else:
     for r in d['reasons']:
         st.markdown(f'- {r}')
 c1, c2, c3, c4 = proof.columns(4)
-c1.metric('Independent micrographs', d.get('n_independent', d['n_micrographs']), help='Fields are tiles of parent micrographs; the micrograph is the statistical unit. Micrographs continuous with approved baseline sections are not counted.')
+c1.metric('Reference micrographs' if IS_REF else 'Independent micrographs', d.get('n_independent', d['n_micrographs']),
+          help='Fields are tiles of parent micrographs; the micrograph is the statistical unit.' + ('' if IS_REF else
+               ' Micrographs continuous with approved baseline sections are not counted.'))
 c2.metric('Fields (tiles)', res['n_fields'])
-c3.metric('Micrographs outside 99% envelope', d['d99'], help='on robust KPIs (additive phase)')
-c4.metric('Batch p-value', f"{d['p_batch']:.3f}" if d['verdict'] != 'REFERENCE' else '—',
+c3.metric('Outside their leave-one-out 99% envelope' if IS_REF else 'Micrographs outside 99% envelope', d['d99'], help='on robust KPIs (additive phase)')
+c4.metric('Batch p-value', f"{d['p_batch']:.3f}" if not IS_REF else '— (reference role)',
           help='Probability that a batch drawn from the approved population would look at least this deviant '
                '(parametric bootstrap with small-baseline uncertainty).')
 

@@ -138,3 +138,16 @@ Each is a place where choosing a visual metaphor would silently choose an ontolo
    temporal or reasoning-order field. Should a "reasoning trace" become part of the state?
 10. **Batch: container or entity?** Prevalence and the batch decision belong to the batch, which the contract treats as
     context. A renderer that gives the batch its own object makes it an entity with state.
+
+## 6. Reference role (additive extension, `docs/REFERENCE_SELF_AUDIT.md`)
+
+These keys are present only when the field is the reference auditing itself, so incoming fields are unchanged:
+* `context.role = "reference"`.
+* `decision.verdict = "REFERENCE"` with `decision.p_batch = null` and a `decision.self_audit` block: the method, parents,
+  frame size, departures and chance calibration.
+* `entities[].reference_influence`: the shift of the reference mean when the parent is left out, also in MDC units.
+* `observations[].reference_relation.frame = "leave_one_out"` and `frame_n`.
+
+`contract.check` enforces three rules: a reference field has no leverage, no reference-linked entity, no batch p, and
+every measurable observation in its own leave-one-out frame; REFERENCE never appears without the role; incoming fields
+are unaffected.

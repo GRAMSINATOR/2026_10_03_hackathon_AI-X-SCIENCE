@@ -9,7 +9,11 @@ from . import pipeline
 
 def show(res):
     d = res['decision']
-    print(f"\n=== {res['batch']}: {d['verdict']}  (batch p = {d['p_batch']:.3f}; {d['n_micrographs']} micrographs from {res['n_fields']} fields)")
+    if d['verdict'] == 'REFERENCE':   # a role, not a verdict
+        print(f"\n=== {res['batch']}: REFERENCE self-audit (no QC verdict; {d['n_micrographs']} parent micrographs, each against the other "
+              f"{d['n_micrographs'] - 1}; {res['n_fields']} fields)")
+    else:
+        print(f"\n=== {res['batch']}: {d['verdict']}  (batch p = {d['p_batch']:.3f}; {d['n_micrographs']} micrographs from {res['n_fields']} fields)")
     for r in d['reasons']:
         print('  -', r)
     for t in res['explanations']:

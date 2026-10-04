@@ -1,7 +1,7 @@
 // Explanation panel model: rich, contract-driven detail for the selected key, colour-linked to the key categories.
 // Sections are {id, title, hue, rows?: [[label, value]], notes?: [{text, hue}], bar?: [{label, share, hue}]}.
 import { CATEGORY, HUE, MATERIAL, RIM_HUE, mix } from './palette.js';
-import { formatValue, keyVisual, categoryInfo, STAGES } from './adapter.js';
+import { formatValue, keyVisual, categoryInfo, STAGES, isReference } from './adapter.js';
 
 const pct = x => `${Math.round(100 * x)}%`;
 const FAIL_TEXT = {
@@ -28,11 +28,16 @@ const STAGE_MEANING = {
   not_measurable: 'Not measurable: the validity gate failed for this KPI family.', not_acquired: 'This dimension was never acquired.',
 };
 
+// in a self-audit, an observation is compared with the other reference micrographs, never with an approved population
+const REF_WORDS = [['the approved population envelope', 'the envelope of the other reference micrographs'], ['approved envelope', 'leave-one-out envelope'],
+                   ['approved micrographs', 'reference micrographs'], ['approved material', 'reference material'], ['approved baseline', 'reference']];
+export const inFrame = (M, t) => (t && isReference(M) ? REF_WORDS.reduce((s, [a, b]) => s.split(a).join(b), t) : t);
+
 export function explainKey(M, keyId, stage, sel = {}) {
   const k = M.keys.find(x => x.id === keyId); if (!k) return null;
   const c = M.columns.find(x => x.id === k.dimension), e = M.ENT[k.entity], row = M.rows.find(r => r.id === k.entity);
   const v = keyVisual(M, k, stage, sel), cat = categoryInfo(v), sections = [];
-  sections.push({ id: 'category', title: cat.label, hue: cat.hue === MATERIAL.ivory ? null : cat.hue, notes: [{ text: STAGE_MEANING[cat.id] || '' }] });
+  sections.push({ id: 'category', title: inFrame(M, cat.label), hue: cat.hue === MATERIAL.ivory ? null : cat.hue, notes: [{ text: inFrame(M, STAGE_MEANING[cat.id] || '') }] });
   if (k.kind === 'missing') {
     const m = k.missing;
     sections.push({ id: 'composition', title: 'Composition', hue: HUE.composition, rows: [['acquired', 'no (no EDS / spectroscopy)'],
@@ -51,11 +56,13 @@ export function explainKey(M, keyId, stage, sel = {}) {
   const dirHue = rr.direction < 0 ? HUE.below : HUE.above, dev = rr.status !== 'in';
   sections.push({ id: 'measurement', title: 'Measurement', hue: dev ? dirHue : null, rows: [
     ['value', `${f(o.value)} ${c.unit}  (${rr.status})`],
-    ['approved', `${f(rr.approved_mean)} ± ${f(M.DIM[c.id].reference.sd)} ${c.unit}`],
+    ...(rr.frame === 'leave_one_out'
+      ? [['other reference micrographs', `${f(rr.approved_mean)} ${c.unit} (leave-one-out frame of ${rr.frame_n})`]]
+      : [['approved', `${f(rr.approved_mean)} ± ${f(M.DIM[c.id].reference.sd)} ${c.unit}`]]),
     ['95% envelope here', `${f(rr.envelope95[0])} – ${f(rr.envelope95[1])} ${c.unit}`],
     ['z vs thresholds', `${rr.z >= 0 ? '+' : ''}${rr.z.toFixed(2)}  (q95 ${rr.q95.toFixed(2)}, q99 ${rr.q99.toFixed(2)})`],
     ['fields', Object.entries(o.per_field).map(([id, x]) => `${id.split('__')[1]} ${f(x)}`).join(' · ')],
-    ...(rr.beyond_reference_support ? [['reference support', 'outside every approved field (extrapolation)']] : [])] });
+    ...(rr.beyond_reference_support ? [['reference support', rr.frame === 'leave_one_out' ? 'outside every other reference field' : 'outside every approved field (extrapolation)']] : [])] });
   const sc = o.scrutiny;
   if (sc.outcome !== 'not_applicable' || row.refLinked || row.untestedAcq) {
     const notes = [];
@@ -84,7 +91,13 @@ export function explainKey(M, keyId, stage, sel = {}) {
   sections.push({ id: 'acquisition', title: 'Acquisition', hue: acq.outside_tested_range.length || o.acquisition_explains_deviation ? HUE.acquisition : null,
     rows: [['vs approved micrographs', acq.differs_from_approved.length ? `${acq.differs_from_approved.length} metrics differ (${acq.differs_from_approved.slice(0, 3).map(d => d.label).join(', ')})` : 'within approved range'],
            ['vs tested range', acq.outside_tested_range.length ? `outside: ${acq.outside_tested_range.map(d => d.label).join(', ')}` : 'within the range whose effects were tested']] });
-  if (e.leverage) sections.push({ id: 'leverage', title: 'Decision leverage', hue: e.leverage.flips ? HUE.population : null, rows: [
+  if (isReference(M)) {   // a self-audit has no decision to lever; show how far this parent moves the reference instead
+    const top = Object.entries(e.reference_influence || {}).filter(([, v]) => v.shift_over_mdc != null)
+      .sort((a, b) => b[1].shift_over_mdc - a[1].shift_over_mdc).slice(0, 3);
+    sections.push({ id: 'leverage', title: 'Reference influence (left out)', hue: null,
+      rows: top.map(([dk, v]) => { const cc = M.columns.find(x => x.id === dk);
+        return [cc ? cc.short : dk, `mean moves ${formatValue(Math.abs(v.mean_shift), cc || c)} ${cc ? cc.unit : ''} · ${v.shift_over_mdc.toFixed(2)} × MDC`]; }) });
+  } else if (e.leverage) sections.push({ id: 'leverage', title: 'Decision leverage', hue: e.leverage.flips ? HUE.population : null, rows: [
     ['verdict without it', `${e.leverage.verdict_without} (p = ${e.leverage.p_without.toFixed(2)})`],
     ['pivotal', e.leverage.flips ? (e.leverage.cause === 'min_independent_count' ? 'yes — batch would have too few independent micrographs' : 'yes — carries the decisive evidence') : 'no']] });
   else sections.push({ id: 'leverage', title: 'Decision leverage', hue: HUE.provenance, notes: [{ text: 'reference-linked: excluded from the batch test' }] });
@@ -142,18 +155,84 @@ function effectText(M, e) {
   return null;
 }
 
-// the selected next capture: why it is proposed (evidence + rationale) and what it would change
+const RESOLUTION = {
+  acquisition: 'Acquisition vs material change',
+  scale: 'Scale truncation',
+  spatial_extent: 'Spatial extent',
+  composition: 'Composition identity',
+  population: 'Lot prevalence',
+  spatial_sampling: 'Independent spatial sampling',
+  validity: 'Measurement validity',
+};
+
+const targetName = A => A.targets.entities.join(', ');
+
+function listLabel(M, A) {
+  const target = targetName(A), dim = A.targets.dimensions[0] && M.columns.find(c => c.id === A.targets.dimensions[0]);
+  if (A.verb === 'REPEAT') return `${target} · approved acquisition settings`;
+  if (A.verb === 'ZOOM') return `${target || 'Approved'} fines · higher magnification`;
+  if (A.verb === 'EDS') return `${target} fines vs approved additive`;
+  if (A.verb === 'EXTEND') return target ? `${target} mosaic · beyond captured edge` : `${dim ? dim.short : 'Reference'} · longer coherent capture`;
+  if (A.verb === 'SECTIONS') return 'Independent lot cross-sections';
+  if (A.verb === 'SPACE') return `${dim ? dim.short : target} · independent field spacing`;
+  if (A.verb === 'BASELINE') return 'Approved reference · +5 independent micrographs';
+  if (A.verb === 'REIMAGE') return `${target} · approved BSE settings`;
+  return A.title;
+}
+
+function whyText(M, A) {
+  const target = targetName(A);
+  const pivotal = A.targets.entities.some(id => M.ENT[id] && M.ENT[id].leverage && M.ENT[id].leverage.flips);
+  if (A.addresses === 'acquisition') return `Tests whether the ${pivotal ? 'decision-driving ' : ''}deviation in ${target} is acquisition-driven.`;
+  if (A.addresses === 'scale') return `Resolves the fines truncated by the current pixel size${target ? ` in ${target}` : ''}.`;
+  if (A.addresses === 'composition') return `Tests whether ${target ? `${target} fines` : 'the fines'} match the approved additive.`;
+  if (A.addresses === 'spatial_extent') return `Bounds how far the observed deviation extends beyond the captured edge${target ? ` in ${target}` : ''}.`;
+  if (A.addresses === 'spatial_sampling') return 'Spaces fields beyond the measured correlation range.';
+  if (A.addresses === 'validity') return 'Restores measurements blocked by the current image quality.';
+  if (A.addresses === 'population' && A.verb === 'SECTIONS') return 'Measures how widely the result extends across the lot.';
+  if (A.addresses === 'population' && A.verb === 'BASELINE') return 'Narrows uncertainty in the approved baseline envelopes.';
+  return A.rationale.split(/(?<=[.!?])\s/)[0];
+}
+
+function leverageText(M, A) {
+  const pivotal = A.targets.entities.map(id => [id, M.ENT[id] && M.ENT[id].leverage]).filter(([, l]) => l && l.flips);
+  if (!pivotal.length) return null;
+  if (pivotal.length === 1) {
+    const [id, l] = pivotal[0];
+    if (l.cause === 'min_independent_count') return `DECISION-DRIVING — too few independent micrographs without ${id}.`;
+    return `DECISION-DRIVING — verdict changes to ${l.verdict_without} without ${id}.`;
+  }
+  return `DECISION-DRIVING — verdict depends on ${pivotal.map(([id]) => id).join(', ')}.`;
+}
+
+// A presentation-only summary of the contract action. It does not rank, infer confidence, or change action semantics.
+export function actionPresentation(M, i) {
+  const A = M.actions[i];
+  if (!A) return null;
+  const resolution = A.addresses === 'population' && A.verb === 'BASELINE' ? 'Baseline uncertainty' : RESOLUTION[A.addresses] || A.addresses.replaceAll('_', ' ');
+  return {
+    action: A,
+    listLabel: listLabel(M, A),
+    why: whyText(M, A),
+    resolves: resolution,
+    grounding: A.status === 'future' ? 'PROSPECTIVE' : A.status.toUpperCase(),
+    tier: `T${A.tier}`,
+    cost: `${A.cost.toUpperCase()} COST`,
+    leverage: leverageText(M, A),
+  };
+}
+
+// Lower evidence layer for the selected next capture: trigger facts, full rationale and any computed effect.
 export function explainAction(M, i) {
   const A = M.actions[i];
-  return { id: 'action', title: `${A.verb} · ${A.title}`, hue: A.reach.hue,
-    rows: [['addresses', A.addresses.replace('_', ' ')], ['tier · status · cost', `${A.tier} · ${A.status} · ${A.cost}`],
-           ...(effectText(M, A.effect) ? [['expected effect', effectText(M, A.effect)]] : [])],
-    notes: [...A.evidence.map(t => ({ text: t, hue: A.reach.hue })), { text: A.rationale }] };
+  return { id: 'action', title: 'Evidence / rationale', hue: A.reach.hue,
+    rows: [...(effectText(M, A.effect) ? [['expected effect', effectText(M, A.effect)]] : [])],
+    notes: [...A.evidence.map(t => ({ text: t, hue: A.reach.hue })), { text: `Rationale — ${A.rationale}` }] };
 }
 
 export function legendFor(M, stage, sel = {}) {
   const seen = new Map();
-  M.keys.forEach(k => { const v = keyVisual(M, k, stage, sel); if (v.category !== 'settled' && v.category !== 'in_family') { const ci = categoryInfo(v); if (!seen.has(ci.label)) seen.set(ci.label, ci.hue); } });
+  M.keys.forEach(k => { const v = keyVisual(M, k, stage, sel); if (v.category !== 'settled' && v.category !== 'in_family') { const ci = categoryInfo(v); if (!seen.has(inFrame(M, ci.label))) seen.set(inFrame(M, ci.label), ci.hue); } });
   return [...seen.entries()].map(([label, hue]) => ({ label, hue }));
 }
 export { CATEGORY };

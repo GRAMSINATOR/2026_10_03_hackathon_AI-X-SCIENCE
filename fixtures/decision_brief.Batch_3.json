@@ -7,6 +7,7 @@
  },
  "hero": {
   "decision": {
+   "title": "DECISION",
    "state": "REJECT",
    "claims": [
     "decision.verdict"
@@ -14,6 +15,7 @@
    "footer": "decision.scope"
   },
   "data_support": {
+   "title": "DATA SUPPORT",
    "state": "SUFFICIENT FOR QC",
    "qualifier": "NOT FOR ATTRIBUTION OR PREVALENCE",
    "claims": [
@@ -24,6 +26,7 @@
    ]
   },
   "surviving_evidence": {
+   "title": "SURVIVING EVIDENCE",
    "state": "M2060 · ADDITIVE DENSITY",
    "claims": [
     "evidence.summary",
@@ -32,6 +35,7 @@
    ]
   },
   "limits": {
+   "title": "LIMITS",
    "state": "SCALE · COMPOSITION · EXTENT · PREVALENCE",
    "claims": [
     "limit.scale:M2060",
@@ -41,6 +45,7 @@
    ]
   },
   "acquisition_policy": {
+   "title": "ACQUISITION POLICY",
    "state": "VERIFY FIRST",
    "mode": "verify_first",
    "sequence": "Repeat M2060 → resolve scale → chemistry (future) → extent → independent sections",

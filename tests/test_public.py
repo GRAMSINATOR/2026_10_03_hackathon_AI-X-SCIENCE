@@ -21,10 +21,10 @@ needs_engine = pytest.mark.skipif(not HAVE_ENGINE, reason='needs the local engin
 def test_instrument_without_images_embeds_no_imagery_and_reads_no_assets(tmp_path):
     f = json.load(open(FIXTURE, encoding='utf-8'))
     html = instrument.render(f, asset_dir=str(tmp_path / 'does_not_exist'), images=False)
-    assert 'data:image' not in html
+    assert bundle.foreign_images(html) == 0          # only the exact brand mark may be embedded
     assert '"imagery":false' in html and '"assets":{}' in html
     with_images = instrument.render(f, asset_dir=os.path.join(ROOT, 'fixtures', 'assets'))
-    assert 'data:image' in with_images and '"imagery":true' in with_images
+    assert bundle.foreign_images(with_images) > 0 and '"imagery":true' in with_images
 
 
 def test_bundle_check_rejects_image_bearing_content(tmp_path):
@@ -100,9 +100,21 @@ def _run_app(env):
 def test_dashboard_runs_from_bundle_without_data_or_images(public_bundle, tmp_path):
     # positive control: the same probes do see imagery in local mode, so the public assertions below are not vacuous
     local = _run_app({})
-    assert local['images'] > 0 and any('data:image' in f for f in local['frames'])
+    assert local['images'] > 0 and any(bundle.foreign_images(f) > 0 for f in local['frames'])
     out = _run_app(dict(QC_PUBLIC='1', QC_REF=str(public_bundle / 'reference.json'), QC_REPORTS=str(public_bundle / 'reports'),
                         QC_CACHE=str(public_bundle / 'cache' / 'fields'), QC_DATA=str(tmp_path / 'no_data')))
     assert out['exception'] == [] and out['errors'] == []
     assert out['images'] == 0
-    assert out['frames'] and all('data:image' not in f and '"imagery":false' in f for f in out['frames'])
+    assert out['frames'] and all(bundle.foreign_images(f) == 0 and '"imagery":false' in f for f in out['frames'])
+
+
+def test_only_the_exact_brand_mark_is_allowed(tmp_path):
+    import base64
+    logo = open(bundle.BRAND_ASSETS[0], 'rb').read()
+    ok = '<img src="data:image/png;base64,' + base64.b64encode(logo).decode() + '">'
+    assert bundle.foreign_images(ok) == 0
+    tampered = '<img src="data:image/png;base64,' + base64.b64encode(logo[:-1] + b'x').decode() + '">'
+    assert bundle.foreign_images(tampered) == 1 and bundle.foreign_images(ok + tampered) == 1
+    (tmp_path / 'page.html').write_text(ok)
+    assert bundle.check(tmp_path)
+

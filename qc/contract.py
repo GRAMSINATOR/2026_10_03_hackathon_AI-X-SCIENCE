@@ -102,9 +102,20 @@ def check(f):
             if not d['acquired'] and f"{e['id']}:{d['id']}" not in M:
                 bad.append(f"missing-dimension relevance absent for {e['id']}:{d['id']}")
         lev = e['leverage']
-        if e['independence']['reference_linked'] != (lev is None):
+        if f['context'].get('role') == 'reference':
+            if lev is not None or e['independence']['reference_linked']:
+                bad.append(f"entity {e['id']}: a reference self-audit has no decision leverage and no reference-linked entities")
+        elif e['independence']['reference_linked'] != (lev is None):
             bad.append(f"entity {e['id']}: leverage must be null exactly for reference-linked entities")
     dec = f['decision']
+    if f['context'].get('role') == 'reference':   # a role, never a verdict; every measurable observation in its own frame
+        if dec['verdict'] != 'REFERENCE' or dec['p_batch'] is not None or 'self_audit' not in dec:
+            bad.append('reference role: verdict must be REFERENCE, with no batch p and a self_audit block')
+        for o in f['observations']:
+            if o['reference_relation']['status'] != 'not_measurable' and o['reference_relation'].get('frame') != 'leave_one_out':
+                bad.append(f"{o['id']}: reference observation not related to its leave-one-out frame")
+    elif dec['verdict'] == 'REFERENCE':
+        bad.append('verdict REFERENCE without the reference role')
     if sorted(dec['pivotal']) != sorted(e['id'] for e in f['entities'] if e['leverage'] and e['leverage']['flips']):
         bad.append('decision.pivotal inconsistent with entity leverage')
     if dec['n_independent'] != sum(not e['independence']['reference_linked'] for e in f['entities']):

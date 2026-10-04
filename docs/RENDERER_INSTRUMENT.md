@@ -39,25 +39,65 @@ qc.field  ──►  reports/<batch>/field.json (epistemic-field/1)  ──►  
 ## Layout
 
 ```
-[ identity                                                                                  ]
-[ DECISION                          | DATA SUPPORT                ]   decision brief hero (docs/DECISION_BRIEF.md)
-[ SURVIVING EVIDENCE                | LIMITS                      ]   every block and chip traces to its proof
-[ ACQUISITION POLICY (segmented step tray)                        ]
-[ scope of the decision                                                                     ]
-[ EXAMINER CONTROL MATRIX · lens selector (SIGNAL … NEXT CAPTURE)                           ]
-[ Evidence Instrument (key matrix)                       | detail panel + proof trail       ]   panel height = instrument height
-[ one-sentence lens interpretation                                                          ]
-[ flat registered spatial evidence (recessed imaging bay, native scale, horizontal scroll)  ]
-[ raw statistical proof (collapsed): engine decision record, reference, all rims, brief governance ]
+╭─ chassis (one molded machine front) ───────────────────────────────────────────────────────╮
+│ identity · QC VERDICT status readout (lamp · verdict · p vs α)                              │
+│ ╭─ human readout assembly ───────────────────────────────────────────────╮                 │
+│ │ DATA SUPPORT          ┊ SURVIVING EVIDENCE    four windows cut into one │                 │
+│ │ LIMITS                ┊ ACQUISITION POLICY    panel (docs/DECISION_BRIEF.md)              │
+│ ╰─ scope ─────────────────────────────────────────────────────────────────╯                 │
+│ EXAMINER CONTROL DECK · sloped header · lens slide selector                                 │
+│   [key bed (3D)]                                      [bevelled detail readout + proof trail]│
+│ IMAGING / INSPECTION BAY · control strip · bevelled aperture (micrograph │ ruler │ profile)  │
+│ SERVICE HATCH (raw statistical proof, flush, opens onto a recessed compartment)             │
+│ MARKER FRONTIER module · CURRENT CAPTURE MARKERS bay │ NEW CAPABILITY CASES bay             │
+╰────────────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
-* The decision is presented once, in the hero's DECISION block. The old header verdict chip is gone, and so is the
-  panel's decision overview.
+* The QC verdict is a compact status readout in the machine status strip, and it traces to the decision proof. The
+  hero no longer has a DECISION block, and the panel no longer has a decision overview.
 * The key matrix is now the **Examiner Control Matrix**, the proof and challenge surface. The five stages are its lenses.
 * Clicking a hero claim turns the claim's `focus` reference into a lens, a pressed key and an open action, then
   scrolls there. The panel opens with the proof trail (brief › section › claim › proof): the claim exactly as stated,
   then each proof reference with its raw field value.
 * The app's metrics and proof tabs sit in one collapsed expander.
+
+## Visual system V2: one molded laboratory instrument
+
+The 3D key matrix is the quality reference, and everything else is built in the same language. The tokens live in
+`renderer/src/styles.css` (`:root`); the Marker Frontier uses them in `ui/frontier.css`.
+
+* **Material.** Warm off-white polymer: `--poly`, `--plateau`, a recessed `--face` and a slightly cooler `--display`
+  plane for readouts. The surface carries about 1% luminance grain (`ui/grain.js`). It is generated at runtime as a
+  `blob:` URL, so the page source never embeds an image and the public bundle's imagery guard stays meaningful.
+* **Light.** One broad diffuse source from the upper-right front, the same studio light as the key matrix.
+  * Raised parts: highlight on the upper and right edges, a solid front lip below, soft cast shadow to the lower left.
+  * Recesses: inner top and right walls in shade, lower-left lip lit.
+  * Bevel rings: inward slopes are lit at the lower left; outward slopes at the upper right.
+* **Construction.**
+  * `--raised` / `--raised-l` for the chassis, bays and keys.
+  * `--cut` / `--cut-deep` for recesses, readouts and slots.
+  * `--bevel-in` / `--bevel-out` (gradient border rings) for sloped rims.
+  * Colour appears only as enamel inlays (title strips, step indices, rail segments) and lamps (verdict, LEDs).
+* **Shapes.** Chassis and bays: radius 18–22 px. Panels and modules: 10–14 px or chamfers. Readouts and slots:
+  4–6 px. Inlays and labels: 2–3 px. There are no capsules.
+* **Interaction follows physics.**
+  * Keys seat deeper when selected, and buttons travel down when pressed.
+  * The lens selector is a slide switch: one block slides and seats in a detent.
+  * Readouts never move; their contents update.
+  * The Frontier tray opens as a drawer, and the service hatch opens onto a compartment.
+  * The trace target's title strip lights up. Nothing levitates on hover.
+* **Regions.**
+  * The human readout is one panel with four windows cut into it. The cross-rib between them is the panel itself, with
+    a parting line.
+  * The examiner is a deck with a sloped header. The detail panel is a bevelled readout.
+  * The inspection bay has a control strip and a thick bevelled aperture. Its dark inner lip and frame shading lie
+    over the micrograph, so the image sits behind the surface plane. A ruler edge (25 µm ticks, 100 µm long ticks)
+    separates the image from the profile.
+  * Raw proof is a flush service hatch.
+  * The Marker Frontier is a module with two recessed bays of chamfered modules. Each module has a sloped leading edge,
+    which becomes a lit indicator on the current decision's module. Evidence rails are machined grooves holding flat
+    enamel inlays.
+* **At rest.** Nothing moves: no running CSS or Web animation, and 0 WebGL frames.
 
 ## Instrument: physical object, straight-on
 

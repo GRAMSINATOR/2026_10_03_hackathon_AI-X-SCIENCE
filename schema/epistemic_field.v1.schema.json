@@ -1,166 +1,1151 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "epistemic-field/1",
-  "title": "Uncertainty field (renderer-independent epistemic state)",
-  "description": "What was measured, how it relates to the approved population, what bounds each envelope, which evidence survives scrutiny, where support fades (rims), and which acquisition actions follow (each pointing back to its triggers). Contains no visual instructions. Prose fields (statement, title, evidence, rationale, reasons, label, note) annotate structured fields beside them. Values are in canonical units (dimensions[].unit); dimensions[].display gives a conventional display unit and factor. Array order carries no meaning except actions (ranked).",
-  "type": "object",
-  "required": ["schema_version", "context", "decision", "dimensions", "entities", "observations", "missing_dimensions",
-               "spatial_profiles", "rims", "actions", "provenance", "summary"],
-  "additionalProperties": false,
-  "properties": {
-    "schema_version": {"const": "epistemic-field/1"},
-    "context": {
-      "type": "object", "required": ["batch", "reference", "statistical_unit", "model"], "additionalProperties": false,
-      "properties": {"batch": {"type": "string"}, "reference": {"type": "string"},
-                     "statistical_unit": {"const": "parent_micrograph"}, "model": {"type": "string"}}
-    },
-    "decision": {
-      "type": "object", "additionalProperties": false,
-      "required": ["verdict", "p_batch", "d99", "d95", "tests", "null_calibration", "n_entities", "n_independent",
-                   "reference_linked", "pivotal", "thresholds", "reasons"],
-      "properties": {
-        "verdict": {"enum": ["ACCEPT", "INVESTIGATE", "REJECT", "REFERENCE"]},
-        "p_batch": {"$ref": "#/$defs/prob"},
-        "d99": {"type": "integer", "minimum": 0}, "d95": {"type": "integer", "minimum": 0},
-        "severity": {"type": ["number", "null"]},
-        "tests": {"type": "object", "properties": {"severity_p": {"$ref": "#/$defs/probOrNull"}, "count_p": {"$ref": "#/$defs/probOrNull"},
-                                                   "combination": {"const": "bonferroni_2"}}},
-        "null_calibration": {"type": "object", "properties": {"p_any_outside_99": {"$ref": "#/$defs/probOrNull"}, "p_any_outside_95": {"$ref": "#/$defs/probOrNull"}}},
-        "n_entities": {"type": "integer"}, "n_independent": {"type": "integer"},
-        "reference_linked": {"$ref": "#/$defs/ids"}, "pivotal": {"$ref": "#/$defs/ids"},
-        "consistent_out": {"$ref": "#/$defs/ids"}, "moderate_out": {"$ref": "#/$defs/ids"}, "validity_failed": {"$ref": "#/$defs/ids"},
-        "thresholds": {"type": "object", "required": ["alpha_reject", "alpha_investigate", "acquisition_share_max", "cnr_min"]},
-        "reasons": {"type": "array", "items": {"type": "string"}}
-      }
-    },
-    "dimensions": {"type": "array", "minItems": 1, "items": {"oneOf": [{"$ref": "#/$defs/kpiDimension"}, {"$ref": "#/$defs/missingDimension"}]}},
-    "entities": {"type": "array", "items": {"$ref": "#/$defs/entity"}},
-    "observations": {"type": "array", "items": {"$ref": "#/$defs/observation"}},
-    "missing_dimensions": {"type": "array", "items": {"$ref": "#/$defs/missingRelevance"}},
-    "spatial_profiles": {"type": "array", "items": {"$ref": "#/$defs/profile"}},
-    "rims": {"type": "array", "items": {"$ref": "#/$defs/rim"}},
-    "actions": {"type": "array", "items": {"$ref": "#/$defs/action"}},
-    "provenance": {
-      "type": "object", "required": ["fields", "edge_links"], "additionalProperties": false,
-      "properties": {
-        "fields": {"type": "array", "items": {"type": "object", "required": ["id", "batch", "fid", "width_um", "height_um", "px_nm"],
-                   "properties": {"id": {"type": "string"}, "batch": {"type": "string"}, "fid": {"type": "string"}, "entity": {"type": ["string", "null"]},
-                                  "width_um": {"type": "number"}, "height_um": {"type": "number"}, "px_nm": {"type": "number"}}}},
-        "edge_links": {"type": "array", "items": {"type": "object", "required": ["left", "right", "ncc", "parent"]}}
-      }
-    },
-    "summary": {
-      "type": "object", "required": ["deviating", "surviving", "n_deviating", "n_surviving", "consequential_rims"],
-      "properties": {"deviating": {"$ref": "#/$defs/ids"}, "surviving": {"$ref": "#/$defs/ids"},
-                     "n_deviating": {"type": "integer"}, "n_surviving": {"type": "integer"}, "consequential_rims": {"$ref": "#/$defs/ids"}}
-    },
-    "assets": {"type": "object", "description": "optional (fixtures): field id -> image asset",
-               "additionalProperties": {"type": "object", "required": ["image", "detector", "image_px_um"]}}
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "$id": "epistemic-field/1",
+ "title": "Uncertainty field (renderer-independent epistemic state)",
+ "description": "What was measured, how it relates to the approved population, what bounds each envelope, which evidence survives scrutiny, where support fades (rims), and which acquisition actions follow (each pointing back to its triggers). Contains no visual instructions. Prose fields (statement, title, evidence, rationale, reasons, label, note) annotate structured fields beside them. Values are in canonical units (dimensions[].unit); dimensions[].display gives a conventional display unit and factor. Array order carries no meaning except actions (ranked).",
+ "type": "object",
+ "required": [
+  "schema_version",
+  "context",
+  "decision",
+  "dimensions",
+  "entities",
+  "observations",
+  "missing_dimensions",
+  "spatial_profiles",
+  "rims",
+  "actions",
+  "provenance",
+  "summary"
+ ],
+ "additionalProperties": false,
+ "properties": {
+  "schema_version": {
+   "const": "epistemic-field/1"
   },
-  "$defs": {
-    "ids": {"type": "array", "items": {"type": "string"}},
-    "prob": {"type": "number", "minimum": 0, "maximum": 1},
-    "probOrNull": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
-    "num2": {"type": "array", "items": {"type": "number"}, "minItems": 2, "maxItems": 2},
-    "kpiDimension": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "kind", "acquired", "label", "short_label", "family", "unit", "display", "modalities", "cross_checks", "robustness", "reference", "spatial_support"],
-      "properties": {
-        "id": {"type": "string"}, "kind": {"const": "kpi"}, "acquired": {"const": true}, "label": {"type": "string"}, "short_label": {"type": "string"},
-        "family": {"enum": ["additive", "pore", "structure"]}, "unit": {"type": "string"},
-        "display": {"type": "object", "required": ["unit", "factor"]},
-        "modalities": {"type": "array", "items": {"enum": ["BSE", "SE", "InLens"]}}, "cross_checks": {"type": "array", "items": {"enum": ["BSE", "SE", "InLens"]}},
-        "robustness": {"type": "object", "required": ["cls"], "properties": {"cls": {"enum": ["robust", "moderate"]}}},
-        "reference": {"type": "object", "required": ["mean", "sd", "sd_between", "sd_tile", "var_mean", "n_micrographs", "mdc95_3tiles"]},
-        "spatial_support": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["cls", "tile_excess", "tile_excess_ci95", "range_um", "window_variance_slope"],
-                            "properties": {"cls": {"enum": ["short-range", "fov-scale", "long-range"]}, "tile_excess_ci95": {"$ref": "#/$defs/num2"},
-                                           "range_um": {"type": ["number", "null"]}}}]}
-      }
+  "context": {
+   "type": "object",
+   "required": [
+    "batch",
+    "reference",
+    "statistical_unit",
+    "model"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "batch": {
+     "type": "string"
     },
-    "missingDimension": {
-      "type": "object", "additionalProperties": false, "required": ["id", "kind", "acquired", "label", "short_label", "family", "would_require"],
-      "properties": {"id": {"type": "string"}, "kind": {"const": "missing"}, "acquired": {"const": false}, "label": {"type": "string"},
-                     "short_label": {"type": "string"}, "family": {"type": "string"}, "would_require": {"type": "array", "items": {"type": "string"}},
-                     "note": {"type": "string"}}
+    "reference": {
+     "type": "string"
+    },
+    "statistical_unit": {
+     "const": "parent_micrograph"
+    },
+    "model": {
+     "type": "string"
+    },
+    "role": {
+     "enum": [
+      "incoming",
+      "reference"
+     ],
+     "description": "absent = incoming. reference = the configured reference population auditing itself (leave-one-parent-micrograph-out); it never carries a QC verdict."
+    }
+   }
+  },
+  "decision": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "verdict",
+    "p_batch",
+    "d99",
+    "d95",
+    "tests",
+    "null_calibration",
+    "n_entities",
+    "n_independent",
+    "reference_linked",
+    "pivotal",
+    "thresholds",
+    "reasons"
+   ],
+   "properties": {
+    "verdict": {
+     "enum": [
+      "ACCEPT",
+      "INVESTIGATE",
+      "REJECT",
+      "REFERENCE"
+     ]
+    },
+    "p_batch": {
+     "$ref": "#/$defs/probOrNull"
+    },
+    "d99": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "d95": {
+     "type": "integer",
+     "minimum": 0
+    },
+    "severity": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "tests": {
+     "type": "object",
+     "properties": {
+      "severity_p": {
+       "$ref": "#/$defs/probOrNull"
+      },
+      "count_p": {
+       "$ref": "#/$defs/probOrNull"
+      },
+      "combination": {
+       "const": "bonferroni_2"
+      }
+     }
+    },
+    "null_calibration": {
+     "type": "object",
+     "properties": {
+      "p_any_outside_99": {
+       "$ref": "#/$defs/probOrNull"
+      },
+      "p_any_outside_95": {
+       "$ref": "#/$defs/probOrNull"
+      }
+     }
+    },
+    "n_entities": {
+     "type": "integer"
+    },
+    "n_independent": {
+     "type": "integer"
+    },
+    "reference_linked": {
+     "$ref": "#/$defs/ids"
+    },
+    "pivotal": {
+     "$ref": "#/$defs/ids"
+    },
+    "consistent_out": {
+     "$ref": "#/$defs/ids"
+    },
+    "moderate_out": {
+     "$ref": "#/$defs/ids"
+    },
+    "validity_failed": {
+     "$ref": "#/$defs/ids"
+    },
+    "thresholds": {
+     "type": "object",
+     "required": [
+      "alpha_reject",
+      "alpha_investigate",
+      "acquisition_share_max",
+      "cnr_min"
+     ]
+    },
+    "reasons": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "self_audit": {
+     "type": "object",
+     "description": "reference role only: leave-one-parent-out self-audit summary",
+     "required": [
+      "method",
+      "n_parents",
+      "frame_size",
+      "departures"
+     ],
+     "properties": {
+      "method": {
+       "const": "leave_one_parent_out"
+      },
+      "n_parents": {
+       "type": "integer"
+      },
+      "frame_size": {
+       "type": "integer"
+      },
+      "n_valid_additive": {
+       "type": "integer"
+      },
+      "departures": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       }
+      },
+      "p_chance_any_95": {
+       "$ref": "#/$defs/probOrNull"
+      },
+      "p_chance_at_least_observed": {
+       "$ref": "#/$defs/probOrNull"
+      },
+      "calibration": {
+       "type": "string"
+      }
+     }
+    }
+   }
+  },
+  "dimensions": {
+   "type": "array",
+   "minItems": 1,
+   "items": {
+    "oneOf": [
+     {
+      "$ref": "#/$defs/kpiDimension"
+     },
+     {
+      "$ref": "#/$defs/missingDimension"
+     }
+    ]
+   }
+  },
+  "entities": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/entity"
+   }
+  },
+  "observations": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/observation"
+   }
+  },
+  "missing_dimensions": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/missingRelevance"
+   }
+  },
+  "spatial_profiles": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/profile"
+   }
+  },
+  "rims": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/rim"
+   }
+  },
+  "actions": {
+   "type": "array",
+   "items": {
+    "$ref": "#/$defs/action"
+   }
+  },
+  "provenance": {
+   "type": "object",
+   "required": [
+    "fields",
+    "edge_links"
+   ],
+   "additionalProperties": false,
+   "properties": {
+    "fields": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "id",
+       "batch",
+       "fid",
+       "width_um",
+       "height_um",
+       "px_nm"
+      ],
+      "properties": {
+       "id": {
+        "type": "string"
+       },
+       "batch": {
+        "type": "string"
+       },
+       "fid": {
+        "type": "string"
+       },
+       "entity": {
+        "type": [
+         "string",
+         "null"
+        ]
+       },
+       "width_um": {
+        "type": "number"
+       },
+       "height_um": {
+        "type": "number"
+       },
+       "px_nm": {
+        "type": "number"
+       }
+      }
+     }
+    },
+    "edge_links": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "left",
+       "right",
+       "ncc",
+       "parent"
+      ]
+     }
+    }
+   }
+  },
+  "summary": {
+   "type": "object",
+   "required": [
+    "deviating",
+    "surviving",
+    "n_deviating",
+    "n_surviving",
+    "consequential_rims"
+   ],
+   "properties": {
+    "deviating": {
+     "$ref": "#/$defs/ids"
+    },
+    "surviving": {
+     "$ref": "#/$defs/ids"
+    },
+    "n_deviating": {
+     "type": "integer"
+    },
+    "n_surviving": {
+     "type": "integer"
+    },
+    "consequential_rims": {
+     "$ref": "#/$defs/ids"
+    }
+   }
+  },
+  "assets": {
+   "type": "object",
+   "description": "optional (fixtures): field id -> image asset",
+   "additionalProperties": {
+    "type": "object",
+    "required": [
+     "image",
+     "detector",
+     "image_px_um"
+    ]
+   }
+  }
+ },
+ "$defs": {
+  "ids": {
+   "type": "array",
+   "items": {
+    "type": "string"
+   }
+  },
+  "prob": {
+   "type": "number",
+   "minimum": 0,
+   "maximum": 1
+  },
+  "probOrNull": {
+   "type": [
+    "number",
+    "null"
+   ],
+   "minimum": 0,
+   "maximum": 1
+  },
+  "num2": {
+   "type": "array",
+   "items": {
+    "type": "number"
+   },
+   "minItems": 2,
+   "maxItems": 2
+  },
+  "kpiDimension": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "acquired",
+    "label",
+    "short_label",
+    "family",
+    "unit",
+    "display",
+    "modalities",
+    "cross_checks",
+    "robustness",
+    "reference",
+    "spatial_support"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "kpi"
+    },
+    "acquired": {
+     "const": true
+    },
+    "label": {
+     "type": "string"
+    },
+    "short_label": {
+     "type": "string"
+    },
+    "family": {
+     "enum": [
+      "additive",
+      "pore",
+      "structure"
+     ]
+    },
+    "unit": {
+     "type": "string"
+    },
+    "display": {
+     "type": "object",
+     "required": [
+      "unit",
+      "factor"
+     ]
+    },
+    "modalities": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "BSE",
+       "SE",
+       "InLens"
+      ]
+     }
+    },
+    "cross_checks": {
+     "type": "array",
+     "items": {
+      "enum": [
+       "BSE",
+       "SE",
+       "InLens"
+      ]
+     }
+    },
+    "robustness": {
+     "type": "object",
+     "required": [
+      "cls"
+     ],
+     "properties": {
+      "cls": {
+       "enum": [
+        "robust",
+        "moderate"
+       ]
+      }
+     }
+    },
+    "reference": {
+     "type": "object",
+     "required": [
+      "mean",
+      "sd",
+      "sd_between",
+      "sd_tile",
+      "var_mean",
+      "n_micrographs",
+      "mdc95_3tiles"
+     ]
+    },
+    "spatial_support": {
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object",
+       "required": [
+        "cls",
+        "tile_excess",
+        "tile_excess_ci95",
+        "range_um",
+        "window_variance_slope"
+       ],
+       "properties": {
+        "cls": {
+         "enum": [
+          "short-range",
+          "fov-scale",
+          "long-range"
+         ]
+        },
+        "tile_excess_ci95": {
+         "$ref": "#/$defs/num2"
+        },
+        "range_um": {
+         "type": [
+          "number",
+          "null"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "missingDimension": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "acquired",
+    "label",
+    "short_label",
+    "family",
+    "would_require"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "missing"
+    },
+    "acquired": {
+     "const": false
+    },
+    "label": {
+     "type": "string"
+    },
+    "short_label": {
+     "type": "string"
+    },
+    "family": {
+     "type": "string"
+    },
+    "would_require": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "note": {
+     "type": "string"
+    }
+   }
+  },
+  "entity": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "kind",
+    "fields",
+    "n_fields",
+    "independence",
+    "geometry",
+    "validity",
+    "acquisition",
+    "leverage",
+    "status",
+    "size_distribution"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "kind": {
+     "const": "parent_micrograph"
+    },
+    "fields": {
+     "$ref": "#/$defs/ids"
+    },
+    "n_fields": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "independence": {
+     "type": "object",
+     "required": [
+      "reference_linked",
+      "also_in_batches"
+     ]
+    },
+    "geometry": {
+     "type": "object",
+     "required": [
+      "known_section_um",
+      "batch_coverage_um",
+      "field_height_um"
+     ]
+    },
+    "validity": {
+     "type": "object",
+     "required": [
+      "measurable",
+      "reasons"
+     ],
+     "properties": {
+      "measurable": {
+       "type": "object",
+       "required": [
+        "additive",
+        "pore",
+        "structure"
+       ]
+      }
+     }
+    },
+    "acquisition": {
+     "type": "object",
+     "required": [
+      "metrics",
+      "differs_from_approved",
+      "outside_tested_range"
+     ],
+     "properties": {
+      "differs_from_approved": {
+       "$ref": "#/$defs/acqDevs"
+      },
+      "outside_tested_range": {
+       "$ref": "#/$defs/acqDevs"
+      }
+     }
+    },
+    "leverage": {
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object",
+       "required": [
+        "verdict_without",
+        "p_without",
+        "flips",
+        "cause"
+       ],
+       "properties": {
+        "cause": {
+         "enum": [
+          "min_independent_count",
+          "carries_decisive_evidence"
+         ]
+        },
+        "verdict_without": {
+         "enum": [
+          "ACCEPT",
+          "INVESTIGATE",
+          "REJECT"
+         ]
+        }
+       }
+      }
+     ]
+    },
+    "status": {
+     "enum": [
+      "in",
+      "deviant",
+      "out",
+      "not measurable"
+     ]
+    },
+    "size_distribution": {
+     "type": [
+      "object",
+      "null"
+     ]
+    },
+    "reference_influence": {
+     "type": "object",
+     "description": "reference role only: shift of the reference mean per KPI when this parent is left out, also in units of the full-reference MDC"
+    }
+   }
+  },
+  "acqDevs": {
+   "type": "array",
+   "items": {
+    "type": "object",
+    "required": [
+     "metric",
+     "value",
+     "lo",
+     "hi",
+     "tolerance"
+    ]
+   }
+  },
+  "observation": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "entity",
+    "dimension",
+    "value",
+    "per_field",
+    "rims",
+    "reference_relation",
+    "variance_shares",
+    "scrutiny",
+    "acquisition_explains_deviation"
+   ],
+   "properties": {
+    "id": {
+     "type": "string",
+     "pattern": "^[^:]+:[^:]+$"
     },
     "entity": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "kind", "fields", "n_fields", "independence", "geometry", "validity", "acquisition", "leverage", "status", "size_distribution"],
-      "properties": {
-        "id": {"type": "string"}, "kind": {"const": "parent_micrograph"}, "fields": {"$ref": "#/$defs/ids"}, "n_fields": {"type": "integer", "minimum": 1},
-        "independence": {"type": "object", "required": ["reference_linked", "also_in_batches"]},
-        "geometry": {"type": "object", "required": ["known_section_um", "batch_coverage_um", "field_height_um"]},
-        "validity": {"type": "object", "required": ["measurable", "reasons"],
-                     "properties": {"measurable": {"type": "object", "required": ["additive", "pore", "structure"]}}},
-        "acquisition": {"type": "object", "required": ["metrics", "differs_from_approved", "outside_tested_range"],
-                        "properties": {"differs_from_approved": {"$ref": "#/$defs/acqDevs"}, "outside_tested_range": {"$ref": "#/$defs/acqDevs"}}},
-        "leverage": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["verdict_without", "p_without", "flips", "cause"],
-                     "properties": {"cause": {"enum": ["min_independent_count", "carries_decisive_evidence"]},
-                                    "verdict_without": {"enum": ["ACCEPT", "INVESTIGATE", "REJECT"]}}}]},
-        "status": {"enum": ["in", "deviant", "out", "not measurable"]},
-        "size_distribution": {"type": ["object", "null"]}
+     "type": "string"
+    },
+    "dimension": {
+     "type": "string"
+    },
+    "value": {
+     "type": [
+      "number",
+      "null"
+     ]
+    },
+    "per_field": {
+     "type": "object",
+     "additionalProperties": {
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "rims": {
+     "$ref": "#/$defs/ids"
+    },
+    "reference_relation": {
+     "type": "object",
+     "required": [
+      "status"
+     ],
+     "properties": {
+      "status": {
+       "enum": [
+        "in",
+        "deviant",
+        "out",
+        "not_measurable"
+       ]
+      },
+      "direction": {
+       "enum": [
+        -1,
+        0,
+        1
+       ]
+      },
+      "envelope95": {
+       "oneOf": [
+        {
+         "type": "null"
+        },
+        {
+         "$ref": "#/$defs/num2"
+        }
+       ]
+      },
+      "frame": {
+       "enum": [
+        "full_reference",
+        "leave_one_out"
+       ],
+       "description": "absent = full_reference (incoming batches)"
+      },
+      "frame_n": {
+       "type": "integer"
       }
+     }
     },
-    "acqDevs": {"type": "array", "items": {"type": "object", "required": ["metric", "value", "lo", "hi", "tolerance"]}},
-    "observation": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "entity", "dimension", "value", "per_field", "rims", "reference_relation", "variance_shares", "scrutiny", "acquisition_explains_deviation"],
-      "properties": {
-        "id": {"type": "string", "pattern": "^[^:]+:[^:]+$"}, "entity": {"type": "string"}, "dimension": {"type": "string"},
-        "value": {"type": ["number", "null"]}, "per_field": {"type": "object", "additionalProperties": {"type": ["number", "null"]}},
-        "rims": {"$ref": "#/$defs/ids"},
-        "reference_relation": {"type": "object", "required": ["status"],
-                               "properties": {"status": {"enum": ["in", "deviant", "out", "not_measurable"]}, "direction": {"enum": [-1, 0, 1]},
-                                              "envelope95": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/num2"}]}}},
-        "variance_shares": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["approved_material", "spatial_sampling", "baseline_support"],
-                            "additionalProperties": false,
-                            "properties": {"approved_material": {"$ref": "#/$defs/prob"}, "spatial_sampling": {"$ref": "#/$defs/prob"}, "baseline_support": {"$ref": "#/$defs/prob"}}}]},
-        "scrutiny": {"type": "object", "required": ["outcome"],
-                     "properties": {"outcome": {"enum": ["survives", "fails", "not_applicable"]},
-                                    "failed": {"type": "array", "items": {"enum": ["moderate_robustness_dimension", "spatially_inconsistent", "acquisition_could_explain"]}}}},
-        "acquisition_explains_deviation": {"type": "boolean"}
+    "variance_shares": {
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object",
+       "required": [
+        "approved_material",
+        "spatial_sampling",
+        "baseline_support"
+       ],
+       "additionalProperties": false,
+       "properties": {
+        "approved_material": {
+         "$ref": "#/$defs/prob"
+        },
+        "spatial_sampling": {
+         "$ref": "#/$defs/prob"
+        },
+        "baseline_support": {
+         "$ref": "#/$defs/prob"
+        }
+       }
       }
+     ]
     },
-    "missingRelevance": {
-      "type": "object", "additionalProperties": false, "required": ["id", "entity", "dimension", "consequential", "basis"],
-      "properties": {"id": {"type": "string"}, "entity": {"type": "string"}, "dimension": {"type": "string"}, "consequential": {"type": "boolean"},
-                     "basis": {"type": "object", "required": ["dependent_observations"]}}
-    },
-    "profile": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "entity", "dimension", "column_um", "window_um", "deviation_direction", "reference_band", "run_separation", "runs", "captured_length_um"],
-      "properties": {
-        "id": {"type": "string"}, "entity": {"type": "string"}, "dimension": {"type": "string"}, "column_um": {"type": "number"}, "window_um": {"type": "number"},
-        "deviation_direction": {"enum": [-1, 1]}, "run_separation": {"const": "unknown"}, "captured_length_um": {"type": "number"},
-        "reference_band": {"type": "object", "required": ["mean", "lo", "hi", "approximate"]},
-        "runs": {"type": "array", "items": {"type": "object",
-                 "required": ["fields", "length_um", "column_centres_um", "column_values", "window_centres_um", "window_means", "open_at_start", "open_at_end", "fraction_outside_band"],
-                 "properties": {"fields": {"type": "array", "items": {"type": "object", "required": ["field", "batch", "x0_um", "width_um"]}}}}}
+    "scrutiny": {
+     "type": "object",
+     "required": [
+      "outcome"
+     ],
+     "properties": {
+      "outcome": {
+       "enum": [
+        "survives",
+        "fails",
+        "not_applicable"
+       ]
+      },
+      "failed": {
+       "type": "array",
+       "items": {
+        "enum": [
+         "moderate_robustness_dimension",
+         "spatially_inconsistent",
+         "acquisition_could_explain"
+        ]
+       }
       }
+     }
     },
-    "rim": {
-      "type": "object", "additionalProperties": false, "required": ["id", "type", "scope", "target", "consequential", "basis", "statement"],
-      "properties": {"id": {"type": "string"}, "type": {"enum": ["population", "spatial", "scale", "composition", "acquisition", "validity"]},
-                     "scope": {"enum": ["batch", "entity", "observation", "dimension"]}, "target": {"type": "string"},
-                     "consequential": {"type": "boolean"}, "basis": {"type": "object"}, "statement": {"type": "string"}}
-    },
-    "action": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "rank", "tier", "verb", "title", "addresses", "status", "cost", "targets", "triggered_by", "trigger_facts", "evidence", "rationale", "effect"],
-      "properties": {
-        "id": {"type": "string"}, "rank": {"type": "integer", "minimum": 1}, "tier": {"enum": [1, 2, 3]},
-        "verb": {"enum": ["REPEAT", "ZOOM", "EDS", "EXTEND", "SECTIONS", "SPACE", "REIMAGE", "BASELINE"]},
-        "title": {"type": "string"},
-        "addresses": {"enum": ["acquisition", "scale", "composition", "spatial_extent", "population", "spatial_sampling", "validity"]},
-        "status": {"enum": ["computed", "grounded", "future"]}, "cost": {"enum": ["low", "medium", "high"]},
-        "targets": {"type": "object", "required": ["observations", "entities", "dimensions"]},
-        "triggered_by": {"$ref": "#/$defs/ids"},
-        "trigger_facts": {"type": "array", "items": {"type": "object", "required": ["collection", "id", "path"],
-                          "properties": {"collection": {"enum": ["entities", "dimensions", "observations", "missing_dimensions", "spatial_profiles", "decision"]}}}},
-        "evidence": {"type": "array", "items": {"type": "string"}}, "rationale": {"type": "string"},
-        "effect": {"oneOf": [{"type": "null"}, {"type": "object", "required": ["kind"],
-                   "properties": {"kind": {"enum": ["prevalence_ci_width", "minimum_detectable_change", "field_spacing", "spatial_extent"]}}}]}
-      }
+    "acquisition_explains_deviation": {
+     "type": "boolean"
     }
+   }
+  },
+  "missingRelevance": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "entity",
+    "dimension",
+    "consequential",
+    "basis"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "entity": {
+     "type": "string"
+    },
+    "dimension": {
+     "type": "string"
+    },
+    "consequential": {
+     "type": "boolean"
+    },
+    "basis": {
+     "type": "object",
+     "required": [
+      "dependent_observations"
+     ]
+    }
+   }
+  },
+  "profile": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "entity",
+    "dimension",
+    "column_um",
+    "window_um",
+    "deviation_direction",
+    "reference_band",
+    "run_separation",
+    "runs",
+    "captured_length_um"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "entity": {
+     "type": "string"
+    },
+    "dimension": {
+     "type": "string"
+    },
+    "column_um": {
+     "type": "number"
+    },
+    "window_um": {
+     "type": "number"
+    },
+    "deviation_direction": {
+     "enum": [
+      -1,
+      1
+     ]
+    },
+    "run_separation": {
+     "const": "unknown"
+    },
+    "captured_length_um": {
+     "type": "number"
+    },
+    "reference_band": {
+     "type": "object",
+     "required": [
+      "mean",
+      "lo",
+      "hi",
+      "approximate"
+     ]
+    },
+    "runs": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "fields",
+       "length_um",
+       "column_centres_um",
+       "column_values",
+       "window_centres_um",
+       "window_means",
+       "open_at_start",
+       "open_at_end",
+       "fraction_outside_band"
+      ],
+      "properties": {
+       "fields": {
+        "type": "array",
+        "items": {
+         "type": "object",
+         "required": [
+          "field",
+          "batch",
+          "x0_um",
+          "width_um"
+         ]
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "rim": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "type",
+    "scope",
+    "target",
+    "consequential",
+    "basis",
+    "statement"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "type": {
+     "enum": [
+      "population",
+      "spatial",
+      "scale",
+      "composition",
+      "acquisition",
+      "validity"
+     ]
+    },
+    "scope": {
+     "enum": [
+      "batch",
+      "entity",
+      "observation",
+      "dimension"
+     ]
+    },
+    "target": {
+     "type": "string"
+    },
+    "consequential": {
+     "type": "boolean"
+    },
+    "basis": {
+     "type": "object"
+    },
+    "statement": {
+     "type": "string"
+    }
+   }
+  },
+  "action": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "id",
+    "rank",
+    "tier",
+    "verb",
+    "title",
+    "addresses",
+    "status",
+    "cost",
+    "targets",
+    "triggered_by",
+    "trigger_facts",
+    "evidence",
+    "rationale",
+    "effect"
+   ],
+   "properties": {
+    "id": {
+     "type": "string"
+    },
+    "rank": {
+     "type": "integer",
+     "minimum": 1
+    },
+    "tier": {
+     "enum": [
+      1,
+      2,
+      3
+     ]
+    },
+    "verb": {
+     "enum": [
+      "REPEAT",
+      "ZOOM",
+      "EDS",
+      "EXTEND",
+      "SECTIONS",
+      "SPACE",
+      "REIMAGE",
+      "BASELINE"
+     ]
+    },
+    "title": {
+     "type": "string"
+    },
+    "addresses": {
+     "enum": [
+      "acquisition",
+      "scale",
+      "composition",
+      "spatial_extent",
+      "population",
+      "spatial_sampling",
+      "validity"
+     ]
+    },
+    "status": {
+     "enum": [
+      "computed",
+      "grounded",
+      "future"
+     ]
+    },
+    "cost": {
+     "enum": [
+      "low",
+      "medium",
+      "high"
+     ]
+    },
+    "targets": {
+     "type": "object",
+     "required": [
+      "observations",
+      "entities",
+      "dimensions"
+     ]
+    },
+    "triggered_by": {
+     "$ref": "#/$defs/ids"
+    },
+    "trigger_facts": {
+     "type": "array",
+     "items": {
+      "type": "object",
+      "required": [
+       "collection",
+       "id",
+       "path"
+      ],
+      "properties": {
+       "collection": {
+        "enum": [
+         "entities",
+         "dimensions",
+         "observations",
+         "missing_dimensions",
+         "spatial_profiles",
+         "decision"
+        ]
+       }
+      }
+     }
+    },
+    "evidence": {
+     "type": "array",
+     "items": {
+      "type": "string"
+     }
+    },
+    "rationale": {
+     "type": "string"
+    },
+    "effect": {
+     "oneOf": [
+      {
+       "type": "null"
+      },
+      {
+       "type": "object",
+       "required": [
+        "kind"
+       ],
+       "properties": {
+        "kind": {
+         "enum": [
+          "prevalence_ci_width",
+          "minimum_detectable_change",
+          "field_spacing",
+          "spatial_extent"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   }
   }
+ }
 }

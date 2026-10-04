@@ -106,7 +106,7 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
           <label key={k}><input type="checkbox" checked={!!overlays[k]} onChange={e => setOverlays({ ...overlays, [k]: e.target.checked })} />
             <i style={{ background: `rgb(${o.color.join(',')})` }} />{o.label}</label>))}</div>}
         {!imagery && <span className="sp-withheld">micrograph imagery withheld · public mode shows derived numbers only</span>}
-        <span className="sp-key"><i className="hatch" />not captured <i style={{ background: HUE.population, opacity: 0.6 }} />approved local band (visual aid)
+        <span className="sp-key"><i className="hatch" />not captured <i style={{ background: HUE.population, opacity: 0.6 }} />{M.meta.role === 'reference' ? 'reference local band (visual aid)' : 'approved local band (visual aid)'}
           <i style={{ background: HUE.spatial }} />open edge <em>· {imagery ? 'native scale, ' : ''}scroll ⇆</em></span>
       </div>
       <div className="sp-view">
@@ -153,13 +153,22 @@ export default function SpatialEvidence({ M, entity, setEntity, stage, action, a
                 <text x={sx(g.x0Um + g.widthUm / 2)} y={stripY + stripH / 2 + 4} textAnchor="middle" className="sp-note" fill={INK}>
                   {g.side === 'same' ? 'repeat · same footprint (prospective)' : 'next field · prospective capture'}</text>
               </g>))}
+            {/* ruler edge between image and profile: ticks every 25 µm (profile column), long ticks every 100 µm (window) */}
+            {reg.runs.map((r, i) => (
+              <g key={'ru' + i}>
+                <rect x={sx(r.offsetUm)} y={stripY + stripH + 6} width={r.lengthUm * pxPerUm} height={9} fill="#d9d6cf" />
+                <rect x={sx(r.offsetUm)} y={stripY + stripH + 6} width={r.lengthUm * pxPerUm} height={1} fill="rgba(52,46,38,.25)" />
+                {Array.from({ length: Math.floor(r.lengthUm / 25) + 1 }, (_, j) => (
+                  <line key={j} x1={sx(r.offsetUm + 25 * j)} x2={sx(r.offsetUm + 25 * j)} y1={stripY + stripH + 6} y2={stripY + stripH + (j % 4 === 0 ? 15 : 10)}
+                        stroke="#6f6c66" strokeWidth={j % 4 === 0 ? 1.2 : 0.8} />))}
+              </g>))}
             {/* profile: approved local band, 25-µm columns, 100-µm windows coloured against the band */}
             {reg.runs.map((r, i) => (
               <g key={'b' + i}>
                 <rect x={sx(r.offsetUm)} y={sy(b.hi)} width={r.lengthUm * pxPerUm} height={sy(b.lo) - sy(b.hi)} fill={HUE.population} opacity={emphBand ? 0.26 : 0.13} />
                 <line x1={sx(r.offsetUm)} x2={sx(r.offsetUm + r.lengthUm)} y1={sy(b.hi)} y2={sy(b.hi)} stroke={HUE.population} strokeOpacity={0.75} strokeDasharray="3 3" />
                 <line x1={sx(r.offsetUm)} x2={sx(r.offsetUm + r.lengthUm)} y1={sy(b.lo)} y2={sy(b.lo)} stroke={HUE.population} strokeOpacity={0.75} strokeDasharray="3 3" />
-                <text x={sx(r.offsetUm) + 6} y={sy(b.lo) - sy(b.hi) > 18 ? sy(b.hi) + 13 : sy(b.hi) - 5} className="sp-note" fill="#5a3fb0">approved local band (100-µm windows)</text>
+                <text x={sx(r.offsetUm) + 6} y={sy(b.lo) - sy(b.hi) > 18 ? sy(b.hi) + 13 : sy(b.hi) - 5} className="sp-note" fill="#5a3fb0">{M.meta.role === 'reference' ? 'reference local band (100-µm windows; includes this micrograph)' : 'approved local band (100-µm windows)'}</text>
               </g>))}
             {prof.runs.map((r, i) => r.column_centres_um.map((x, j) => (
               <circle key={`${i}-c${j}`} cx={sx(reg.runs[i].offsetUm + x)} cy={sy(r.column_values[j])} r={2.3} fill={MUT} opacity={0.55} />)))}

@@ -9,9 +9,12 @@ field records (KPIs, per-strip KPIs, histogram anchors, window variances, acquis
 sensitivity summary. Excluded: raw TIFFs, thumbnails, segmentation labels, edge strips (*.npy), mosaics and any
 instrument page with embedded imagery. `check()` enforces this and fails the export otherwise.
 """
+import base64
 import glob
+import hashlib
 import json
 import os
+import re
 import shutil
 
 from . import brief, instrument, provmap
@@ -22,8 +25,25 @@ IMAGE_EXT = ('.png', '.jpg', '.jpeg', '.tif', '.tiff', '.gif', '.webp', '.bmp', 
 BATCH_FILES = ('result.json', 'field.json', 'brief.json', 'report.md')
 
 
+# Our own brand assets may be embedded (the renderer inlines its company mark). They are allowed by exact content:
+# an embedded image passes only if its decoded bytes equal one of these files; anything else is rejected.
+BRAND_ASSETS = (os.path.join(os.path.dirname(os.path.dirname(__file__)), 'renderer', 'src', 'assets', 'brand-logo.png'),)
+DATA_URI = re.compile(r'data:image/[\w.+-]+;base64,([A-Za-z0-9+/=]+)')
+
+
+def _brand_digests():
+    return {hashlib.sha256(open(p, 'rb').read()).hexdigest() for p in BRAND_ASSETS if os.path.exists(p)}
+
+
+def foreign_images(text):
+    """Number of embedded images in text that are not an exact brand asset (malformed data: URIs count as foreign)."""
+    brand, uris = _brand_digests(), DATA_URI.findall(text)
+    return (text.count('data:image') - len(uris)) + sum(hashlib.sha256(base64.b64decode(u)).hexdigest() not in brand for u in uris)
+
+
 def check(root):
-    """Raise if anything image-bearing is present under root (by extension or as an embedded data: URI)."""
+    """Raise if anything image-bearing is present under root (by extension or as an embedded data: URI), except the
+    exact brand assets in BRAND_ASSETS."""
     bad = []
     for dp, _, fs in os.walk(root):
         for f in fs:
@@ -31,7 +51,7 @@ def check(root):
             if f.lower().endswith(IMAGE_EXT):
                 bad.append(p)
             elif f.lower().endswith(('.html', '.json', '.md', '.txt', '.csv', '.js')):
-                if 'data:image' in open(p, encoding='utf-8', errors='ignore').read():
+                if foreign_images(open(p, encoding='utf-8', errors='ignore').read()):
                     bad.append(p + ' (embedded image)')
     if bad:
         raise RuntimeError('public bundle contains image-bearing content:\n  ' + '\n  '.join(bad))

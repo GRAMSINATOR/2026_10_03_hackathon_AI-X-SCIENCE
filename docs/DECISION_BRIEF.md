@@ -112,3 +112,15 @@ infer or change the policy.
 Assessment: little value now. The deterministic brief already reads cleanly, and an LLM adds a dependency, latency and
 a verification burden for marginal phrasing gains. The seam exists if longer free-text summaries (reports, emails) are
 ever wanted.
+
+## Reference mode
+
+A field with `context.role = "reference"` gets the same hero keys under reference titles and states:
+* ROLE;
+* DATASET SELF-AUDIT;
+* SURVIVING SIGNAL;
+* OPEN LIMITS;
+* NEXT ACQUISITION.
+
+Reference support is stated once, in the self-audit block. `check()` additionally rejects any QC verdict, the word
+"defect", and a departure not tested in its leave-one-out frame. See `docs/REFERENCE_SELF_AUDIT.md`.

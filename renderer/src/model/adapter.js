@@ -46,6 +46,7 @@ export function buildModel(F) {
   const actions = F.actions.map(a => ({ ...a, reach: actionReach(a, F, RIM, OBS) }));
   return { F, DIM, OBS, ENT, MISS, RIM, PROF, rows, columns, keys, actions,
            meta: { batch: F.context.batch, reference: F.context.reference, verdict: F.decision.verdict, p: F.decision.p_batch,
+                   role: F.context.role || 'incoming',
                    nIndependent: F.decision.n_independent, pivotal: F.decision.pivotal, linked: F.decision.reference_linked,
                    reasons: F.decision.reasons } };
 }
@@ -193,6 +194,11 @@ export function structureVisual(M, stage, sel = {}) {
 }
 
 // concise, data-derived interpretation line (prose built only from contract fields)
+// what an observation is compared with: the approved population (incoming) or the other reference parents (self-audit)
+export const isReference = M => M.meta.role === 'reference';
+export const frameWord = M => (isReference(M) ? 'the other reference micrographs' : 'approved');
+export const envelopeWord = M => (isReference(M) ? 'its leave-one-out envelope' : 'the approved envelope');
+
 export function interpretation(M, stage, sel = {}) {
   const s = typeof stage === 'number' ? stage : STAGES.indexOf(stage);
   const F = M.F, sum = F.summary;
@@ -200,13 +206,13 @@ export function interpretation(M, stage, sel = {}) {
     return `${o.entity} ${c.short.toLowerCase()} ${formatValue(o.value, c)} vs ${formatValue(o.reference_relation.approved_mean, c)} ${c.unit}`; };
   if (sel.key) return keyInterpretation(M, sel.key, s);
   if (s === 0) {
-    if (!sum.n_deviating) return 'No observation lies outside the approved envelope.';
+    if (!sum.n_deviating) return `No observation lies outside ${envelopeWord(M)}.`;
     const top = [...sum.deviating].sort((a, b) => M.OBS[b].reference_relation.exceedance_ratio - M.OBS[a].reference_relation.exceedance_ratio)[0];
-    return `${sum.n_deviating} observation${sum.n_deviating > 1 ? 's' : ''} outside the approved envelope; strongest: ${fmtObs(top)}.`;
+    return `${sum.n_deviating} observation${sum.n_deviating > 1 ? 's' : ''} outside ${envelopeWord(M)}; strongest: ${fmtObs(top)}.`;
   }
   if (s === 1) {
     const linked = F.decision.reference_linked.length;
-    return `${sum.n_surviving} of ${sum.n_deviating} deviations survive scrutiny` + (sum.surviving.length ? ` (${sum.surviving.join(', ')})` : '') +
+    return `${sum.n_surviving} of ${sum.n_deviating} ${isReference(M) ? 'local departures' : 'deviations'} survive scrutiny` + (sum.surviving.length ? ` (${sum.surviving.join(', ')})` : '') +
       `.${linked ? ` ${linked} micrograph${linked > 1 ? 's are' : ' is'} reference-linked and carr${linked > 1 ? 'y' : 'ies'} no independent weight.` : ''}`;
   }
   if (s === 2) {
@@ -217,11 +223,18 @@ export function interpretation(M, stage, sel = {}) {
   if (s === 3) {
     const cons = F.rims.filter(r => r.consequential);
     return cons.length ? `${cons.length} consequential limit${cons.length > 1 ? 's' : ''}: ` + cons.map(r => `${r.type} (${r.target})`).join(' · ') + '.'
-      : 'No consequential limit: remaining rims do not affect the decision.';
+      : isReference(M) ? 'No consequential limit: the reference supports its role at the tested scales.' : 'No consequential limit: remaining rims do not affect the decision.';
   }
   if (s === 4) {
     const A = sel.action != null ? M.actions[sel.action] : M.actions[0];
-    return A ? `${A.title} — addresses ${A.addresses.replace('_', ' ')}; ${A.status}.` : 'No capture recommended.';
+    if (!A) return 'No capture recommended.';
+    const outcomes = {
+      acquisition: 'separates acquisition from material', scale: 'resolves scale truncation',
+      spatial_extent: 'bounds spatial extent', composition: 'resolves composition identity',
+      spatial_sampling: 'improves independent spatial sampling', validity: 'restores measurement validity',
+      population: A.verb === 'BASELINE' ? 'narrows baseline uncertainty' : 'constrains lot prevalence',
+    };
+    return `${A.title} — ${outcomes[A.addresses] || `addresses ${A.addresses.replaceAll('_', ' ')}`}.`;
   }
   return '';
 }
@@ -232,7 +245,7 @@ export function keyInterpretation(M, id, s) {
   if (k.kind === 'missing') return `${k.entity} · ${c.label}: not acquired` + (k.missing.consequential ? ' — consequential: the surviving deviation depends on it.' : '.');
   const o = k.obs, rr = o.reference_relation;
   if (rr.status === 'not_measurable') return `${k.entity} · ${c.short}: not measurable (${M.ENT[k.entity].validity.reasons.join('; ')}).`;
-  const base = `${k.entity} · ${c.short}: ${formatValue(o.value, c)} ${c.unit} vs approved ${formatValue(rr.approved_mean, c)} (z ${rr.z >= 0 ? '+' : ''}${rr.z.toFixed(1)}, ${rr.status})`;
+  const base = `${k.entity} · ${c.short}: ${formatValue(o.value, c)} ${c.unit} vs ${frameWord(M)} ${formatValue(rr.approved_mean, c)} (z ${rr.z >= 0 ? '+' : ''}${rr.z.toFixed(1)}, ${rr.status})`;
   if (s === 1 && o.scrutiny.outcome !== 'not_applicable') return `${base} — ${o.scrutiny.outcome}${o.scrutiny.failed.length ? ': ' + o.scrutiny.failed.join(', ').replaceAll('_', ' ') : ''}.`;
   if (s === 2) { const v = o.variance_shares; return `${base} — envelope: material ${pct(v.approved_material)}, spatial sampling ${pct(v.spatial_sampling)}, baseline ${pct(v.baseline_support)}.`; }
   if (s === 3 && o.rims.length) return `${base} — ${o.rims.map(r => M.RIM[r].statement).join(' ')}`;

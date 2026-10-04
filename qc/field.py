@@ -17,13 +17,17 @@ import numpy as np
 from scipy import stats as sps
 
 from .explain import acquisition_deviations
-from .spatial import BAND_COLS, COL_UM, PSD_BINS, SPATIAL_KPIS
+from .spatial import BAND_COLS, COL_UM, PSD_BINS, SPATIAL_KPIS, psd_density
 from .stats import ALPHA_INVESTIGATE, ALPHA_REJECT, CNR_MIN, KPIS, _calibrate
 
 SCHEMA_VERSION = 'epistemic-field/1'
 ACQ_SHARE_MAX = 0.5      # a deviation survives if the worst tested acquisition change explains < 50% of it
 VERB_ORDER = ['REPEAT', 'ZOOM', 'EDS', 'EXTEND', 'SECTIONS', 'SPACE', 'REIMAGE', 'BASELINE']
+REF_VERB_ORDER = ['REIMAGE', 'ZOOM', 'SPACE', 'EXTEND', 'EDS', 'BASELINE']
 CANON_UNIT = {'%': 'fraction'}   # KPI values are stored in canonical units; display factor converts
+# reference self-audit (role REFERENCE): when estimating the baseline contributes at least this share of a 3-field
+# envelope's variance on a robust KPI, the size of the reference itself limits every comparison made against it
+REF_SUPPORT_SHARE = 1 / 3
 
 
 def _oid(entity, dim):
@@ -125,9 +129,13 @@ def _dimensions(ref):
     return dims
 
 
-def build(res, ref, recs, chains, all_records):
+def build(res, ref, recs, chains, all_records, frames=None):
+    """frames: leave-one-parent-out reference frames (qc.stats.loo_frames). Given, the field is the reference's
+    self-audit (role REFERENCE): each reference micrograph is related to its own frame, never to a model containing it,
+    and rims are consequential when they weaken the reference as a comparison anchor. Absent, an incoming batch."""
     by_key = {r['key']: r for r in all_records}
     d = res['decision']
+    is_ref = frames is not None
     batch = res['batch']
     sp, rob = ref.get('spatial', {}), ref.get('robustness', {})
     dims = _dimensions(ref)
@@ -159,10 +167,15 @@ def build(res, ref, recs, chains, all_records):
             leverage=None if lev is None else dict(verdict_without=lev['verdict_without'], p_without=lev['p_without'], flips=lev['flips'],
                                                    cause='min_independent_count' if 'below 3' in lev['why'] else 'carries_decisive_evidence'),
             status=m['status'], size_distribution=_size_distribution(rec_by[pid], ref) if 'psd_ref' in ref else None)
+        if is_ref:   # this parent against the others only: size distribution, tile support range, influence on the reference
+            others = [x for x in res['micrographs'] if x['parent'] != pid]
+            ok = [by_key[k] for x in others if x['gate']['additive'] for k in x['keys'] if k in by_key]
+            ent['size_distribution'] = _size_distribution(rec_by[pid], dict(ref, psd_ref=psd_density(ok))) if ok else None
+            ent['reference_influence'] = m.get('reference_influence', {})
         entities.append(ent)
         surviving_additive = []
         for k, meta in KPIS.items():
-            R, sc = ref['kpi'][k], m['score'][k]
+            R, sc = (frames[pid]['kpi'].get(k) if is_ref else ref['kpi'][k]), m['score'][k]
             o = dict(id=_oid(pid, k), entity=pid, dimension=k, value=sc.get('value'),
                      per_field={f'{batch}__{f}': v.get(k) for f, v in m['tile_kpi'].items()}, rims=[])
             if sc['status'] == 'not measurable':
@@ -178,9 +191,15 @@ def build(res, ref, recs, chains, all_records):
             acq_share = shift / delta if delta > 0 else None
             deviating = sc['status'] in ('deviant', 'out')
             lo_s, hi_s = ref.get('tile_range', {}).get(k, [None, None])
+            if is_ref:   # support range of the OTHER reference micrographs' fields
+                tv = [t[k] for x in res['micrographs'] if x['parent'] != pid and x['gate'][meta['family']]
+                      for t in x['tile_kpi'].values() if t.get(k) is not None and np.isfinite(t[k])]
+                lo_s, hi_s = (min(tv), max(tv)) if tv else (None, None)
             o['reference_relation'] = dict(status=sc['status'], z=sc['t'], q95=sc['q95'], q99=sc['q99'], envelope95=sc.get('pi95'),
                                            approved_mean=mu, exceedance_ratio=abs(sc['t']) / sc['q95'], direction=int(np.sign(x - mu)),
                                            beyond_reference_support=bool(lo_s is not None and (x < lo_s or x > hi_s)))
+            if is_ref:
+                o['reference_relation'].update(frame='leave_one_out', frame_n=R['n'])
             o['variance_shares'] = {kk: v / tot for kk, v in comp.items()}
             scr = dict(outcome='not_applicable', robust_dimension=meta['cls'] == 'robust', tile_consistent=bool(sc.get('consistent')),
                        fields_beyond_95=sc.get('tiles_beyond95'), n_fields=sc.get('n_tiles'), acquisition_share=acq_share,
@@ -208,7 +227,7 @@ def build(res, ref, recs, chains, all_records):
             rid = f'scale:{pid}'
             for k in add_dev:
                 obs[k]['rims'].append(rid)
-            rims.append(dict(id=rid, type='scale', scope='entity', target=pid, consequential=bool(lev and lev['flips']),
+            rims.append(dict(id=rid, type='scale', scope='entity', target=pid, consequential=bool(surviving_additive) if is_ref else bool(lev and lev['flips']),
                              basis=dict(excess_share_below_0_7um=sd['excess_share_below_0_7um'], peak_ratio_at_floor=sd['peak_ratio_at_floor'],
                                         detection_floor_um=sd['detection_floor_um'], pixel_nm=float(m['acq']['px_nm']), observations=[_oid(pid, k) for k in add_dev]),
                              statement=f"{100 * sd['excess_share_below_0_7um']:.0f}% of the excess high-Z objects are < 0.7 µm and the excess ratio peaks "
@@ -225,7 +244,8 @@ def build(res, ref, recs, chains, all_records):
                 if edges or not obs[k]['scrutiny']['tile_consistent']:
                     rid = f'spatial:{pid}:{k}'
                     obs[k]['rims'].append(rid)
-                    rims.append(dict(id=rid, type='spatial', scope='observation', target=_oid(pid, k), consequential=bool(lev and lev['flips']),
+                    rims.append(dict(id=rid, type='spatial', scope='observation', target=_oid(pid, k),
+                                     consequential=(obs[k]['scrutiny'].get('outcome') == 'survives') if is_ref else bool(lev and lev['flips']),
                                      basis=dict(open_edges=edges, captured_length_um=prof['captured_length_um'],
                                                 fraction_outside_band=max(r['fraction_outside_band'] for r in prof['runs']),
                                                 tile_consistent=obs[k]['scrutiny']['tile_consistent'], dimension_spatial_class=s['cls'],
@@ -241,17 +261,20 @@ def build(res, ref, recs, chains, all_records):
                             basis=dict(dependent_observations=surviving_additive, fines_bse_intensity_u=fu,
                                        approved_fines_bse_intensity_range=[rf['min'], rf['max']] if rf else None)))
         if surviving_additive:
-            rims.append(dict(id=f'composition:{pid}', type='composition', scope='entity', target=pid, consequential=bool(lev and lev['flips']),
+            rims.append(dict(id=f'composition:{pid}', type='composition', scope='entity', target=pid, consequential=True if is_ref else bool(lev and lev['flips']),
                              basis=dict(missing_dimension='composition', dependent_observations=surviving_additive, fines_bse_intensity_u=fu,
                                         approved_fines_bse_intensity_range=[rf['min'], rf['max']] if rf else None),
                              statement='the surviving deviation is in the high-Z phase, whose chemistry is not measured: BSE alone cannot '
                                        'separate a finer additive from a different lower-Z phase.'))
         if untested:
-            rims.append(dict(id=f'acquisition:{pid}', type='acquisition', scope='entity', target=pid, consequential=bool(lev and lev['flips']),
+            # reference: outside the tested range only matters on its own when the measurements are otherwise valid; with a
+            # validity failure, the validity rim carries the consequence (the acquisition difference is its likely cause)
+            rims.append(dict(id=f'acquisition:{pid}', type='acquisition', scope='entity', target=pid,
+                             consequential=(not m['gate_reasons']) if is_ref else bool(lev and lev['flips']),
                              basis=dict(outside_tested_range=untested),
                              statement='acquired outside the tested acquisition range; sensitivity bounds do not apply.'))
         if m['gate_reasons']:
-            rims.append(dict(id=f'validity:{pid}', type='validity', scope='entity', target=pid, consequential=False,
+            rims.append(dict(id=f'validity:{pid}', type='validity', scope='entity', target=pid, consequential=is_ref,
                              basis=dict(measurable=m['gate'], reasons=m['gate_reasons']), statement='; '.join(m['gate_reasons'])))
 
     # batch-level population support
@@ -260,32 +283,70 @@ def build(res, ref, recs, chains, all_records):
     prev = _prevalence(n_out, len(indep)) if indep else (0.0, 1.0)
     pivotal = [e['id'] for e in entities if e['leverage'] and e['leverage']['flips']]
     n_ref = [dm['reference']['n_micrographs'] for dm in dims if dm['acquired']]
-    rims.insert(0, dict(id=f'population:{batch}', type='population', scope='batch', target=batch, consequential=bool(pivotal),
-                        basis=dict(n_reference_min=min(n_ref), n_reference_max=max(n_ref), n_independent=len(indep),
-                                   n_reference_linked=len(entities) - len(indep), pivotal=pivotal,
-                                   pivotal_cause=sorted({e['leverage']['cause'] for e in entities if e['id'] in pivotal}),
-                                   prevalence=dict(out_of_family=n_out, n=len(indep), ci95=prev)),
-                        statement=f"approved reference = {min(n_ref)}-{max(n_ref)} micrographs; {len(indep)} independent incoming micrographs"
-                                  + (f"; verdict rests on {', '.join(pivotal)}" if pivotal else '')
-                                  + f"; out-of-family prevalence {n_out}/{len(indep)} (95% CI {100 * prev[0]:.0f}-{100 * prev[1]:.0f}%)"))
+    if is_ref:   # reference support: how much of a 3-field envelope is the uncertainty of estimating the reference itself
+        share = {}
+        for k, meta in KPIS.items():
+            R = ref['kpi'][k]
+            tot = R['sd_between'] ** 2 + R['sd_within_tile'] ** 2 / 3 + R['var_mu']
+            share[k] = float(R['var_mu'] / tot) if tot > 0 else 0.0
+        robust = [k for k in KPIS if KPIS[k]['cls'] == 'robust']
+        kmax = max(robust, key=lambda k: share[k])
+        n_out = len([e for e in entities if e['status'] == 'out'])
+        prev = _prevalence(n_out, len(entities))
+        excl = sorted({p for k in KPIS for p in ref['kpi'][k].get('excluded', [])})
+        rims.insert(0, dict(id=f'population:{batch}', type='population', scope='batch', target=batch,
+                            consequential=bool(share[kmax] >= REF_SUPPORT_SHARE),
+                            basis=dict(n_reference_min=min(n_ref), n_reference_max=max(n_ref), n_independent=len(entities), n_reference_linked=0,
+                                       pivotal=[], pivotal_cause=[], prevalence=dict(out_of_family=n_out, n=len(entities), ci95=prev),
+                                       baseline_share_3_fields=share, max_baseline_share=share[kmax], max_baseline_share_dimension=kmax,
+                                       support_share_threshold=REF_SUPPORT_SHARE, excluded_by_validity=excl),
+                            statement=f"reference = {min(n_ref)}-{max(n_ref)} micrographs per KPI"
+                                      + (f" ({', '.join(excl)} excluded by the validity gate for some KPIs)" if excl else '')
+                                      + f"; estimating the reference is {100 * share[kmax]:.0f}% of a 3-field envelope's variance for "
+                                      f"{KPIS[kmax]['label'].lower()}"))
+        pr = np.array(ref.get('psd_ref') or [], float)
+        if pr.size >= 2:   # does the reference's own size distribution turn over before the detection floor?
+            truncated = bool(pr[0] >= pr[1:].max())
+            rims.append(dict(id=f'scale:{batch}', type='scale', scope='batch', target=batch, consequential=truncated,
+                             basis=dict(bin_edges_um=PSD_BINS[:-1], reference_density_per_1000um2=pr.tolist(), detection_floor_um=PSD_BINS[0],
+                                        floor_bin_density=float(pr[0]), max_density_above_floor=float(pr[1:].max()),
+                                        truncated_at_floor=truncated, pixel_nm=float(ref['px_nm'])),
+                             statement=(f"the reference high-Z size distribution is highest in its smallest resolved bin ({PSD_BINS[0]}-{PSD_BINS[1]} "
+                                        f"µm: {pr[0]:.2f} vs at most {pr[1:].max():.2f} /1000 µm² above): it has not turned over at the "
+                                        f"{PSD_BINS[0]} µm detection floor, so normal fines below the floor are unobserved")
+                                       if truncated else f"the reference size distribution turns over above the {PSD_BINS[0]} µm detection floor"))
+    else:
+        rims.insert(0, dict(id=f'population:{batch}', type='population', scope='batch', target=batch, consequential=bool(pivotal),
+                            basis=dict(n_reference_min=min(n_ref), n_reference_max=max(n_ref), n_independent=len(indep),
+                                       n_reference_linked=len(entities) - len(indep), pivotal=pivotal,
+                                       pivotal_cause=sorted({e['leverage']['cause'] for e in entities if e['id'] in pivotal}),
+                                       prevalence=dict(out_of_family=n_out, n=len(indep), ci95=prev)),
+                            statement=f"approved reference = {min(n_ref)}-{max(n_ref)} micrographs; {len(indep)} independent incoming micrographs"
+                                      + (f"; verdict rests on {', '.join(pivotal)}" if pivotal else '')
+                                      + f"; out-of-family prevalence {n_out}/{len(indep)} (95% CI {100 * prev[0]:.0f}-{100 * prev[1]:.0f}%)"))
     for dm in dims:
         s = dm.get('spatial_support')
         if s and s['cls'] != 'short-range':
-            rims.append(dict(id=f'spatial-dimension:{dm["id"]}', type='spatial', scope='dimension', target=dm['id'], consequential=False,
+            # reference: the adjacent-tile sampling assumption is challenged when the tile-excess 95% CI excludes 1
+            rims.append(dict(id=f'spatial-dimension:{dm["id"]}', type='spatial', scope='dimension', target=dm['id'],
+                             consequential=bool(is_ref and s['tile_excess_ci95'][0] > 1),
                              basis=dict(cls=s['cls'], tile_excess=s['tile_excess'], tile_excess_ci95=s['tile_excess_ci95'], range_um=s['range_um']),
                              statement=f"{dm['short_label']}: adjacent-tile variance {s['tile_excess']:.1f}× the short-range prediction (95% CI "
                                        f"{s['tile_excess_ci95'][0]:.1f}-{s['tile_excess_ci95'][1]:.1f}); " +
                                        (f"variogram range ≈ {s['range_um']:.0f} µm" if s['cls'] == 'fov-scale' else
                                         f"variogram still rising at {s['range_um']:.0f} µm (structure larger than the longest coherent capture)")))
 
-    actions = _actions(entities, observations, dims, profiles, missing, rims, ref, d, sp)
+    actions = (_reference_actions if is_ref else _actions)(entities, observations, dims, profiles, missing, rims, ref, d, sp)
     devs = [o['id'] for o in observations if o['reference_relation'].get('status') in ('deviant', 'out')]
     surv = [o['id'] for o in observations if o['scrutiny'].get('outcome') == 'survives']
     fields = sorted({f['field'] for p in profiles for run in p['runs'] for f in run['fields']} | {k for e in entities for k in e['fields']})
-    return dict(
+    context = dict(batch=batch, reference=ref['name'], statistical_unit='parent_micrograph',
+                   model='two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian')
+    if is_ref:
+        context['role'] = 'reference'
+    out = dict(
         schema_version=SCHEMA_VERSION,
-        context=dict(batch=batch, reference=ref['name'], statistical_unit='parent_micrograph',
-                     model='two-level random-effects (approved material + tile sampling + baseline support), simulation-calibrated; not Bayesian'),
+        context=context,
         decision=dict(verdict=d['verdict'], p_batch=d['p_batch'], d99=d['d99'], d95=d['d95'], severity=d.get('severity'),
                       tests=dict(severity_p=d['null'].get('p_severity'), count_p=d['null'].get('p_count'), combination='bonferroni_2'),
                       null_calibration=dict(p_any_outside_99=d['null'].get('p_any99'), p_any_outside_95=d['null'].get('p_any95')),
@@ -302,6 +363,90 @@ def build(res, ref, recs, chains, all_records):
                         edge_links=res.get('links', [])),
         summary=dict(deviating=devs, surviving=surv, n_deviating=len(devs), n_surviving=len(surv),
                      consequential_rims=[r['id'] for r in rims if r['consequential']]))
+    if is_ref:
+        out['decision']['self_audit'] = d['self_audit']
+    return out
+
+
+def _reference_actions(entities, observations, dims, profiles, missing, rims, ref, d, sp):
+    """How the reference dataset itself should next be acquired. Every action is triggered by a reference-derived rim;
+    tier 1 when that rim is consequential for the reference as a comparison anchor."""
+    A = []
+    dim = {x['id']: x for x in dims}
+    R = {r['id']: r for r in rims}
+    pop = rims[0]
+
+    def add(**a):
+        a['targets'] = dict(observations=a.pop('obs', []), entities=a.pop('ents', []), dimensions=a.pop('dims', []))
+        a['triggered_by'] = [r for r in a.pop('rims', []) if r in R]
+        a['trigger_facts'] = [dict(collection=c, id=i, path=p) for c, i, p in a.pop('facts', [])]
+        a.setdefault('effect', None)
+        A.append(a)
+
+    tier = lambda rid: 1 if R[rid]['consequential'] else 2
+    for e in entities:
+        rid = f"validity:{e['id']}"
+        if rid in R:
+            fams = [f for f, ok in e['validity']['measurable'].items() if not ok]
+            add(verb='REIMAGE', tier=tier(rid), addresses='validity', status='grounded', cost='low', ents=[e['id']], rims=[rid],
+                facts=[('entities', e['id'], 'validity')],
+                obs=[o['id'] for o in observations if o['entity'] == e['id'] and o['reference_relation']['status'] == 'not_measurable'],
+                title=f"Re-image reference {e['id']} at the approved BSE settings", evidence=e['validity']['reasons'],
+                rationale=f"{e['id']} belongs to the reference, but its {', '.join(fams)} measurements are not trustworthy at this "
+                          'contrast-to-noise, so those reference statistics rest on one micrograph fewer. Re-imaging restores it; no analysis can.')
+    rid = f"scale:{pop['target']}"
+    if rid in R and R[rid]['consequential']:
+        b = R[rid]['basis']
+        add(verb='ZOOM', tier=1, addresses='scale', status='grounded', cost='low', dims=['additive_density', 'additive_d50_um'], rims=[rid],
+            facts=[('rims', rid, 'basis')], title='Higher-magnification BSE on reference micrographs: resolve the approved fines below the floor',
+            evidence=[R[rid]['statement']],
+            rationale=f"The reference cannot say what normal looks like below {b['detection_floor_um']} µm, so any incoming sub-floor population "
+                      'is compared with an unobserved baseline. A finer pixel (≤ 10 nm) on approved material resolves it.')
+    for k in SPATIAL_KPIS:
+        rid = f'spatial-dimension:{k}'
+        if rid not in R or not R[rid]['consequential']:
+            continue
+        b = R[rid]['basis']
+        if b['cls'] == 'fov-scale':
+            add(verb='SPACE', tier=1, addresses='spatial_sampling', status='computed', cost='medium', dims=[k], rims=[rid],
+                facts=[('dimensions', k, 'spatial_support')],
+                title=f"{dim[k]['short_label']}: space reference fields ≥ {b['range_um']:.0f} µm apart instead of adjacent tiles",
+                evidence=[R[rid]['statement']], effect=dict(kind='field_spacing', min_spacing_um=b['range_um'], basis=b['cls']),
+                rationale='Adjacent reference tiles re-measure the same structure, so the tile-sampling spread they supply mixes sampling noise '
+                          'with spatial structure. Fields spaced by the correlation range sample it approximately independently.')
+        else:
+            add(verb='EXTEND', tier=1, addresses='spatial_extent', status='computed', cost='low', dims=[k], rims=[rid],
+                facts=[('dimensions', k, 'spatial_support')],
+                title=f"{dim[k]['short_label']}: one longer coherent reference capture (> {b['range_um']:.0f} µm)",
+                evidence=[R[rid]['statement']],
+                rationale='The variogram has not reached its plateau within the longest reference capture, so the scale of this structure is '
+                          'unknown; one longer mosaic of approved material locates it, and then tells how far apart fields must be.')
+    for o in observations:
+        rid = f"spatial:{o['id']}"
+        if rid in R and R[rid]['basis']['open_edges'] and o['scrutiny'].get('outcome') == 'survives':
+            edges = R[rid]['basis']['open_edges']
+            add(verb='EXTEND', tier=tier(rid), addresses='spatial_extent', status='computed', cost='low', obs=[o['id']], ents=[o['entity']],
+                rims=[rid], facts=[('spatial_profiles', o['id'], 'runs')], title=f"Extend reference {o['entity']} beyond its {' and '.join(edges)}",
+                evidence=[R[rid]['statement']], effect=dict(kind='spatial_extent', known_extent_um=R[rid]['basis']['captured_length_um'], open_edges=edges),
+                rationale='Tells whether this local departure is a bounded feature of approved material or part of a larger zone.')
+    surv = [o['id'] for o in observations if o['scrutiny'].get('outcome') == 'survives']
+    pick = sorted([x for x in dims if x['acquired'] and x['robustness']['cls'] == 'robust'],
+                  key=lambda x: -pop['basis']['baseline_share_3_fields'][x['id']])[:3]
+    proj = [dict(dimension=x['id'], mdc95_now=x['reference']['mdc95_3tiles'],
+                 mdc95_with_plus5=_mdc_at(ref['kpi'][x['id']], ref['kpi'][x['id']]['n'] + 5)) for x in pick]
+    add(verb='BASELINE', tier=1 if pop['consequential'] else 3, addresses='population', status='computed', cost='high', rims=[pop['id']], obs=surv,
+        dims=[x['id'] for x in pick], facts=[('rims', pop['id'], 'basis')] + [('dimensions', x['id'], 'reference') for x in pick],
+        title='Add independent reference micrographs (+5)',
+        evidence=[pop['statement']] + ([f"local departures to place: {', '.join(surv)}"] if surv else []),
+        effect=dict(kind='minimum_detectable_change', tiles_per_micrograph=3, projected=proj),
+        rationale='Shrinks the baseline-estimation part of every envelope' + (
+            ', and tells whether each local departure is a tail of the approved population or a distinct morphology' if surv else '') + '.')
+    # reference order: restore invalid measurements first (cheap, recovers a micrograph), then resolve, then resample, then add
+    A.sort(key=lambda a: (a['tier'], REF_VERB_ORDER.index(a['verb'])))
+    for i, a in enumerate(A):
+        a['id'] = f"{a['verb'].lower()}:{i + 1}"
+        a['rank'] = i + 1
+    return A
 
 
 def _actions(entities, observations, dims, profiles, missing, rims, ref, d, sp):

@@ -96,19 +96,24 @@ def assess(batch_dir, workers=None, ref=None):
     allr = known_records()
     prov = provenance.build(allr, ref['name'])
     mgs = stats.micrographs(recs, prov['parent_of'])
-    linked = set() if is_ref else {m['parent'] for m in ref['micrographs']}
-    decision = stats.decide(mgs, ref, linked)
-    if is_ref:
-        decision.update(verdict='REFERENCE', reasons=['approved baseline: self-audit (leave-one-micrograph-out) shown per micrograph.']
-                        + [f"{a['parent']}: {a['status']} (max |t| {a['max_t']:.1f}) {'; '.join(a['gate_reasons'])}" for a in ref['self_audit']])
+    frames = None
+    if is_ref:   # role REFERENCE: self-audit, each reference micrograph against the other parents only (never itself)
+        for m in mgs:
+            stats.gate(m, ref['px_nm'])
+        frames = stats.loo_frames(mgs, allr, prov['parent_of'])
+        decision = stats.self_audit(mgs, ref, frames)
+    else:        # incoming batch: compared with the complete configured reference, exactly as before
+        decision = stats.decide(mgs, ref, {m['parent'] for m in ref['micrographs']})
     links = _links(batch, prov, allr)
-    mtexts = [explain.micrograph_text(m, ref, links) for m in mgs]
+    # a reference micrograph is explained against its own leave-one-out frame, an incoming one against the full reference
+    mtexts = [explain.micrograph_text(m, dict(ref, kpi=frames[m['parent']]['kpi']), links, against='the other reference micrographs')
+              if frames else explain.micrograph_text(m, ref, links) for m in mgs]
     chains = {pid: ch for pid, ch in prov['chains'].items() if pid in {m['parent'] for m in mgs}}
     res = dict(batch=batch, reference=ref['name'], decision=decision, summary=explain.batch_summary(batch, decision, mtexts),
                micrographs=mgs, explanations=mtexts, chains=chains,
                links=[l for l in prov['links'] if l['parent'] in chains], n_fields=len(recs),
                mdc95={k: ref['kpi'][k]['mdc95'] for k in stats.KPIS})
-    res['field'] = field.build(_clean(res), ref, recs, prov['chains'], allr)
+    res['field'] = field.build(_clean(res), ref, recs, prov['chains'], allr, frames=frames)
     res['actions'] = [f"[{a['verb']}] {a['title']}" for a in res['field']['actions']]
     os.makedirs(os.path.join(REPORTS, batch), exist_ok=True)
     json.dump(_clean(res), open(os.path.join(REPORTS, batch, 'result.json'), 'w'), indent=1)

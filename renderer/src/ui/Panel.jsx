@@ -1,5 +1,5 @@
 // Explanation panel: rich contract-driven detail; every accent uses the same category hue as the keys.
-import { explainKey, explainStage, explainAction, legendFor } from '../model/explain.js';
+import { explainKey, explainStage, explainAction, actionPresentation, legendFor } from '../model/explain.js';
 import { STAGES } from '../model/adapter.js';
 import { BLOCK_LABEL, describeRef } from '../model/brief.js';
 import { HERO_HUE } from './Hero.jsx';
@@ -42,24 +42,45 @@ function Section({ s }) {
   );
 }
 
+function SelectedAction({ M, index }) {
+  const p = actionPresentation(M, index);
+  if (!p) return null;
+  return (
+    <section className="px-rec" style={{ '--hue': p.action.reach.hue }} aria-label="selected action">
+      <span className="px-rec-kicker">Selected action</span>
+      <div className="px-rec-command"><b>{p.action.verb}</b><h3>{p.action.title}</h3></div>
+      <dl>
+        <div><dt>Why</dt><dd>{p.why}</dd></div>
+        <div><dt>Resolves</dt><dd>{p.resolves}</dd></div>
+      </dl>
+      {p.leverage && <p className="px-rec-leverage">{p.leverage}</p>}
+      <div className="px-rec-meta"><span>{p.tier}</span><span>{p.grounding}</span><span>{p.cost}</span></div>
+    </section>
+  );
+}
+
 export default function Panel({ M, stage, selKey, action, setAction, trace, onClearTrace }) {
   const ex = selKey ? explainKey(M, selKey, stage, { action }) : explainStage(M, stage, action);
   const legend = legendFor(M, stage, { action });
+  const actionRows = stage === 4 ? M.actions.map((a, i) => actionPresentation(M, i)) : [];
+  const sections = stage === 4 ? ex.sections.filter(s => !['action', 'actions', 'category'].includes(s.id)) : ex.sections;
   return (
     <aside className="panel"><div className="px-scroll">
-      {trace && <Trace M={M} c={trace} onClear={onClearTrace} />}
+      {trace && stage !== 4 && <Trace M={M} c={trace} onClear={onClearTrace} />}
       {stage === 4 && (
         <div className="px-actions">
-          <h3>Next capture</h3>
-          {M.actions.map((a, i) => (
-            <button key={a.id} className={i === action ? 'on' : ''} onClick={() => setAction(i)} aria-pressed={i === action}>
-              <i style={{ background: a.reach.hue }} /><b>{a.verb}</b><span>{a.title}</span><em>{a.tier}</em>
+          <h3>Next capture <span>{M.actions.length} ranked actions</span></h3>
+          {actionRows.map((p, i) => (
+            <button key={p.action.id} className={i === action ? 'on' : ''} onClick={() => setAction(i)} aria-pressed={i === action}>
+              <i style={{ background: p.action.reach.hue }} /><b>{p.action.verb}</b><span>{p.listLabel}</span><em>{p.tier}</em>
             </button>))}
         </div>
       )}
-      {stage === 4 && action != null && selKey && <Section s={explainAction(M, action)} />}
-      <div className="px-head"><h3>{ex.title}</h3><span>{ex.subtitle}</span></div>
-      {ex.sections.map(s => <Section key={s.id + s.title} s={s} />)}
+      {stage === 4 && action != null && <SelectedAction M={M} index={action} />}
+      {stage === 4 && action != null && <Section s={explainAction(M, action)} />}
+      {trace && stage === 4 && <Trace M={M} c={trace} onClear={onClearTrace} />}
+      <div className="px-head"><h3>{stage === 4 ? 'Evidence detail' : ex.title}</h3><span>{stage === 4 ? ex.title : ex.subtitle}</span></div>
+      {sections.map(s => <Section key={s.id + s.title} s={s} />)}
       {legend.length > 0 && (
         <div className="px-legend"><b>KEY COLOURS · {STAGES[stage]}</b>{legend.map(l => <span key={l.label}><i style={{ background: l.hue }} />{l.label}</span>)}</div>
       )}

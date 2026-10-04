@@ -24,8 +24,10 @@ SCHEMA_VERSION = 'decision-brief/1'
 # state vocabularies (the status is the meaning; labels are default wording a renderer may restyle)
 SUPPORT = {'sufficient': 'SUFFICIENT', 'at_minimum': 'SUFFICIENT AT MINIMUM', 'partial': 'PARTIAL',
            'expansion_needed': 'EXPANSION NEEDED', 'change_modality': 'CHANGE MODALITY', 'reacquire': 'REACQUIRE / INVALID',
-           'not_applicable': 'NOT APPLICABLE', 'no_expansion_justified': 'NO EXPANSION JUSTIFIED AT TESTED SCALES'}
-SUPPORT_ORDER = ['reacquire', 'change_modality', 'expansion_needed', 'partial', 'at_minimum', 'no_expansion_justified',
+           'not_applicable': 'NOT APPLICABLE', 'no_expansion_justified': 'NO EXPANSION JUSTIFIED AT TESTED SCALES',
+           # reference self-audit
+           'resolved': 'RESOLVED', 'limited': 'LIMITED', 'challenged': 'ASSUMPTION CHALLENGED'}
+SUPPORT_ORDER = ['reacquire', 'challenged', 'change_modality', 'expansion_needed', 'limited', 'partial', 'at_minimum', 'resolved', 'no_expansion_justified',
                  'sufficient', 'not_applicable']   # worst first; an explicit stop statement outranks plain sufficiency                     # worst first
 POLICY = {'verify_first': 'VERIFY FIRST', 'change_modality': 'CHANGE MODALITY', 'extend': 'EXTEND THE CAPTURE',
           'expand_sampling': 'EXPAND SAMPLING', 'stop': 'STOP'}
@@ -43,9 +45,10 @@ FAILURE_WORDS = [('acquisition_could_explain', 'acquisition could explain it'), 
                  ('moderate_robustness_dimension', 'acquisition-sensitive KPI')]
 # words that would overstate what the engine computes (checked in every rendered text)
 FORBIDDEN = ('prove', 'proven', 'proves', 'certain', 'certainly', 'impossible', 'guarantee', 'guaranteed', 'validated', 'causes',
-             'caused by', 'chemical identity', 'universal', 'universally', 'always', 'hidden variance', 'definitely', 'confirms')
+             'caused by', 'chemical identity', 'universal', 'universally', 'always', 'hidden variance', 'definitely', 'confirms',
+             'defect', 'defective', 'faulty')
 # definitional names of envelope levels may appear in templates; every other digit must come from a referenced value
-DEFINITIONAL = ('95% CI', '95%', '99%', 'q95', 'q99')
+DEFINITIONAL = ('95% CI', '95%', '99%', 'q95', 'q99', '3-field', '/1000 µm²')   # envelope levels, the MDC convention, a unit
 MAX_SURVIVING, MAX_LIMITS, MAX_STEPS = 2, 5, 5
 
 
@@ -145,6 +148,8 @@ def build(F):
     batch = ref('context', path='batch')
     verdict = D['verdict']
     pop = next((r for r in RIMS if r['type'] == 'population'), None)
+    if C.get('role') == 'reference':
+        return _reference(F, add, acts_for, claims, suppressed, OBS, ENT, RIMS, ACTS, pop)
 
     # ---- DECISION
     tmpl = {'REJECT': '{0} crosses the QC rejection rule.', 'ACCEPT': '{0} stays inside the approved envelope.',
@@ -348,12 +353,12 @@ def build(F):
         sequence = sequence[0].upper() + sequence[1:]
 
     hero = {
-        'decision': dict(state=verdict, claims=['decision.verdict'], footer='decision.scope'),
-        'data_support': dict(state=support_state, qualifier=' · '.join(qual) or None, claims=sup),
-        'surviving_evidence': dict(state=(claims[[c['id'] for c in claims].index(ev_ids[1])]['label'] if surviving else
+        'decision': dict(title='DECISION', state=verdict, claims=['decision.verdict'], footer='decision.scope'),
+        'data_support': dict(title='DATA SUPPORT', state=support_state, qualifier=' · '.join(qual) or None, claims=sup),
+        'surviving_evidence': dict(title='SURVIVING EVIDENCE', state=(claims[[c['id'] for c in claims].index(ev_ids[1])]['label'] if surviving else
                                           'NONE SURVIVES' if S['deviating'] else 'NO DEVIATION'), claims=ev_ids),
-        'limits': dict(state=' · '.join(next(c['label'] for c in claims if c['id'] == i) for i in lim_ids) or 'NONE CONSEQUENTIAL', claims=lim_ids),
-        'acquisition_policy': dict(state=POLICY[mode], mode=mode, sequence=sequence, claims=pol,
+        'limits': dict(title='LIMITS', state=' · '.join(next(c['label'] for c in claims if c['id'] == i) for i in lim_ids) or 'NONE CONSEQUENTIAL', claims=lim_ids),
+        'acquisition_policy': dict(title='ACQUISITION POLICY', state=POLICY[mode], mode=mode, sequence=sequence, claims=pol,
                                    later=[dict(action=a['id'], step=STEP_OF_VERB.get(a['verb'], a['verb'].lower()).format(e=(a['targets']['entities'] or [''])[0]),
                                                tier=a['tier']) for a in ACTS if a not in t1]),
     }
@@ -371,6 +376,196 @@ GOVERNANCE_RULES = [
     'acquisition policy = tier-1 actions in rank order; lower tiers listed, not narrated; STOP when no action exists',
     'states come from explicit engine flags; the wording template is chosen by the state',
 ]
+
+
+# ---------------------------------------------------------------- reference self-audit (role REFERENCE, never a verdict)
+REF_POLICY = {'validity': ('reimage_first', 'RE-IMAGE FIRST'), 'scale': ('change_modality', 'CHANGE MODALITY'),
+              'spatial_sampling': ('respace', 'RESPACE THE REFERENCE'), 'spatial_extent': ('extend', 'LONGER REFERENCE CAPTURE'),
+              'population': ('expand_reference', 'EXPAND THE REFERENCE')}
+REF_STEP = {'REIMAGE': 're-image {e}', 'ZOOM': 'resolve sub-floor fines', 'SPACE': 'space fields', 'EXTEND': 'longer capture',
+            'BASELINE': '+5 reference micrographs'}
+REF_LIMIT_ORDER = ['validity', 'scale', 'spatial', 'composition', 'acquisition']   # population is stated by DATASET SELF-AUDIT
+
+
+def _reference(F, add, acts_for, claims, suppressed, OBS, ENT, RIMS, ACTS, pop):
+    """The reference dataset auditing itself: how well it represents its own variation (DATASET SELF-AUDIT), what
+    departs locally from the rest of it after leave-one-out scrutiny (SURVIVING SIGNAL), where it is weakly sampled
+    (OPEN LIMITS) and how its acquisition should improve (NEXT ACQUISITION). Wording is chosen by the computed state; a
+    local departure is never called a defect."""
+    C, D, S = F['context'], F['decision'], F['summary']
+    SA = D['self_audit']
+    batch = ref('context', path='batch')
+    R = {r['id']: r for r in RIMS}
+    cons = [r for r in RIMS if r['consequential']]
+    add(id='decision.verdict', kind='decision', block='decision', scope=C['batch'], status='REFERENCE', label='REFERENCE',
+        template='{0} is the configured reference population: no QC verdict, self-audit only.', values=[_val(F, batch, 'str')],
+        fact_template='{0} parent micrographs, each compared with the other {1}',
+        fact_values=[_val(F, ref('decision', path='self_audit.n_parents'), 'int'), _val(F, ref('decision', path='self_audit.frame_size'), 'int')],
+        priority=0, group='decision', proof_refs=[ref('decision', path='verdict'), ref('decision', path='self_audit'), ref('decision', path='reasons')],
+        focus=ref('decision', path='self_audit'))
+    add(id='decision.scope', kind='scope', block='decision', scope=C['batch'], status='dataset_scope', label='SCOPE',
+        template='Self-audit under this dataset only: leave-one-parent-micrograph-out; {0}.', values=[_val(F, ref('context', path='model'), 'str')],
+        priority=9, group='scope', proof_refs=[ref('decision', path='self_audit.method'), ref('context', path='model')])
+
+    # ---- DATASET SELF-AUDIT: reference support (content) + one pointer per audited assumption
+    B = lambda p: ref('rims', pop['id'], p)
+    kmax = pop['basis']['max_baseline_share_dimension']
+    sup = [add(id='support.reference', kind='support', block='data_support', scope=C['batch'], status='limited' if pop['consequential'] else 'resolved',
+               label='REFERENCE SUPPORT', template='{0}–{1} reference micrographs per KPI; estimating the reference is {2} of a 3-field envelope for {3}.',
+               values=[_val(F, B('basis.n_reference_min'), 'int'), _val(F, B('basis.n_reference_max'), 'int'),
+                       _val(F, B('basis.max_baseline_share'), 'pct'), _val(F, ref('dimensions', kmax, 'short_label'), 'str')],
+               priority=1, group=f"rim:{pop['id']}", proof_refs=[B('basis'), B('consequential'), ref('dimensions', kmax, 'reference')], focus=B('basis'))]
+    suppressed.append(dict(candidate=f"limit.{pop['id']}", reason='stated by DATASET SELF-AUDIT', into='support.reference'))
+    vrims = [r for r in RIMS if r['type'] == 'validity']
+    srims = [r for r in RIMS if r['type'] == 'spatial' and r['scope'] == 'dimension']
+    scale_rim = R.get(f"scale:{C['batch']}")
+    checks = [
+        ('support.validity', 'VALIDITY', 'limited' if any(r['consequential'] for r in vrims) else 'sufficient',
+         'A reference micrograph fails the validity gate for some KPIs; see Open limits.', 'Every reference micrograph passes the validity gate.', vrims),
+        ('support.sampling', 'TILE SAMPLING', 'challenged' if any(r['consequential'] for r in srims) else 'sufficient',
+         'Adjacent reference tiles are not independent samples for some KPIs; see Open limits.',
+         'No tile-scale structure is established at the captured lengths.', srims),
+        ('support.scale', 'SCALE FLOOR', 'change_modality' if scale_rim and scale_rim['consequential'] else 'no_expansion_justified',
+         'The reference fines distribution is truncated at the detection floor; see Open limits.',
+         'The reference size distribution turns over above the detection floor.', [scale_rim] if scale_rim else []),
+    ]
+    for cid, label, status, bad_t, ok_t, rs in checks:
+        sup.append(add(id=cid, kind='support', block='data_support', scope=C['batch'], status=status, label=label, role='pointer',
+                       template=bad_t if status not in ('sufficient', 'no_expansion_justified') else ok_t, priority=4, group=f'support:{label.lower()}',
+                       points_to=[f"limit.{r['id']}" for r in rs if r['consequential']],
+                       proof_refs=[ref('rims', r['id'], 'consequential') for r in rs] or [ref('decision', path='self_audit')]))
+    statuses = {c['id']: c['status'] for c in claims if c['kind'] == 'support'}
+    flagged = [c for c in claims if c['kind'] == 'support' and c['status'] not in ('resolved', 'sufficient', 'no_expansion_justified')]
+    if statuses['support.sampling'] == 'challenged':
+        sup_state = 'SAMPLING ASSUMPTION CHALLENGED'
+    elif flagged:
+        sup_state = 'REFERENCE SUPPORT LIMITED'
+    else:
+        sup_state = 'REFERENCE STRUCTURE RESOLVED'
+    qual = ' · '.join(c['label'] for c in flagged if not (sup_state.startswith('SAMPLING') and c['id'] == 'support.sampling')) or None
+
+    # ---- SURVIVING SIGNAL: leave-one-out departures after acquisition / validity / consistency scrutiny
+    surviving = sorted(S['surviving'], key=lambda o: -OBS[o]['reference_relation']['exceedance_ratio'])
+    ev = []
+    for oid in surviving[:MAX_SURVIVING]:
+        o, d = OBS[oid], _dim(F, OBS[oid]['dimension'])
+        Ob = lambda p: ref('observations', oid, p)
+        ev.append(add(id=f'evidence.{oid}', kind='surviving_evidence', block='surviving_evidence', scope=oid, status='survives',
+                      label=f"{o['entity']} · {d['short_label']}".upper(),
+                      template='{0} in {1} departs from the other reference micrographs (leave-one-out) and survives scrutiny: a local departure within the reference.',
+                      values=[_val(F, ref('dimensions', d['id'], 'label'), 'str'), _val(F, Ob('entity'), 'str')],
+                      fact_template='{0} vs {1} {2} in the other reference micrographs',
+                      fact_values=[_val(F, Ob('value'), 'kpi:' + d['id']), _val(F, Ob('reference_relation.approved_mean'), 'kpi:' + d['id']),
+                                   _val(F, ref('dimensions', d['id'], 'unit'), 'str')],
+                      details=[dict(template='z = {0} against q99 = {1} in a leave-one-out frame of {2} micrographs',
+                                    values=[_val(F, Ob('reference_relation.z'), 'z'), _val(F, Ob('reference_relation.q99'), 'f2'),
+                                            _val(F, Ob('reference_relation.frame_n'), 'int')])],
+                      priority=1, group=f'evidence:{oid}', proof_refs=[Ob('reference_relation'), Ob('scrutiny'), ref('dimensions', d['id'], 'robustness')],
+                      focus=Ob('scrutiny'), action_refs=[a['id'] for a in ACTS if oid in a['targets']['observations']]))
+    parents = {OBS[o]['entity'] for o in surviving}
+    if not surviving:
+        ev.append(add(id='evidence.none', kind='evidence_summary', block='surviving_evidence', scope=C['batch'], status='none', label='NONE',
+                      template='{0} of {1} additive-valid reference micrographs leave their leave-one-out 95% envelope on a robust KPI.',
+                      values=[_val(F, ref('decision', path='d95'), 'int'), _val(F, ref('decision', path='self_audit.n_valid_additive'), 'int')],
+                      fact_template='chance of at least one such excursion among them: {0}',
+                      fact_values=[_val(F, ref('decision', path='self_audit.p_chance_any_95'), 'f2')],
+                      priority=3, group='evidence:summary', proof_refs=[ref('decision', path='d95'), ref('decision', path='self_audit')]))
+    failed = [o for o in S['deviating'] if o not in S['surviving']]
+    if failed:
+        parts, vals = [], []
+        for oid in failed:
+            o = OBS[oid]
+            code = next(c for c, _ in FAILURE_WORDS if c in o['scrutiny']['failed'])
+            vals += [_val(F, ref('observations', oid, 'entity'), 'str'), _val(F, ref('dimensions', o['dimension'], 'short_label'), 'str'),
+                     _val(F, ref('observations', oid, f"scrutiny.failed.{o['scrutiny']['failed'].index(code)}"), 'failure')]
+            n = len(vals)
+            parts.append('{%d} {%d} ({%d})' % (n - 3, n - 2, n - 1))
+        ev.append(add(id='evidence.non_surviving', kind='context', block='surviving_evidence', scope=C['batch'], status='fails',
+                      label='DID NOT SURVIVE', template='Departed but did not survive: ' + ', '.join(parts) + '.', values=vals, priority=6,
+                      group='evidence:non_surviving', proof_refs=[ref('observations', o, 'scrutiny') for o in failed]))
+    infl = [(e['id'], k, v['shift_over_mdc']) for e in F['entities'] for k, v in (e.get('reference_influence') or {}).items()
+            if v.get('shift_over_mdc') is not None]
+    if infl:
+        eid, k, _ = max(infl, key=lambda t: t[2])
+        ev.append(add(id='evidence.influence', kind='context', block='surviving_evidence', scope=eid, status='measured', label='INFLUENCE',
+                      template='Largest single influence: leaving out {0} moves the {1} reference mean by {2} of its minimum detectable change.',
+                      values=[_val(F, ref('entities', eid, 'id'), 'str'), _val(F, ref('dimensions', k, 'short_label'), 'str'),
+                              _val(F, ref('entities', eid, f'reference_influence.{k}.shift_over_mdc'), 'f2')],
+                      priority=7, group='evidence:influence', proof_refs=[ref('entities', eid, 'reference_influence'), ref('dimensions', k, 'reference')]))
+    sig_state = ('REFERENCE HETEROGENEITY' if len(parents) >= 2 else 'LOCAL DEPARTURE') if surviving else 'NO STRONG INTERNAL DEPARTURE'
+
+    # ---- OPEN LIMITS: consequential reference-derived rims (reference support itself is stated above)
+    lims = []
+    order = sorted([r for r in cons if r['type'] != 'population'],
+                   key=lambda r: (REF_LIMIT_ORDER.index(r['type']) if r['type'] in REF_LIMIT_ORDER else 99, r['id']))
+    for r in RIMS:
+        if not r['consequential']:
+            suppressed.append(dict(candidate=f"limit.{r['id']}", reason='not consequential for the reference (examiner only)'))
+    for r in order[:MAX_LIMITS]:
+        Rb = lambda p: ref('rims', r['id'], p)
+        prf, focus = [Rb('statement'), Rb('basis')], Rb('basis')
+        if r['type'] == 'validity':
+            label, t, v = 'VALIDITY', '{0}: in the reference, but not measurable here: {1}.', [_val(F, Rb('target'), 'str'), _val(F, Rb('basis.reasons.0'), 'str')]
+            focus = ref('entities', r['target'], 'validity')
+        elif r['type'] == 'scale' and r['scope'] == 'batch':
+            label = 'SCALE FLOOR'
+            t = ('The reference fines distribution peaks in its smallest resolved bin at the {0} µm floor ({1} vs at most {2} /1000 µm² above): '
+                 'normal fines below the floor are unobserved.')
+            v = [_val(F, Rb('basis.detection_floor_um'), 'g'), _val(F, Rb('basis.floor_bin_density'), 'f2'), _val(F, Rb('basis.max_density_above_floor'), 'f2')]
+        elif r['type'] == 'spatial' and r['scope'] == 'dimension':
+            label = 'TILE SAMPLING'
+            t = '{0}: adjacent-tile variance {1}× the short-range prediction (95% CI {2}–{3}); adjacent tiles are not independent samples.'
+            v = [_val(F, ref('dimensions', r['target'], 'short_label'), 'str'), _val(F, Rb('basis.tile_excess'), 'f1'),
+                 _val(F, Rb('basis.tile_excess_ci95.0'), 'f1'), _val(F, Rb('basis.tile_excess_ci95.1'), 'f1')]
+            focus = ref('dimensions', r['target'], 'spatial_support')
+        else:
+            label, t, v = LIMIT_LABEL.get(r['type'], r['type'].upper()), '{0}', [_val(F, Rb('statement'), 'str')]
+        lims.append(add(id=f"limit.{r['id']}", kind='limit', block='limits', scope=r['target'], status='consequential', label=label,
+                        template=t, values=v, priority=2 + (REF_LIMIT_ORDER.index(r['type']) if r['type'] in REF_LIMIT_ORDER else 9) / 10,
+                        group=f"rim:{r['id']}", proof_refs=prf, focus=focus, action_refs=acts_for(r['id'])))
+    labels = list(dict.fromkeys(c['label'] for c in claims if c['id'] in lims))
+
+    # ---- NEXT ACQUISITION: tier-1 reference actions in rank order; STOP when nothing justifies more of the same
+    t1 = [a for a in ACTS if a['tier'] == 1][:MAX_STEPS]
+    for a in ACTS:
+        if a not in t1:
+            suppressed.append(dict(candidate=f"action.{a['id']}", reason=f"tier {a['tier']} (examiner only)" if a['tier'] != 1 else 'steps cap'))
+    pol = []
+    for a in t1:
+        Ab = lambda p: ref('actions', a['id'], p)
+        pol.append(add(id=f"action.{a['id']}", kind='action', block='acquisition_policy', scope=','.join(a['targets']['entities']) or C['batch'],
+                       status=a['status'], label=a['verb'], template='{0}', values=[_val(F, Ab('title'), 'str')],
+                       step=REF_STEP.get(a['verb'], a['verb'].lower()).format(e=(a['targets']['entities'] or [''])[0]),
+                       priority=10 + a['rank'], group=f"action:{a['id']}", action_refs=[a['id']],
+                       proof_refs=[Ab('rationale')] + [ref('rims', x, 'basis') for x in a['triggered_by']] + [dict(f) for f in a['trigger_facts']],
+                       focus=Ab('title')))
+    if t1:
+        mode, pol_state = REF_POLICY.get(t1[0]['addresses'], ('expand_reference', 'EXPAND THE REFERENCE'))
+    else:
+        mode, pol_state = 'stop', 'NO SAME-REGIME EXPANSION JUSTIFIED'
+        pol.append(add(id='action.stop', kind='action', block='acquisition_policy', scope=C['batch'], status='no_expansion_justified', label='STOP',
+                       template='No current observation justifies more same-regime acquisition of the reference.', priority=10,
+                       group='action:stop', proof_refs=[ref('summary', path='consequential_rims')], focus=ref('summary', path='consequential_rims')))
+    seq = ' → '.join(next(c['step'] for c in claims if c['id'] == i) for i in pol) if t1 else None
+    hero = {
+        'decision': dict(title='ROLE', state='REFERENCE', claims=['decision.verdict'], footer='decision.scope'),
+        'data_support': dict(title='DATASET SELF-AUDIT', state=sup_state, qualifier=qual, claims=sup),
+        'surviving_evidence': dict(title='SURVIVING SIGNAL', state=sig_state, claims=ev),
+        'limits': dict(title='OPEN LIMITS', state=' · '.join(labels) or 'NONE CONSEQUENTIAL', claims=lims),
+        'acquisition_policy': dict(title='NEXT ACQUISITION', state=pol_state, mode=mode, sequence=seq[0].upper() + seq[1:] if seq else None,
+                                   claims=pol, later=[dict(action=a['id'], step=REF_STEP.get(a['verb'], a['verb'].lower()).format(
+                                       e=(a['targets']['entities'] or [''])[0]), tier=a['tier']) for a in ACTS if a not in t1]),
+    }
+    return dict(schema_version=SCHEMA_VERSION, source=dict(schema_version=F['schema_version'], batch=C['batch'], reference=C['reference'], role='reference'),
+                hero=hero, claims=claims, governance=dict(rules=GOVERNANCE_RULES + REF_GOVERNANCE, suppressed=suppressed))
+
+
+REF_GOVERNANCE = [
+    'reference role: no QC verdict; every observation is related to its leave-one-parent-out frame, never to a model containing it',
+    'reference support is stated once, in DATASET SELF-AUDIT; OPEN LIMITS carries the other consequential reference-derived rims',
+    'a surviving local departure is reported as a departure within the reference, never as a defect',
+]
+
 
 
 def compose(brief, compositor=None):
@@ -460,6 +655,16 @@ def check(brief, F):
                 if c['group'] in seen:
                     bad.append(f'hero: redundancy group {c["group"]} selected twice ({seen[c["group"]]}, {cid})')
                 seen[c['group']] = cid
+    if F['context'].get('role') == 'reference':
+        if hero['decision']['state'] != 'REFERENCE':
+            bad.append('reference role: the top-level state must be REFERENCE')
+        for c in brief['claims']:
+            if c['status'] in ('ACCEPT', 'INVESTIGATE', 'REJECT') or c['label'] in ('ACCEPT', 'INVESTIGATE', 'REJECT'):
+                bad.append(f"{c['id']}: a QC verdict in the reference self-audit")
+            if c['kind'] == 'surviving_evidence':
+                o = next((x for x in F['observations'] if x['id'] == c['scope']), {})
+                if o.get('reference_relation', {}).get('frame') != 'leave_one_out':
+                    bad.append(f"{c['id']}: reference departure not tested in its leave-one-out frame")
     if hero['decision']['state'] != F['decision']['verdict']:
         bad.append('hero decision state differs from the field verdict')
     if by_id.get('decision.verdict', {}).get('status') != F['decision']['verdict']:
