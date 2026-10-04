@@ -446,6 +446,11 @@ The research / literature agent proposes Marker and Capability cases. It does **
 qte77's parallel research/evaluation repository is:
 [qte77/2026-10-03-london-ai-science-hack](https://github.com/qte77/2026-10-03-london-ai-science-hack).
 
+**HackBench, live (Parallax's trust and evaluation layer, derived results only):**
+- QC console with Parallax's decision briefs plus HackBench's independent cross-check: <https://thismay52--hackbench-web.modal.run/results/>
+- Results for agents: [`/v1/results`](https://thismay52--hackbench-web.modal.run/v1/results) (JSON) · [`/results.md`](https://thismay52--hackbench-web.modal.run/results.md)
+- The cycle runs on Modal (reference, planted-drift suite, agent honeypots, Paperclip literature + LLM judge, your briefs), with every step in a hash-chained journal.
+
 ---
 
 # Proof and governance
